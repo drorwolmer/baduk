@@ -206,10 +206,16 @@
                 },
                 events: {
                     onReady: function (e) {
-                        console.error(e);
                         // e.target.mute();
-                        e.target.setVolume(25);
-                    }
+                        e.target.setVolume(15);
+                        e.target.playVideo();
+
+                    },
+                    // onStateChange: function (e) {
+                    //     if (e.data == YT.PlayerState.PLAYING) {
+                    //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
+                    //     }
+                    // }
                 }
             });
         }
