@@ -46,6 +46,7 @@
             /*border: 1px solid blue;*/
             /*float: left;*/
             border-radius: 50px;
+            /*border-radius: 50%;*/
             /*box-shadow: 0 0 5px 10px #000;*/
             /*-webkit-filter: blur(8px); !*SATLA MODE1!!!*!*/
             overflow: hidden;
@@ -58,19 +59,23 @@
             box-shadow: 0px 0px 23px 2px rgba(0, 0, 0, 0.98);
 
         }
+
         .video.video-logo {
-            width:640px;
+            width: 640px;
             background: url('https://media.timeout.com/images/105153350/image.jpg');
             background-size: cover;
             background-position-y: -50px;
             border-radius: 50px;
         }
 
+        .video.person, .video .in {
+            border-radius: 44% 56% 52% 48% / 63% 65% 35% 37%;
+        }
+
 
         .video.stream.stream-big {
             width: 640px;
             height: 440px;
-            float: left;
 
         }
 
@@ -91,9 +96,10 @@
             width: 320px;
             height: 240px;
             position: absolute;
+            opacity: 50%;
             z-index: 3;
             /*box-shadow: inset 0px 0px 0px 0px; rgba(0,0,0,0.7);*/
-            box-shadow: 0px 0px 23px 20px rgba(0, 0, 0, 0.98);
+            box-shadow: inset 0 0 30px #000000;
 
 
         }
@@ -133,14 +139,15 @@
 
     <div id="container">
 
-        <div class="video stream stream-big">
+        <div class="video video-logo">d
+        </div>
+
+        <div class="video stream stream-big float-left">
             <div class="big-video-container">
-                 <div id="muteYouTubeVideoPlayer"></div>
+                <div id="muteYouTubeVideoPlayer"></div>
             </div>
         </div>
 
-        <div class="video video-logo ffloat-left">d
-        </div>
 
     </div>
 
@@ -192,10 +199,10 @@
                     iv_load_policy: 3,  // Hide the Video Annotations
                     autohide: 1,         // Hide video controls when playing,
                     disablekb: 1,
-                    start: 100,
+                    start: 900,
                 },
                 events: {
-                    onReady: function(e) {
+                    onReady: function (e) {
                         console.error(e);
                         // e.target.mute();
                         e.target.setVolume(25);
