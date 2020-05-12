@@ -178,7 +178,7 @@ function onConnectionSuccess() {
 
     room = connection.initJitsiConference(room_name, confOptions);
     room.addCommandListener("FOO", function (e) {
-        console.error("GOT FOO CMD", e);
+        console.error("GOT FOO", e);
     });
 
     window.Conference = room;
