@@ -188,6 +188,9 @@
             //     }
             // });
             var player2;
+            var utcstart = 1589269943;
+            var utcnow = Math.round(new Date().getTime() / 1000);
+            var offset = utcnow - utcstart;
             player1 = new YT.Player('muteYouTubeVideoPlayer', {
                 videoId: 'zMG7K5_Jv2M', // YouTube Video ID
                 width: 640,               // Player width (in px)
@@ -203,7 +206,7 @@
                     iv_load_policy: 3,  // Hide the Video Annotations
                     autohide: 1,         // Hide video controls when playing,
                     disablekb: 1,
-                    start: 900,
+                    start: offset,
                     origin: 'https://foosa-a977b5f6.localhost.run'
                 },
                 events: {
