@@ -161,8 +161,15 @@ window.Conference = null;
  */
 function onConnectionSuccess() {
 
+    console.error("yu", window.location.href);
+    if (window.location.href.indexOf("toilet") > -1) {
+        // console.error(jQuery("#body"));
+        document.getElementById("body").classList.add("toilet");
+    }
+
+
     room = connection.initJitsiConference("pipkaki", confOptions);
-    room.addCommandListener("FOO", function(e) {
+    room.addCommandListener("FOO", function (e) {
         console.error("GOT FOO CMD", e);
     });
 
@@ -306,6 +313,7 @@ const initOptions = {
     // Whether desktop sharing should be disabled on Firefox.
     desktopSharingFirefoxDisabled: true,
 };
+
 
 JitsiMeetJS.init(initOptions);
 

@@ -6,7 +6,7 @@
     <script src="libs/strophe/strophe.js"></script>
     <script src="libs/strophe/strophe.disco.min.js?v=1"></script>
     <script src="https://meet.jit.si/libs/lib-jitsi-meet.min.js"></script>
-    <script src="example.js"></script>
+    <script src="example.js?12124"></script>
     <meta charset="utf-8"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,9 +27,22 @@
             display: block;
             /*background: red;*/
             opacity: 0.9;
-            background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
 
             background-size: cover;
+        }
+
+        .toilet #muteYouTubeVideoPlayer2 {
+            background: url('https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg');
+            background-size: contain;
+        }
+
+        .block #muteYouTubeVideoPlayer2 {
+            background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
+
+        }
+
+        .toilet .video.logo {
+            display: none;
         }
 
         .container {
@@ -91,7 +104,7 @@
             /*border-radius: 50px;*/
             /*position: relative;*/
             top: -40px;
-            left:-40px;
+            left: -40px;
             /*border: 1px solid red;*/
         }
 
@@ -123,6 +136,18 @@
             /*background-color: orange;*/
         }
 
+        .toilet .stream, .toilet .video-logo {
+            display: none;
+        }
+
+        .button {
+            display: none;
+        }
+
+        .toilet .button {
+            display:inline-block;
+        }
+
         /*#muteYouTubeVideoPlayer2 {*/
         /*    width: 480px;*/
         /*    height: 320px;*/
@@ -136,7 +161,7 @@
 
     </style>
 </head>
-<body>
+<body id="body">
 <div style="z-index: -1" id="muteYouTubeVideoPlayer2"></div>
 <div class="container-fluid">
 
@@ -144,6 +169,9 @@
     <div id="container">
 
         <div class="video video-logo">d
+        </div>
+
+        <div class="video button"><a href="?room=block">GO TO BLOCK</a>
         </div>
 
         <div class="video stream stream-big float-left">
@@ -187,42 +215,44 @@
             //         }
             //     }
             // });
-            var player2;
-            var utcstart = 1589275490;
-            var utcnow = Math.round(new Date().getTime() / 1000);
-            var offset = utcnow - utcstart;
-            player1 = new YT.Player('muteYouTubeVideoPlayer', {
-                videoId: 'zMG7K5_Jv2M', // YouTube Video ID
-                width: 640,               // Player width (in px)
-                height: 480,              // Player height (in px)
-                playerVars: {
-                    autoplay: 1,        // Auto-play the video on load
-                    controls: 0,        // Show pause/play buttons in player
-                    showinfo: 0,        // Hide the video title
-                    modestbranding: 1,  // Hide the Youtube Logo
-                    loop: 1,            // Run the video in a loop
-                    fs: 0,              // Hide the full screen button
-                    cc_load_policy: 1, // Hide closed captions
-                    iv_load_policy: 3,  // Hide the Video Annotations
-                    autohide: 1,         // Hide video controls when playing,
-                    disablekb: 1,
-                    start: offset,
-                    origin: 'https://foosa-a977b5f6.localhost.run'
-                },
-                events: {
-                    onReady: function (e) {
-                        // e.target.mute();
-                        e.target.setVolume(0);
-                        e.target.playVideo();
-
+            if (window.location.href.indexOf("toilet") === -1) {
+                var player2;
+                var utcstart = 1589275490;
+                var utcnow = Math.round(new Date().getTime() / 1000);
+                var offset = utcnow - utcstart;
+                player1 = new YT.Player('muteYouTubeVideoPlayer', {
+                    videoId: 'zMG7K5_Jv2M', // YouTube Video ID
+                    width: 640,               // Player width (in px)
+                    height: 480,              // Player height (in px)
+                    playerVars: {
+                        autoplay: 1,        // Auto-play the video on load
+                        controls: 0,        // Show pause/play buttons in player
+                        showinfo: 0,        // Hide the video title
+                        modestbranding: 1,  // Hide the Youtube Logo
+                        loop: 1,            // Run the video in a loop
+                        fs: 0,              // Hide the full screen button
+                        cc_load_policy: 1, // Hide closed captions
+                        iv_load_policy: 3,  // Hide the Video Annotations
+                        autohide: 1,         // Hide video controls when playing,
+                        disablekb: 1,
+                        start: offset,
+                        origin: 'https://foosa-a977b5f6.localhost.run'
                     },
-                    // onStateChange: function (e) {
-                    //     if (e.data == YT.PlayerState.PLAYING) {
-                    //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
-                    //     }
-                    // }
-                }
-            });
+                    events: {
+                        onReady: function (e) {
+                            // e.target.mute();
+                            e.target.setVolume(0);
+                            e.target.playVideo();
+
+                        },
+                        // onStateChange: function (e) {
+                        //     if (e.data == YT.PlayerState.PLAYING) {
+                        //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
+                        //     }
+                        // }
+                    }
+                });
+            }
         }
 
         // Written by @labnol
