@@ -1,18 +1,226 @@
+<!DOCTYPE html>
 <html>
-  <head>
-  </head>
-  <body>
-    <div id="meet">foo</div>
-    <script src='https://meet.jit.si/external_api.js'></script>
-    <script type="text/javascript">
-    const domain = 'meet.jit.si';
-    const options = {
-      roomName: 'JitsiMeetAPIExample',
-      width: 700,
-      height: 700,
-      parentNode: document.querySelector('#meet')
-      };
-    const api = new JitsiMeetExternalAPI(domain, options);
+<head lang="en">
+    <title></title>
+    <script src="libs/jquery-2.1.1.min.js"></script>
+    <script src="libs/strophe/strophe.js"></script>
+    <script src="libs/strophe/strophe.disco.min.js?v=1"></script>
+    <script src="../../lib-jitsi-meet.min.js"></script>
+    <script src="example.js"></script>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge, chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>untitled</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style type="text/css">
+        body {
+            background: #000;
+        }
+
+        #muteYouTubeVideoPlayer2 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            /*background: red;*/
+            opacity: 0.9;
+            background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
+
+            background-size: cover;
+        }
+
+        .container {
+        }
+
+        .video {
+            display: inline-block;
+            /*width: 24%;*/
+            /*height: 13.5%;*/
+            /*background: red;*/
+            width: 310px;
+            vertical-align: top;
+            height: 240px;
+            /*border: 1px solid blue;*/
+            /*float: left;*/
+            border-radius: 50px;
+            /*box-shadow: 0 0 5px 10px #000;*/
+            /*-webkit-filter: blur(8px); !*SATLA MODE1!!!*!*/
+            overflow: hidden;
+            padding: 0 !important;
+            margin: 5px;
+            /*display:inline-block;*/
+            /*float:left;*/
+            z-index: 1;
+            position: relative;
+            box-shadow: 0px 0px 23px 2px rgba(0, 0, 0, 0.98);
+
+        }
+        .video.video-logo {
+            width:640px;
+            background: url('https://media.timeout.com/images/105153350/image.jpg');
+            background-size: cover;
+            background-position-y: -50px;
+            border-radius: 50px;
+        }
+
+
+        .video.stream.stream-big {
+            width: 640px;
+            height: 440px;
+            float: left;
+
+        }
+
+        .video video {
+            width: 480px;
+            float: left;
+            height: 320px;
+            margin-bottom: 0;
+            position: absolute;
+            /*border-radius: 50px;*/
+            /*position: relative;*/
+            top: -30px;
+            /*border: 1px solid red;*/
+        }
+
+        .video .in {
+            /*background:orange;*/
+            width: 320px;
+            height: 240px;
+            position: absolute;
+            z-index: 3;
+            /*box-shadow: inset 0px 0px 0px 0px; rgba(0,0,0,0.7);*/
+            box-shadow: 0px 0px 23px 20px rgba(0, 0, 0, 0.98);
+
+
+        }
+
+        .video iframe {
+            width: 840px;
+            height: 580px;
+            position: relative;
+            top: -50px;
+            /*border: 1px solid red;*/
+        }
+
+        .big-video-container {
+            width: 640px;
+            height: 480px;
+            overflow: hidden;
+            /*background-color: orange;*/
+        }
+
+        /*#muteYouTubeVideoPlayer2 {*/
+        /*    width: 480px;*/
+        /*    height: 320px;*/
+        /*}*/
+
+        .logo {
+            width: 100%;
+            height: 100%;
+        }
+
+
+    </style>
+</head>
+<body>
+<div style="z-index: -1" id="muteYouTubeVideoPlayer2"></div>
+<div class="container-fluid">
+
+
+    <div id="container">
+
+        <div class="video stream stream-big">
+            <div class="big-video-container">
+                 <div id="muteYouTubeVideoPlayer"></div>
+            </div>
+        </div>
+
+        <div class="video video-logo ffloat-left">d
+        </div>
+
+    </div>
+
+    <script async src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        function onYouTubeIframeAPIReady() {
+            // var player1;
+            // player1 = new YT.Player('muteYouTubeVideoPlayer2', {
+            //     // videoId: 'NPo9MvroDmo', // YouTube Video ID
+            //     // videoId: 'QtXx3Qubmys',
+            //     videoId: '6MyjFHd04R8',
+            //     playlist: 'QtXx3Qubmys',
+            //     width: 2000,               // Player width (in px)
+            //     height: 2000,              // Player height (in px)
+            //     playerVars: {
+            //         autoplay: 1,        // Auto-play the video on load
+            //         controls: 0,        // Show pause/play buttons in player
+            //         showinfo: 0,        // Hide the video title
+            //         modestbranding: 1,  // Hide the Youtube Logo
+            //         loop: 1,            // Run the video in a loop
+            //         fs: 1,              // Hide the full screen button
+            //         cc_load_policy: 1, // Hide closed captions
+            //         iv_load_policy: 3,  // Hide the Video Annotations
+            //         autohide: 1,         // Hide video controls when playing,
+            //         disablekb: 1
+            //     },
+            //     events: {
+            //         onReady: function(e) {
+            //             console.error(e);
+            //             e.target.mute();
+            //             // e.target.setPlaybackRate(0.25);
+            //             // e.target.setVolume(50);
+            //         }
+            //     }
+            // });
+            var player2;
+            player1 = new YT.Player('muteYouTubeVideoPlayer', {
+                videoId: '7HZpg-x6eSA', // YouTube Video ID
+                width: 640,               // Player width (in px)
+                height: 480,              // Player height (in px)
+                playerVars: {
+                    autoplay: 1,        // Auto-play the video on load
+                    controls: 0,        // Show pause/play buttons in player
+                    showinfo: 0,        // Hide the video title
+                    modestbranding: 1,  // Hide the Youtube Logo
+                    loop: 1,            // Run the video in a loop
+                    fs: 1,              // Hide the full screen button
+                    cc_load_policy: 1, // Hide closed captions
+                    iv_load_policy: 3,  // Hide the Video Annotations
+                    autohide: 1,         // Hide video controls when playing,
+                    disablekb: 1
+                },
+                events: {
+                    onReady: function(e) {
+                        console.error(e);
+                        // e.target.mute();
+                        e.target.setVolume(25);
+                    }
+                }
+            });
+        }
+
+        // Written by @labnol
     </script>
-  </body>
+
+    <!--        <iframe-->
+    <!--            src="https://www.youtube.com/embed/P7d1H83IcjE?autoplay=1&controls=0&disablekb=0&color=blue&enablejsapi=1?&modestbranding=1"-->
+    <!--            frameborder="0"-->
+    <!--            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"-->
+    <!--            allowfullscreen></iframe>-->
+</div>
+<!--<a href="#" onclick="unload()">Unload</a>-->
+<!--<a href="#" onclick="switchVideo()">switchVideo</a>-->
+<!--<div id="audioOutputSelectWrapper" style="display: none;">-->
+<!--    Change audio output device-->
+<!--    <select id="audioOutputSelect" onchange="changeAudioOutput(this)"/>-->
+<!--</div>-->
+<!--     <video id="localVideo" autoplay="true"></video>-->
+<!--    <audio id="localAudio" autoplay="true" muted="true"></audio>-->
+
+
+</body>
 </html>
