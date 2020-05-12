@@ -33,7 +33,7 @@
 
         .toilet #muteYouTubeVideoPlayer2 {
             background: url('https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg');
-            background-size: contain;
+            background-size: cover;
         }
 
         .block #muteYouTubeVideoPlayer2 {
@@ -143,6 +143,9 @@
         .button {
             display: inline-block;
             background: #000;
+            width:100px;
+            height:100px;
+            border: 1px solid #fff;
         }
 
 
@@ -158,7 +161,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            opacity: 0.2;
+            /*opacity: 0.5;*/
         }
 
         .toilet .button a {
@@ -194,17 +197,19 @@
         <div class="video video-logo">d
         </div>
 
-        <div class="video button button-to-block"><a href="?room=block">GO TO BLOCK</a>
-        </div>
-
-        <div class="video button button-to-toilet"><a href="?room=toilet">GO TO TOILET</a>
-        </div>
-
         <div class="video stream stream-big float-left">
             <div class="big-video-container">
                 <div id="muteYouTubeVideoPlayer"></div>
             </div>
         </div>
+
+        <div class="video button button-to-block  float-right"><a href="?room=block"> </a>
+        </div>
+
+        <div class="video button button-to-toilet  float-right"><a href="?room=toilet"> </a>
+        </div>
+
+
 
 
     </div>
