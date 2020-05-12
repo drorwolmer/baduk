@@ -178,7 +178,7 @@
             // });
             var player2;
             player1 = new YT.Player('muteYouTubeVideoPlayer', {
-                videoId: '7HZpg-x6eSA', // YouTube Video ID
+                videoId: 'zMG7K5_Jv2M', // YouTube Video ID
                 width: 640,               // Player width (in px)
                 height: 480,              // Player height (in px)
                 playerVars: {
@@ -187,11 +187,12 @@
                     showinfo: 0,        // Hide the video title
                     modestbranding: 1,  // Hide the Youtube Logo
                     loop: 1,            // Run the video in a loop
-                    fs: 1,              // Hide the full screen button
+                    fs: 0,              // Hide the full screen button
                     cc_load_policy: 1, // Hide closed captions
                     iv_load_policy: 3,  // Hide the Video Annotations
                     autohide: 1,         // Hide video controls when playing,
-                    disablekb: 1
+                    disablekb: 1,
+                    start: 100,
                 },
                 events: {
                     onReady: function(e) {
