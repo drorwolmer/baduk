@@ -9,6 +9,8 @@ const options = {
 
     // The name of client node advertised in XEP-0115 'c' stanza
     clientNode: "http://jitsi.org/jitsimeet",
+    desktopSharingChromeDisabled: true,
+
 };
 
 const confOptions = {
@@ -152,12 +154,19 @@ function onUserLeft(id) {
     document.querySelectorAll(".video_".concat(id)).forEach((e) => e.remove());
 }
 
+window.Conference = null;
+
 /**
  * That function is called when connection is established successfully
  */
 function onConnectionSuccess() {
 
     room = connection.initJitsiConference("pipkaki", confOptions);
+    room.addCommandListener("FOO", function(e) {
+        console.error("GOT FOO CMD", e);
+    });
+
+    window.Conference = room;
 
     room.on(JitsiMeetJS.events.conference.TRACK_ADDED, onRemoteTrack);
     room.on(JitsiMeetJS.events.conference.TRACK_REMOVED, (track) => {
@@ -277,7 +286,7 @@ function changeAudioOutput(selected) {
 $(window).bind("beforeunload", unload);
 $(window).bind("unload", unload);
 
-// JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.ERROR);
+JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.WARNING);
 const initOptions = {
     disableAudioLevels: true,
 
