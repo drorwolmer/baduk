@@ -166,9 +166,17 @@ function onConnectionSuccess() {
         // console.error(jQuery("#body"));
         document.getElementById("body").classList.add("toilet");
     }
+    else {
+        document.getElementById("body").classList.add("block");
+    }
+
+    let room_name = "block_demo_block";
+    if (window.location.href.indexOf("toilet") > -1) {
+        room_name = "block_demo_toilet";
+    }
 
 
-    room = connection.initJitsiConference("pipkaki", confOptions);
+    room = connection.initJitsiConference(room_name, confOptions);
     room.addCommandListener("FOO", function (e) {
         console.error("GOT FOO CMD", e);
     });
