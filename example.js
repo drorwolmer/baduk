@@ -23,6 +23,7 @@ let room = null;
 
 let localTracks = [];
 const remoteTracks = {};
+let haramotTimePoints = [];
 
 /**
  * Handles local tracks.
@@ -175,10 +176,16 @@ function onConnectionSuccess() {
         room_name = "block_demo_toilet";
     }
 
-
     room = connection.initJitsiConference(room_name, confOptions);
     room.addCommandListener("FOO", function (e) {
         console.error("GOT FOO", e);
+    });
+
+    room.addCommandListener("HARAMA", function (e) {
+        haramotTimePoints.push({
+            time: Math.round(new Date().getTime() / 1000),
+            user: e.attributes["user"]
+        });
     });
 
     window.Conference = room;
@@ -212,6 +219,7 @@ function onConnectionSuccess() {
         console.log(`${room.getPhoneNumber()} - ${room.getPhonePin()}`)
     );
     room.join();
+    var timer = setInterval(checkHaramot, 1000);
 }
 
 /**
@@ -296,6 +304,59 @@ function switchVideo() {
 function changeAudioOutput(selected) {
     // eslint-disable-line no-unused-vars
     JitsiMeetJS.mediaDevices.setAudioOutputDevice(selected.value);
+}
+
+function checkHaramot() {
+  let cooldown = 30.0;
+  let max_haramot_per_user = 30;
+
+  var users = {};
+  var current_time = new Date().getTime() / 1000;
+  var total = 0;
+  var remove_amount = 0;
+
+
+  for (let i = haramotTimePoints.length; i != 0; i--) {
+      var harama_user = haramotTimePoints[i - 1]["user"];
+      var harama_time = haramotTimePoints[i - 1]["time"];
+
+      // Because we're iterating backwards the first time our 'harama_time' is invalid all the following
+      // ones are invalid too
+      if (harama_time  + cooldown < current_time) {
+        remove_amount = i + 1;
+        break;
+      }
+
+      if (harama_user in users){
+        if (users[harama_user] == max_haramot_per_user){
+          continue;
+        }
+        users[harama_user] += 1;
+
+      }
+      else {
+        users[harama_user] = 1;
+      }
+
+      total += 1;
+
+  }
+
+  haramotTimePoints.splice(0, remove_amount);
+
+  console.error("Total haramot", total);
+  return total;
+}
+
+function sendHarama() {
+
+    var o = {
+        attributes: {
+            user: room.myUserId()
+        }
+    };
+
+    room.sendCommandOnce("HARAMA", o);
 }
 
 $(window).bind("beforeunload", unload);
