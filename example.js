@@ -24,6 +24,8 @@ let room = null;
 let localTracks = [];
 const remoteTracks = {};
 let haramotTimePoints = [];
+let sentHaramot = [];
+let max_haramot_per_user = 30;
 
 /**
  * Handles local tracks.
@@ -308,13 +310,11 @@ function changeAudioOutput(selected) {
 
 function checkHaramot() {
   let cooldown = 30.0;
-  let max_haramot_per_user = 30;
 
   var users = {};
   var current_time = new Date().getTime() / 1000;
   var total = 0;
   var remove_amount = 0;
-
 
   for (let i = haramotTimePoints.length; i != 0; i--) {
       var harama_user = haramotTimePoints[i - 1]["user"];
@@ -344,12 +344,12 @@ function checkHaramot() {
 
   haramotTimePoints.splice(0, remove_amount);
 
-  console.error("Total haramot", total);
   return total;
 }
 
 function sendHarama() {
 
+    sentHaramot.push()
     var o = {
         attributes: {
             user: room.myUserId()
