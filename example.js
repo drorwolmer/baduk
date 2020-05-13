@@ -23,9 +23,13 @@ let room = null;
 
 let localTracks = [];
 const remoteTracks = {};
+
 let haramotTimePoints = [];
 let sentHaramot = [];
 let max_haramot_per_user = 30;
+let harama_cooldown = 30.0;
+let total_haramot_sent = 0;
+
 
 /**
  * Handles local tracks.
@@ -309,7 +313,6 @@ function changeAudioOutput(selected) {
 }
 
 function checkHaramot() {
-  let cooldown = 30.0;
 
   var users = {};
   var current_time = new Date().getTime() / 1000;
@@ -322,7 +325,7 @@ function checkHaramot() {
 
       // Because we're iterating backwards the first time our 'harama_time' is invalid all the following
       // ones are invalid too
-      if (harama_time  + cooldown < current_time) {
+      if (harama_time  + harama_cooldown < current_time) {
         remove_amount = i + 1;
         break;
       }
@@ -349,7 +352,11 @@ function checkHaramot() {
 
 function sendHarama() {
 
-    sentHaramot.push()
+    if (total_haramot_sent == max_haramot_per_user) {
+        console.warn("Not sending any more haramot atm");
+        return;
+    }
+
     var o = {
         attributes: {
             user: room.myUserId()
@@ -357,6 +364,11 @@ function sendHarama() {
     };
 
     room.sendCommandOnce("HARAMA", o);
+    total_haramot_sent += 1;
+
+    setTimeout(function() {
+        total_haramot_sent -= 1;
+    }, harama_cooldown * 1000);
 }
 
 $(window).bind("beforeunload", unload);
