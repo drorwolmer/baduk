@@ -488,74 +488,73 @@ function sendHarama() {
     }, harama_cooldown * 1000);
 }
 
-$(window).bind("beforeunload", unload);
-$(window).bind("unload", unload);
-
-JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.WARNING);
-// const initOptions = {
-//     disableAudioLevels: true,
-//
-//     // The ID of the jidesha extension for Chrome.
-//     desktopSharingChromeExtId: "mbocklcggfhnbahlnepmldehdhpjfcjp",
-//
-//     // Whether desktop sharing should be disabled on Chrome.
-//     desktopSharingChromeDisabled: true,
-//
-//     // The media sources to use when using screen sharing with the Chrome
-//     // extension.
-//     desktopSharingChromeSources: ["screen", "window"],
-//
-//     // Required version of Chrome extension
-//     desktopSharingChromeMinExtVersion: "0.1",
-//
-//     // Whether desktop sharing should be disabled on Firefox.
-//     desktopSharingFirefoxDisabled: true,
-// };
-
-JitsiMeetJS.init(options);
-
-connection = new JitsiMeetJS.JitsiConnection(null, null, options);
-
-connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
-    onConnectionSuccess
-);
-connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_FAILED,
-    onConnectionFailed
-);
-connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
-    disconnect
-);
-
-
-JitsiMeetJS.mediaDevices.addEventListener(
-    JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
-    onDeviceListChanged
-);
-
-connection.connect();
-
-JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
-    .then(onLocalTracks)
-    .catch((error) => {
-        throw error;
-    });
-
-if (JitsiMeetJS.mediaDevices.isDeviceChangeAvailable("output")) {
-    JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
-        const audioOutputDevices = devices.filter((d) => d.kind === "audiooutput");
-
-        if (audioOutputDevices.length > 1) {
-            $("#audioOutputSelect").html(
-                audioOutputDevices
-                    .map((d) => `<option value="${d.deviceId}">${d.label}</option>`)
-                    .join("\n")
-            );
-
-            $("#audioOutputSelectWrapper").show();
-        }
-    });
+rooms = {
+    "block": ["toilet"],
+    "toilet": ["block"]
 }
 
+function changeRoom() {
+
+}
+
+function roomInit() {
+
+    $(window).bind("beforeunload", unload);
+    $(window).bind("unload", unload);
+
+    JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.WARNING);
+
+
+    JitsiMeetJS.init(options);
+
+    connection = new JitsiMeetJS.JitsiConnection(null, null, options);
+
+    connection.addEventListener(
+        JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
+        onConnectionSuccess
+    );
+    connection.addEventListener(
+        JitsiMeetJS.events.connection.CONNECTION_FAILED,
+        onConnectionFailed
+    );
+    connection.addEventListener(
+        JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
+        disconnect
+    );
+
+
+    JitsiMeetJS.mediaDevices.addEventListener(
+        JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
+        onDeviceListChanged
+    );
+
+    connection.connect();
+
+    JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
+        .then(onLocalTracks)
+        .catch((error) => {
+            throw error;
+        });
+
+    if (JitsiMeetJS.mediaDevices.isDeviceChangeAvailable("output")) {
+        JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
+            const audioOutputDevices = devices.filter((d) => d.kind === "audiooutput");
+
+            if (audioOutputDevices.length > 1) {
+                $("#audioOutputSelect").html(
+                    audioOutputDevices
+                        .map((d) => `<option value="${d.deviceId}">${d.label}</option>`)
+                        .join("\n")
+                );
+
+                $("#audioOutputSelectWrapper").show();
+            }
+        });
+    }
+}
+
+function roomCleanup() {
+
+}
+
+roomInit();
