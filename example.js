@@ -113,7 +113,7 @@ function onLocalTracks(tracks) {
 
         if (local_track_type === "video") {
             $("#container").append(
-                `<div class="video person video_self"><div class="in"></div><video autoplay='1' id='localVideo${i}' /></div>`
+                `<div class="video person video_self"><div class="in"></div><video muted autoplay='1' id='localVideo${i}' /></div>`
             );
             localTracks[i].attach($(`#localVideo${i}`)[0]);
         } else {
@@ -169,7 +169,7 @@ function onRemoteTrackAdded(track) {
 
     if (track.getType() === "video") {
         $("#container").append(
-            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${participant}</div><div class="in"></div><video autoplay='1' id='${id}' /></div>  `
+            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
