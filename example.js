@@ -7,7 +7,7 @@ const options = {
         domain: "beta.meet.jit.si",
         muc: "conference.beta.meet.jit.si",
     },
-    bosh: '//beta.meet.jit.si/http-bind', // FIXME: use xep-0156 for that
+    bosh: '//beta.meet.jit.si/http-bind?room=ELHAMIN_BLOCKUS', // FIXME: use xep-0156 for that
     websocket: 'wss://beta.meet.jit.si/xmpp-websocket', // FIXME: use xep-0156 for that
     clientNode: "http://jitsi.org/jitsimeet",
     desktopSharingChromeDisabled: true,
