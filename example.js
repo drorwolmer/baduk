@@ -224,6 +224,7 @@ function onConferenceJoined() {
             Conference.getLocalAudioTrack().unmute();
             Conference.getLocalVideoTrack().unmute()
         } else {
+            // TODO(DROR): These methods return a promise, whatever the fuck that means
             Conference.getLocalAudioTrack().mute();
             Conference.getLocalVideoTrack().mute()
         }
@@ -240,6 +241,20 @@ function onConferenceJoined() {
             $(`.video_${participant_id}`).removeClass("local_muted");
 
         }
+    });
+
+    $("#second_room").click(function () {
+        Conference.sendCommand("CHANGE_ROOM", {
+            attributes: {
+                id: Conference.myUserId(),
+                to: "second_room"
+            }
+        });
+    });
+
+    Conference.addCommandListener("CHANGE_ROOM", function (e) {
+        let participant_id = e.attributes["id"];
+        $(`video_${participant_id}`).appendTo("#second_room");
     });
 
 
