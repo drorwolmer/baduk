@@ -20,6 +20,10 @@ const options = {
 
 };
 
+const mini_conferences = {
+    second_room: []
+}
+
 
 let connection = null;
 let isJoined = false;
@@ -139,7 +143,6 @@ function onRemoteTrackAdded(track) {
 
     console.error("Remote TRACK_ADDED", track.getParticipantId(), track);
 
-
     const participant = track.getParticipantId();
 
     if (!remoteTracks[participant]) {
@@ -167,17 +170,22 @@ function onRemoteTrackAdded(track) {
     );
     const id = participant + track.getType();
 
+    let video_parent = "#container";
+    if (mini_conferences["second_room"].indexOf(participant) > -1) {
+        video_parent = "#second_room";
+    }
+
     if (track.getType() === "video") {
-        $("#container").append(
+        $(video_parent).append(
             `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
         $("#container").append(`<audio autoplay='1' id='${id}' />`);
         // Audio Track is always LOCALLY muted on start!
-        document.getElementById(id).volume = 0;
     }
 
+    document.getElementById(id).volume = 0;
     track.attach($(`#${id}`)[0]);
 
 
@@ -230,31 +238,111 @@ function onConferenceJoined() {
         }
     });
 
-    $(document).on("click", ".remote_participant", function () {
-        let participant_id = $(this).data()["id"];
-        let audio_el = document.getElementById(`${participant_id}audio`);
-        if (audio_el.volume > 0) {
-            audio_el.volume = 0;
-            $(`.video_${participant_id}`).addClass("local_muted");
-        } else {
-            audio_el.volume = 1;
-            $(`.video_${participant_id}`).removeClass("local_muted");
+    // $(document).on("click", ".remote_participant", function () {
+    //
+    //
+    //     let participant_id = $(this).data()["id"];
+    //
+    //
+    //     let audio_el = document.getElementById(`${participant_id}audio`);
+    //     console.error("current_volume", audio_el.volume);
+    //
+    //     if (audio_el.volume > 0) {
+    //         audio_el.volume = 0;
+    //         $(`.video_${participant_id}`).addClass("local_muted");
+    //     } else {
+    //         audio_el.volume = 1;
+    //         $(`.video_${participant_id}`).removeClass("local_muted");
+    //
+    //     }
+    // });
 
+    $("#second_room").click(function () {
+        if (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1) {
+            Conference.removeCommand("JOIN_MINI_CONFERENCE", {
+                attributes: {
+                    from: Conference.myUserId(),
+                    to: "second_room"
+                }
+            });
+            Conference.sendCommandOnce("LEAVE_MINI_CONFERENCE", {
+                attributes: {
+                    from: Conference.myUserId(),
+                    to: "second_room"
+
+                }
+            });
+        } else {
+            Conference.sendCommand("JOIN_MINI_CONFERENCE", {
+                attributes: {
+                    from: Conference.myUserId(),
+                    to: "second_room"
+                }
+            });
         }
     });
 
-    $("#second_room").click(function () {
-        Conference.sendCommand("CHANGE_ROOM", {
-            attributes: {
-                id: Conference.myUserId(),
-                to: "second_room"
-            }
-        });
+    Conference.addCommandListener("JOIN_MINI_CONFERENCE", function (e) {
+        let from = e.attributes["from"];
+        let to = e.attributes["to"];
+
+        mini_conferences[to].push(from);
+
+        console.error("JOIN_MINI_CONFERENCE", from, to, mini_conferences);
+        $(`.video_${from}`).prependTo(`#${to}`);
+
+        if (from === Conference.myUserId()) {
+            Conference.getParticipants().forEach(function (participant) {
+                let participant_id = participant.getId();
+                let index = mini_conferences[to].indexOf(participant_id);
+                if (index > -1) {
+                    let audio_el = document.getElementById(`${participant_id}audio`);
+                    audio_el.volume = 1;
+                    $(`.video_${participant_id}`).removeClass("local_muted");
+                }
+
+            });
+        }
     });
 
-    Conference.addCommandListener("CHANGE_ROOM", function (e) {
-        let participant_id = e.attributes["id"];
-        $(`video_${participant_id}`).appendTo("#second_room");
+    Conference.addCommandListener("LEAVE_MINI_CONFERENCE", function (e) {
+        let from = e.attributes["from"];
+        let to = e.attributes["to"];
+
+        let index = mini_conferences[to].indexOf(from);
+        mini_conferences[to].splice(index, 1);
+
+        console.error("LEAVE_MINI_CONFERENCE", from, mini_conferences);
+        $(`.video_${from}`).appendTo(`#container`);
+
+        if (from === Conference.myUserId()) {
+            console.error("IM Out!!!");
+            Conference.getParticipants().forEach(function (participant) {
+                let participant_id = participant.getId();
+                let audio_el = document.getElementById(`${participant_id}audio`);
+                if (audio_el) {
+                    audio_el.volume = 0;
+                }
+                $(`.video_${participant_id}`).addClass("local_muted");
+            });
+        }
+        else
+        {
+            // Someone else left the mini-room, let's see if we're in that room
+            let index = mini_conferences[to].indexOf(Conference.myUserId());
+            if (index > -1)
+            {
+                let audio_el = document.getElementById(`${from}audio`);
+                if (audio_el) {
+                    audio_el.volume = 0;
+                }
+                $(`.video_${from}`).addClass("local_muted");
+            }
+        }
+    });
+
+    Conference.addEventListener("USER_ADDED_TO_SCREEN", function (e) {
+        console.error("USER_ADDED_TO_SCREEN", e);
     });
 
 
@@ -316,6 +404,8 @@ function onConnectionSuccess() {
     if (window.location.href.indexOf("toilet") > -1) {
         room_name = "block_demo_toiletsss";
     }
+
+    console.error(room_name);
 
     room = connection.initJitsiConference(room_name, options);
     room.addCommandListener("FOO", function (e) {
