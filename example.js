@@ -112,13 +112,14 @@ function onLocalTracks(tracks) {
         );
 
         if (local_track_type === "video") {
+
             $("#container").append(
                 `<div class="video person video_self"><div class="in"></div><video autoplay='1' id='localVideo${i}' /></div>`
             );
             localTracks[i].attach($(`#localVideo${i}`)[0]);
         } else {
             $("body").append(
-                `<audio autoplay='1' muted='true' id='localAudio${i}' />`
+                `<audio autoplay='1' muted='true' id='localAudio${i}' class="audio_self"/>`
             );
             localTracks[i].attach($(`#localAudio${i}`)[0]);
         }
@@ -169,11 +170,11 @@ function onRemoteTrackAdded(track) {
 
     if (track.getType() === "video") {
         $("#container").append(
-            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${participant}</div><div class="in"></div><video autoplay='1' id='${id}' /></div>  `
+            `<div class="video person local_muted remote_participant video_remote video_${participant}"><div class="id">${participant}</div><div class="in"></div><video autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
-        $("#container").append(`<audio autoplay='1' id='${id}' />`);
+        $("#container").append(`<audio autoplay='1' id='${id}' class="audio_remote"/>`);
         // Audio Track is always LOCALLY muted on start!
         document.getElementById(id).volume = 0;
     }
@@ -289,19 +290,16 @@ window.Conference = null;
  * That function is called when connection is established successfully
  */
 function onConnectionSuccess() {
-    console.error("yu", window.location.href);
-    if (window.location.href.indexOf("toilet") > -1) {
-        // console.error(jQuery("#body"));
-        document.getElementById("body").classList.add("toilet");
-    } else {
-        document.getElementById("body").classList.add("block");
-    }
+    console.warn("onConnectionSuccess");
+    current_room = getRoom();
 
-    let room_name = "block_demo_block";
-    if (window.location.href.indexOf("toilet") > -1) {
-        room_name = "block_demo_toiletsss";
-    }
+    current_room_config = rooms[current_room];
 
+    //document.getElementById("body").classList.add(current_room_config["body_class"])
+
+    let room_name = current_room_config["jitsi_room_name"]
+
+    console.error("Joining jitsi room", room_name);
     room = connection.initJitsiConference(room_name, options);
     room.addCommandListener("FOO", function (e) {
         console.error("GOT FOO", e);
@@ -329,6 +327,9 @@ function onConnectionSuccess() {
     room.on(
         JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED,
         (userID, displayName) => console.log(`${userID} - ${displayName}`)
+    );
+    room.addEventListener(
+            JitsiMeetJS.events.conference.CONFERENCE_LEFT, () => console.error("CONFERENCE_LEFT")
     );
     // room.on(
     //     JitsiMeetJS.events.conference.TRACK_AUDIO_LEVEL_CHANGED,
@@ -379,15 +380,28 @@ function disconnect() {
     );
 }
 
+function disposeLocalTracks() {
+    for (let i = 0; i < localTracks.length; i++) {
+        localTracks[i].dispose();
+    }
+}
+
 /**
  *
  */
 function unload() {
-    for (let i = 0; i < localTracks.length; i++) {
-        localTracks[i].dispose();
-    }
-    room.leave();
+    disposeLocalTracks();
+    room.leave()
     connection.disconnect();
+    console.error("DISCONNECTED", room);
+}
+
+function unloadAndJoinNewRoom() {
+    disposeLocalTracks();
+    room.leave().then(() => {
+      console.error("Left room");
+      roomInit();
+    });
 }
 
 let isVideo = true;
@@ -489,21 +503,42 @@ function sendHarama() {
 }
 
 rooms = {
-    "block": ["toilet"],
-    "toilet": ["block"]
+    "block": {
+        "available_moves": ["toilet", "hamin"],
+        "jitsi_room_name": "block_room",
+        "body_class": "block"
+    },
+    "toilet": {
+        "available_moves": ["block"],
+        "jitsi_room_name": "toilet_room",
+        "body_class": "toilet"
+    },
+    "hamin": {
+        "available_moves": ["block"],
+        "jitsi_room_name": "hamin_room",
+        "body_class": "hamin"
+    }
 }
 
-function changeRoom() {
+function changeRoom(new_room) {
+    current_room = document.getElementById("current_room").setAttribute('data-value', new_room);
+    roomCleanup();
+    unloadAndJoinNewRoom();
+    console.warn("Done unload")
 
 }
 
 function roomInit() {
-
+    console.warn("roomInit")
     $(window).bind("beforeunload", unload);
     $(window).bind("unload", unload);
 
-    JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.WARNING);
+    current_room = getRoom();
+    current_room_config = rooms[current_room];
 
+    document.getElementById("body").classList = [current_room_config["body_class"]];
+
+    JitsiMeetJS.setLogLevel(JitsiMeetJS.logLevels.WARNING);
 
     JitsiMeetJS.init(options);
 
@@ -554,7 +589,15 @@ function roomInit() {
 }
 
 function roomCleanup() {
-
+    $('.video_self').remove();
+    $('.audio_self').remove();
+    $('.video_remote').remove();
+    $('.audio_remote').remove();
 }
 
-roomInit();
+function getRoom() {
+    current_room = document.getElementById("current_room").getAttribute('data-value');
+    return current_room;
+}
+
+document.addEventListener("DOMContentLoaded", roomInit);

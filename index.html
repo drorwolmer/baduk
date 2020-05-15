@@ -217,13 +217,13 @@
             </div>
         </div>
 
-        <div class="video button button-to-block float-right">
-            <a href="?room=block"> </a>
+        <div class="video button button-to-block float-right" onclick="changeRoom('block')">
         </div>
 
-        <div class="video button button-to-toilet float-right">
-            <a href="?room=toilet"> </a>
+        <div class="video button button-to-toilet float-right" onclick="changeRoom('toilet')">
         </div>
+
+        <div id="current_room" data-value="block"></div>
 
         <div class="video button" id="mute_toggle">Mute/Unmute</div>
     </div>
