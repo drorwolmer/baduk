@@ -40,7 +40,29 @@ function onLocalTrackAudioEventChanged(e) {
 }
 
 function onLocalTrackMuteChanged(track) {
-    console.warn(`TRACK_MUTE_CHANGED`, track.track.label, track.isMuted());
+    console.warn(`Local TRACK_MUTE_CHANGED`, track.track.label, track.isMuted(), track);
+    if (track.type==="audio") {
+            if (track.isMuted()) {
+                $(".video_self").addClass("muted");
+            }
+            else
+            {
+                $(".video_self").removeClass("muted");
+            }
+    }
+}
+
+function onRemoteTrackMuteChanged(track) {
+    console.warn(`Remote TRACK_MUTE_CHANGED`, track, track.isMuted(), track);
+    if (track.type==="audio") {
+            if (track.isMuted()) {
+                $(`.video_${track.ownerEndpointId}`).addClass("muted");
+            }
+            else
+            {
+                $(`.video_${track.ownerEndpointId}`).removeClass("muted");
+            }
+    }
 }
 
 function onLocalTrackStopped(e) {
@@ -122,9 +144,7 @@ function onRemoteTrack(track) {
         JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED,
         (audioLevel) => console.warn(`Audio Level remote: ${audioLevel}`)
     );
-    track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, (e) =>
-        console.warn("remote track muted", e)
-    );
+    track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onRemoteTrackMuteChanged);
     track.addEventListener(JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, () =>
         console.warn("remote track stoped")
     );
