@@ -297,14 +297,15 @@ function onConferenceJoined() {
                 let index = mini_conferences[to].indexOf(participant_id);
                 if (index > -1) {
                     let audio_el = document.getElementById(`${participant_id}audio`);
-                    audio_el.volume = 1;
+                    if (audio_el) {
+
+                        audio_el.volume = 1;
+                    }
                     $(`.video_${participant_id}`).removeClass("local_muted");
                 }
 
             });
-        }
-        else
-        {
+        } else {
             let index = mini_conferences[to].indexOf(Conference.myUserId());
             if (index > -1) {
                 let audio_el = document.getElementById(`${from}audio`);
@@ -336,13 +337,10 @@ function onConferenceJoined() {
                 }
                 $(`.video_${participant_id}`).addClass("local_muted");
             });
-        }
-        else
-        {
+        } else {
             // Someone else left the mini-room, let's see if we're in that room
             let index = mini_conferences[to].indexOf(Conference.myUserId());
-            if (index > -1)
-            {
+            if (index > -1) {
                 let audio_el = document.getElementById(`${from}audio`);
                 if (audio_el) {
                     audio_el.volume = 0;
