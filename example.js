@@ -321,9 +321,6 @@ function onConferenceJoined() {
         let from = e.attributes["from"];
         let to = e.attributes["to"];
 
-        let index = mini_conferences[to].indexOf(from);
-        mini_conferences[to].splice(index, 1);
-
         console.error("LEAVE_MINI_CONFERENCE", from, mini_conferences);
         $(`.video_${from}`).appendTo(`#container`);
 
@@ -348,6 +345,12 @@ function onConferenceJoined() {
                 $(`.video_${from}`).addClass("local_muted");
             }
         }
+
+        let index = mini_conferences[to].indexOf(from);
+        if (index > -1) {
+            mini_conferences[to].splice(index, 1);
+        }
+
     });
 
     Conference.addEventListener("USER_ADDED_TO_SCREEN", function (e) {
