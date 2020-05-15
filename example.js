@@ -550,7 +550,7 @@ JitsiMeetJS.mediaDevices.addEventListener(
     onDeviceListChanged
 );
 
-connection.connect();
+connection.connect(undefined, undefined, "ELHAMIN_BLOCK");
 
 JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
     .then(onLocalTracks)
