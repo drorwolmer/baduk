@@ -303,6 +303,17 @@ function onConferenceJoined() {
 
             });
         }
+        else
+        {
+            let index = mini_conferences[to].indexOf(Conference.myUserId());
+            if (index > -1) {
+                let audio_el = document.getElementById(`${from}audio`);
+                if (audio_el) {
+                    audio_el.volume = 1;
+                }
+                $(`.video_${from}`).removeClass("local_muted");
+            }
+        }
     });
 
     Conference.addCommandListener("LEAVE_MINI_CONFERENCE", function (e) {
