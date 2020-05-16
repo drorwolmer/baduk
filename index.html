@@ -94,6 +94,7 @@
         }
 
         .video.stream.stream-big {
+            display: none;
             width: 640px;
             height: 440px;
         }
@@ -111,6 +112,12 @@
             /*top: -40px;*/
             /*left: -40px;*/
             /*border: 1px solid red;*/
+            object-fit: cover;
+            filter: saturate(500%) grayscale(0.25);
+        }
+
+        .video.local_muted video{
+            filter: blur(5px) saturate(1000%) grayscale(0.25);
         }
 
         .video .in {
@@ -126,6 +133,7 @@
 
         .video .id {
             background: green;
+            color:green;
             z-index: 5;
             position: absolute;
             width: 100%;
@@ -134,10 +142,12 @@
 
         .video.local_muted .id {
             background: orange;
+            color:orange;
         }
 
         .video.muted .id {
             background: red !important;
+            color: red !important;
         }
 
         .video iframe {
@@ -184,12 +194,12 @@
             /*opacity: 0.5;*/
         }
 
-        .toilet .button a {
+        .toilet .button-to-block {
             background: url("https://media.timeout.com/images/105153350/image.jpg");
             background-size: cover;
         }
 
-        .block .button a {
+        .block .button-to-toilet {
             background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");
             background-size: cover;
         }
@@ -202,6 +212,13 @@
         .logo {
             width: 100%;
             height: 100%;
+        }
+
+        #second_room {
+            background: red;
+            width: 100%;
+            height: 500px;
+            display: None;
         }
     </style>
 </head>
@@ -226,6 +243,10 @@
         <div id="current_room" data-value="block"></div>
 
         <div class="video button" id="mute_toggle">Mute/Unmute</div>
+    </div>
+
+    <div id="second_room">
+
     </div>
 
     <script async src="https://www.youtube.com/iframe_api"></script>
@@ -260,43 +281,7 @@
             //         }
             //     }
             // });
-            if (window.location.href.indexOf("toilet") === -1) {
-                var player2;
-                var utcstart = 1589278643;
-                var utcnow = Math.round(new Date().getTime() / 1000);
-                var offset = utcnow - utcstart;
-                player1 = new YT.Player("muteYouTubeVideoPlayer", {
-                    videoId: "zMG7K5_Jv2M", // YouTube Video ID
-                    width: 640, // Player width (in px)
-                    height: 480, // Player height (in px)
-                    playerVars: {
-                        autoplay: 1, // Auto-play the video on load
-                        controls: 0, // Show pause/play buttons in player
-                        showinfo: 0, // Hide the video title
-                        modestbranding: 1, // Hide the Youtube Logo
-                        loop: 1, // Run the video in a loop
-                        fs: 0, // Hide the full screen button
-                        cc_load_policy: 1, // Hide closed captions
-                        iv_load_policy: 3, // Hide the Video Annotations
-                        autohide: 1, // Hide video controls when playing,
-                        disablekb: 1,
-                        start: offset,
-                        origin: "https://foosa-a977b5f6.localhost.run",
-                    },
-                    events: {
-                        onReady: function (e) {
-                            // e.target.mute();
-                            e.target.setVolume(30);
-                            e.target.playVideo();
-                        },
-                        // onStateChange: function (e) {
-                        //     if (e.data == YT.PlayerState.PLAYING) {
-                        //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
-                        //     }
-                        // }
-                    },
-                });
-            }
+
         }
 
         // Written by @labnol

@@ -7,7 +7,7 @@ const options = {
         domain: "beta.meet.jit.si",
         muc: "conference.beta.meet.jit.si",
     },
-    bosh: '//beta.meet.jit.si/http-bind', // FIXME: use xep-0156 for that
+    bosh: '//beta.meet.jit.si/http-bind?room=ELHAMIN_BLOCKUS', // FIXME: use xep-0156 for that
     websocket: 'wss://beta.meet.jit.si/xmpp-websocket', // FIXME: use xep-0156 for that
     clientNode: "http://jitsi.org/jitsimeet",
     desktopSharingChromeDisabled: true,
@@ -114,16 +114,18 @@ function onLocalTracks(tracks) {
         if (local_track_type === "video") {
 
             $("#container").append(
-                `<div class="video person video_self"><div class="in"></div><video autoplay='1' id='localVideo${i}' /></div>`
+                `<div class="video person video_self"><div class="in"></div><video muted autoplay='1' id='localVideo${i}' /></div>`
             );
             localTracks[i].attach($(`#localVideo${i}`)[0]);
         } else {
             $("body").append(
-                `<audio autoplay='1' muted='true' id='localAudio${i}' class="audio_self"/>`
+                `<audio autoplay='1' muted='true' id='localAudio${i}' />`
             );
             localTracks[i].attach($(`#localAudio${i}`)[0]);
         }
         if (isJoined) {
+            console.error("room", room);
+            console.error("localtracks", localTracks);
             room.addTrack(localTracks[i]);
         }
     }
@@ -170,7 +172,7 @@ function onRemoteTrackAdded(track) {
 
     if (track.getType() === "video") {
         $("#container").append(
-            `<div class="video person local_muted remote_participant video_remote video_${participant}"><div class="id">${participant}</div><div class="in"></div><video autoplay='1' id='${id}' /></div>  `
+            `<div class="video person local_muted remote_participant video_remote video_${participant}"><div class="id">${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
@@ -225,6 +227,7 @@ function onConferenceJoined() {
             Conference.getLocalAudioTrack().unmute();
             Conference.getLocalVideoTrack().unmute()
         } else {
+            // TODO(DROR): These methods return a promise, whatever the fuck that means
             Conference.getLocalAudioTrack().mute();
             Conference.getLocalVideoTrack().mute()
         }
@@ -241,6 +244,20 @@ function onConferenceJoined() {
             $(`.video_${participant_id}`).removeClass("local_muted");
 
         }
+    });
+
+    $("#second_room").click(function () {
+        Conference.sendCommand("CHANGE_ROOM", {
+            attributes: {
+                id: Conference.myUserId(),
+                to: "second_room"
+            }
+        });
+    });
+
+    Conference.addCommandListener("CHANGE_ROOM", function (e) {
+        let participant_id = e.attributes["id"];
+        $(`video_${participant_id}`).appendTo("#second_room");
     });
 
 
@@ -381,6 +398,7 @@ function disconnect() {
 }
 
 function disposeLocalTracks() {
+    console.warn("DISPOSING LOCAL TRACKS");
     for (let i = 0; i < localTracks.length; i++) {
         localTracks[i].dispose();
     }
@@ -530,8 +548,8 @@ function changeRoom(new_room) {
 
 function roomInit() {
     console.warn("roomInit")
-    $(window).bind("beforeunload", unload);
-    $(window).bind("unload", unload);
+//    $(window).bind("beforeunload", unload);
+//    $(window).bind("unload", unload);
 
     current_room = getRoom();
     current_room_config = rooms[current_room];
@@ -563,7 +581,7 @@ function roomInit() {
         onDeviceListChanged
     );
 
-    connection.connect();
+    connection.connect(undefined, undefined, "ELHAMIN_BLOCK");
 
     JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
         .then(onLocalTracks)
@@ -598,6 +616,46 @@ function roomCleanup() {
 function getRoom() {
     current_room = document.getElementById("current_room").getAttribute('data-value');
     return current_room;
+}
+
+function addYoutubePlayer() {
+    if (getRoom() === "block") {
+                var player2;
+                var utcstart = 1589278643;
+                var utcnow = Math.round(new Date().getTime() / 1000);
+                var offset = utcnow - utcstart;
+                player1 = new YT.Player("muteYouTubeVideoPlayer", {
+                    videoId: "zMG7K5_Jv2M", // YouTube Video ID
+                    width: 640, // Player width (in px)
+                    height: 480, // Player height (in px)
+                    playerVars: {
+                        autoplay: 1, // Auto-play the video on load
+                        controls: 0, // Show pause/play buttons in player
+                        showinfo: 0, // Hide the video title
+                        modestbranding: 1, // Hide the Youtube Logo
+                        loop: 1, // Run the video in a loop
+                        fs: 0, // Hide the full screen button
+                        cc_load_policy: 1, // Hide closed captions
+                        iv_load_policy: 3, // Hide the Video Annotations
+                        autohide: 1, // Hide video controls when playing,
+                        disablekb: 1,
+                        start: offset,
+                        origin: "https://foosa-a977b5f6.localhost.run",
+                    },
+                    events: {
+                        onReady: function (e) {
+                            // e.target.mute();
+                            e.target.setVolume(30);
+                            e.target.playVideo();
+                        },
+                        // onStateChange: function (e) {
+                        //     if (e.data == YT.PlayerState.PLAYING) {
+                        //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
+                        //     }
+                        // }
+                    },
+                });
+            }
 }
 
 document.addEventListener("DOMContentLoaded", roomInit);
