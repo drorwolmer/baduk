@@ -351,13 +351,16 @@ function onConferenceJoined() {
         if (index > -1) {
             mini_conferences[to].splice(index, 1);
         }
-
     });
 
     Conference.addEventListener("USER_ADDED_TO_SCREEN", function (e) {
         console.error("USER_ADDED_TO_SCREEN", e);
     });
 
+
+    Conference.addCommandListener("SET_HD_USERS", function (e) {
+        onSetHdUsers(e);
+    });
 
     // TODO(DROR): Probably there's another way to do this
     user_id = Conference.myUserId()
@@ -458,10 +461,6 @@ function onConnectionSuccess() {
             time: Math.round(new Date().getTime() / 1000),
             user: e.attributes["user"]
         });
-    });
-
-    room.addCommandListener("SET_HD_USERS", function (e) {
-        onSetHdUsers(e);
     });
 
     window.Conference = room;
