@@ -357,9 +357,19 @@ function onConferenceJoined() {
         console.error("USER_ADDED_TO_SCREEN", e);
     });
 
-
     Conference.addCommandListener("SET_HD_USERS", function (e) {
-        onSetHdUsers(e);
+            var user_list = e.attributes['user_list'].split(",");
+
+            console.error("setting users to hd", user_list);
+
+            if (user_list.indexOf(room.myUserId()) > -1) {
+                room.setSenderVideoConstraint(1080);
+            }
+            else {
+                room.setSenderVideoConstraint(180);
+            }
+
+            room.selectParticipants(user_list);
     });
 
     // TODO(DROR): Probably there's another way to do this
@@ -414,22 +424,6 @@ function setHdUsers(user_list) {
                     }
                 }
             );
-}
-
-function onSetHdUsers(e) {
-
-    var user_list = e.attributes['user_list'].split(",");
-
-    console.error("setting users to hd", user_list);
-
-    if (user_list.indexOf(room.myUserId()) > -1) {
-        room.setSenderVideoConstraint(1080);
-    }
-    else {
-        room.setSenderVideoConstraint(180);
-    }
-
-    room.selectParticipants(user_list);
 }
 
 /**
