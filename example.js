@@ -403,9 +403,9 @@ window.Conference = null;
 
 function setHdUsers(user_list) {
 
-    room.removeCommand("SET_HD_USERS");
+    Conference.removeCommand("SET_HD_USERS");
 
-    room.sendCommand("SET_HD_USERS", {
+    Conference.sendCommand("SET_HD_USERS", {
                 attributes: {
                     "user_list": user_list.join(",")
                     }
