@@ -16,7 +16,8 @@ const options = {
     enableNoAudioDetection: true,
     enableNoisyMicDetection: true,
     enableLipSync: true,
-    disableAudioLevels: false
+    disableAudioLevels: false,
+    disableSimulcast: false
 
 };
 
@@ -400,6 +401,32 @@ function onUserLeft(id) {
 
 window.Conference = null;
 
+function setHdUsers(user_list) {
+
+    room.sendCommand("SET_HD_USERS", {
+                attributes: {
+                    "user_list": user_list.join(",")
+                    }
+                }
+            );
+}
+
+function onSetHdUsers(e) {
+
+    var user_list = e.attributes['user_list'].split(",");
+
+    console.error("setting users to hd", user_list, typeof(user_list));
+
+    if (user_list.indexOf(room.myUserId()) > -1) {
+        room.setSenderVideoConstraint(1080);
+    }
+    else {
+        room.setSenderVideoConstraint(180);
+    }
+
+    room.selectParticipants(user_list);
+}
+
 /**
  * That function is called when connection is established successfully
  */
@@ -429,6 +456,10 @@ function onConnectionSuccess() {
             time: Math.round(new Date().getTime() / 1000),
             user: e.attributes["user"]
         });
+    });
+
+    room.addCommandListener("SET_HD_USERS", function (e) {
+        onSetHdUsers(e);
     });
 
     window.Conference = room;
@@ -461,6 +492,7 @@ function onConnectionSuccess() {
     // );
 
     room.join();
+    room.setSenderVideoConstraint(180);
 }
 
 /**
