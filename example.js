@@ -403,6 +403,8 @@ window.Conference = null;
 
 function setHdUsers(user_list) {
 
+    room.removeCommand("SET_HD_USERS");
+
     room.sendCommand("SET_HD_USERS", {
                 attributes: {
                     "user_list": user_list.join(",")
@@ -415,7 +417,7 @@ function onSetHdUsers(e) {
 
     var user_list = e.attributes['user_list'].split(",");
 
-    console.error("setting users to hd", user_list, typeof(user_list));
+    console.error("setting users to hd", user_list);
 
     if (user_list.indexOf(room.myUserId()) > -1) {
         room.setSenderVideoConstraint(1080);
