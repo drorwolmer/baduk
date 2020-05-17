@@ -176,6 +176,8 @@ function onRemoteTrackRemoved(track) {
 function onConferenceJoined() {
     console.warn("onConferenceJoined");
 
+    isJoined = true;
+
     user_id = Conference.myUserId();
 
     $("#container").append(
@@ -189,7 +191,19 @@ function onConferenceJoined() {
         </div>`
     );
 
-    isJoined = true;
+    // Try to load the display_name from the local cache
+    let display_name = window.localStorage.getItem("DISPLAY_NAME");
+    if (!display_name || display_name === "null") {
+        display_name = "ANONYMOUS"
+    }
+    change_local_display_name(display_name);
+
+    // Try to load the emoji from the local cache
+    let emoji = window.localStorage.getItem("EMOJI");
+    if (!emoji || emoji === "null") {
+        emoji = "😷";
+    }
+    setLocalEmoji(emoji);
 
     JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
         .then(function (local_tracks) {
@@ -232,19 +246,6 @@ function onConferenceJoined() {
             // throw error;
         });
 
-    // Try to load the display_name from the local cache
-    let display_name = window.localStorage.getItem("DISPLAY_NAME");
-    if (!display_name || display_name === "null") {
-        display_name = "ANONYMOUS"
-    }
-    change_local_display_name(display_name);
-
-    // Try to load the emoji from the local cache
-    let emoji = window.localStorage.getItem("EMOJI");
-    if (!emoji || emoji === "null") {
-        emoji = "😷";
-    }
-    setLocalEmoji(emoji);
 
     $("#mute_toggle").click(function () {
         if (Conference.getLocalAudioTrack().isMuted()) {
