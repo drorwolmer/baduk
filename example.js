@@ -34,6 +34,8 @@ let user_id = null;
 let localTracks = [];
 const remoteTracks = {};
 
+const GLOBAL_EMOJI_STATE = {};
+
 let haramotTimePoints = [];
 let sentHaramot = [];
 let max_haramot_per_user = 30;
@@ -179,8 +181,9 @@ function onRemoteTrackAdded(track) {
     }
 
     if (track.getType() === "video") {
-        $(video_parent).append(
-            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div><div class="chat"></div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
+        $(video_parent).append(`
+            <div class="video person local_muted remote_participant video_${participant}"><div class="emoji">${GLOBAL_EMOJI_STATE[participant]}</div> <div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div> <div class="chat"></div><div class="in"></div> <video muted autoplay='1' id='${id}' /></div>
+`
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
@@ -375,25 +378,54 @@ function onConferenceJoined() {
             room.selectParticipants(user_list);
     });
 
+    Conference.addCommandListener("SET_EMOJI", function (e) {
+        let emoji = e.attributes["emoji"];
+        let id = e.attributes["id"];
+        GLOBAL_EMOJI_STATE[id] = emoji
+        console.error("SET_EMOJI", id, emoji);
+        $(`.video_${id} .emoji`).text(emoji);
+    });
+
+
     // TODO(DROR): Probably there's another way to do this
     user_id = Conference.myUserId();
 
 
-    $('.video_self').addClass(`video_${user_id}`).prepend(`<div class="id">${user_id}</div><div class="chat"></div>`);
+    $('.video_self').addClass(`video_${user_id}`).prepend(
+        `<div class="emoji">🙌</div><div class="id">${user_id}</div><div class="chat"></div>`);
 
     // Try to load the display_name from the local cache
     const display_name = window.localStorage.getItem("DISPLAY_NAME");
     change_local_display_name(display_name);
 
+    // Try to load the emoji from the local cache
+    let emoji = window.localStorage.getItem("EMOJI");
+    if (!emoji || emoji === "null") {
+        emoji = "😷";
+    }
+    setLocalEmoji(emoji);
+
     $(".video_self .id").click(function () {
         const display_name = window.prompt("Display Name???");
-        change_local_display_name(display_name);
+        if (display_name) {
+            change_local_display_name(display_name);
+
+        }
     });
 
     $(".video_self .in").click(function () {
         const msg = window.prompt("Say something:");
-        Conference.sendMessage(msg);
-        // No need to emit an event here, we will get this event
+        if (msg) {
+            Conference.sendMessage(msg);
+            // No need to emit an event here, we will get this event
+        }
+    });
+
+    $(".video_self .emoji").click(function () {
+        const emoji = window.prompt("what emoji? https://getemoji.com/");
+        if (emoji) {
+            setLocalEmoji(emoji);
+        }
     });
 
     isJoined = true;
@@ -422,6 +454,19 @@ function change_local_display_name(display_name) {
     Conference.setDisplayName(display_name);
     window.localStorage.setItem("DISPLAY_NAME", display_name);
     Conference.eventEmitter.emit(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, user_id, display_name);
+}
+
+function setLocalEmoji(emoji) {
+    window.localStorage.setItem("EMOJI", emoji);
+    $(".video_self .emoji").text(emoji);
+    console.error(`setLocalEmoji(${emoji})`);
+    Conference.sendCommand("SET_EMOJI", {
+            attributes: {
+                "id": Conference.myUserId(),
+                "emoji": emoji
+            }
+        }
+    );
 }
 
 /**
