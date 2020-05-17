@@ -401,6 +401,21 @@ function onConferenceJoined() {
     for (let i = 0; i < localTracks.length; i++) {
         room.addTrack(localTracks[i]);
     }
+
+    setInterval(function () {
+
+        var participants = room.getParticipants();
+
+        for (let i = 0; i < participants.length; i++) {
+
+            var participant = participants[i];
+            if (participant._connectionStatus === "interrupted") {
+                console.warn("Kicking participant because of interrupted connection", participant._id);
+                room.kickParticipant(participant._id);
+            }
+        }
+
+    }, 5000);
 }
 
 function change_local_display_name(display_name) {
