@@ -146,6 +146,8 @@ function onRemoteTrackAdded(track) {
 
     const participant = track.getParticipantId();
 
+    const the_actual_participnt = Conference.getParticipantById(participant);
+
     if (!remoteTracks[participant]) {
         remoteTracks[participant] = [];
     }
@@ -178,7 +180,7 @@ function onRemoteTrackAdded(track) {
 
     if (track.getType() === "video") {
         $(video_parent).append(
-            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
+            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
@@ -318,6 +320,7 @@ function onConferenceJoined() {
         }
     });
 
+
     Conference.addCommandListener("LEAVE_MINI_CONFERENCE", function (e) {
         let from = e.attributes["from"];
         let to = e.attributes["to"];
@@ -373,16 +376,31 @@ function onConferenceJoined() {
     });
 
     // TODO(DROR): Probably there's another way to do this
-    user_id = Conference.myUserId()
-    console.warn("user_id", user_id);
+    user_id = Conference.myUserId();
 
-    $('.video_self').addClass(`video_${user_id}`).prepend(`<div class="id">${user_id}</div>`)
+
+    $('.video_self').addClass(`video_${user_id}`).prepend(`<div class="id">${user_id}</div>`);
+
+    // Try to load the display_name from the local cache
+    const display_name = window.localStorage.getItem("DISPLAY_NAME");
+    change_local_display_name(display_name);
+
+    $(".video_self .id").click(function () {
+        const display_name = window.prompt("Display Name???");
+        change_local_display_name(display_name);
+    });
 
     isJoined = true;
 
     for (let i = 0; i < localTracks.length; i++) {
         room.addTrack(localTracks[i]);
     }
+}
+
+function change_local_display_name(display_name) {
+    Conference.setDisplayName(display_name);
+    window.localStorage.setItem("DISPLAY_NAME", display_name);
+    Conference.eventEmitter.emit(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, user_id, display_name);
 }
 
 /**
@@ -419,18 +437,17 @@ function setHdUsers(user_list) {
     Conference.removeCommand("SET_HD_USERS");
 
     Conference.sendCommand("SET_HD_USERS", {
-                attributes: {
-                    "user_list": user_list.join(",")
-                    }
-                }
-            );
+            attributes: {
+                "user_list": user_list.join(",")
+            }
+        }
+    );
 }
 
 /**
  * That function is called when connection is established successfully
  */
 function onConnectionSuccess() {
-    console.error("yu", window.location.href);
     if (window.location.href.indexOf("toilet") > -1) {
         // console.error(jQuery("#body"));
         document.getElementById("body").classList.add("toilet");
@@ -458,6 +475,15 @@ function onConnectionSuccess() {
     });
 
     window.Conference = room;
+
+    Conference.on(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, function (id, display_name) {
+        console.error("DISPLAY_NAME_CHANGED", id, display_name);
+        $(`.video_${id} .id`).text(`${display_name} | ${id}`);
+    });
+
+    Conference.on(JitsiMeetJS.events.conference.SUBJECT_CHANGED, function(subject){
+        console.error("SUBJECT_CHANGED", subject)
+    })
 
     room.on(JitsiMeetJS.events.conference.USER_STATUS_CHANGED, onUserStatusChanged);
 
