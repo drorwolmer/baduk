@@ -99,7 +99,7 @@ function onUserJoined(participant) {
     }
 
     $(video_parent).append(`
-        <div class="video person local_muted remote_participant video_${participant}">
+        <div class="video person local_muted remote_participant muted video_${participant}">
             <div class="emoji">${GLOBAL_EMOJI_STATE[participant]}</div>
             <div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div>
             <div class="chat"></div>
@@ -121,7 +121,7 @@ function onRemoteTrackAdded(track) {
         return;
     }
 
-    console.error("Remote TRACK_ADDED", track.getParticipantId(), track);
+    console.error("Remote TRACK_ADDED", track.getParticipantId(), track.isMuted(), track);
 
     const participant = track.getParticipantId();
 
@@ -146,8 +146,19 @@ function onRemoteTrackAdded(track) {
     );
 
     const id = participant + track.getType();
+
+    console.error("ABOUT TO LOCALLY MUTE ", id, $(`#${id}`)[0]);
     document.getElementById(id).volume = 0;
+
     track.attach($(`#${id}`)[0]);
+
+    if (track.getType() === "audio") {
+        if (track.isMuted()) {
+            $(`.video_${participant}`).addClass("muted").removeClass("local_muted");
+        } else {
+            $(`.video_${participant}`).removeClass("muted").addClass("local_muted");
+        }
+    }
 
 }
 
@@ -181,7 +192,7 @@ function onConferenceJoined() {
     user_id = Conference.myUserId();
 
     $("#container").append(
-        `<div class="video person video_self video_${user_id}">
+        `<div class="video person video_self muted video_${user_id}">
             <div class="emoji"></div>
             <div class="id">${user_id}</div>
             <div class="chat"></div>
@@ -227,13 +238,14 @@ function onConferenceJoined() {
                     OnLocalTrackAudioOutputChanged
                 );
 
-                local_track.unmute();
 
                 Conference.addTrack(local_track);
 
                 if (local_track.getType() === "video") {
+                    local_track.unmute();
                     local_track.attach(document.getElementById("localVideo"));
                 } else {
+                    local_track.mute();
                     local_track.attach(document.getElementById("localAudio"));
                 }
 
@@ -248,29 +260,23 @@ function onConferenceJoined() {
 
 
     $("#mute_toggle").click(function () {
-        if (Conference.getLocalAudioTrack().isMuted()) {
-            Conference.getLocalAudioTrack().unmute();
+        if (Conference.getLocalVideoTrack().isMuted()) {
+            // Conference.getLocalAudioTrack().unmute();
             Conference.getLocalVideoTrack().unmute()
         } else {
             // TODO(DROR): These methods return a promise, whatever the fuck that means
-            Conference.getLocalAudioTrack().mute();
+            // Conference.getLocalAudioTrack().mute();
             Conference.getLocalVideoTrack().mute()
         }
     });
 
     $("#second_room").click(function () {
         if (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1) {
-            Conference.removeCommand("JOIN_MINI_CONFERENCE", {
-                attributes: {
-                    from: Conference.myUserId(),
-                    to: "second_room"
-                }
-            });
+            Conference.removeCommand("JOIN_MINI_CONFERENCE");
             Conference.sendCommandOnce("LEAVE_MINI_CONFERENCE", {
                 attributes: {
                     from: Conference.myUserId(),
                     to: "second_room"
-
                 }
             });
         } else {
@@ -284,15 +290,30 @@ function onConferenceJoined() {
     });
 
     Conference.addCommandListener("JOIN_MINI_CONFERENCE", function (e) {
+
         let from = e.attributes["from"];
         let to = e.attributes["to"];
 
+        console.error("JOIN_MINI_CONFERENCE", from, to, mini_conferences);
+
+        if (mini_conferences[to].indexOf(from) > -1) {
+            // Probably command sent twice, do not address it
+            console.error("Skipping handling of JOIN_MINI_CONFERENCE", from, to)
+            return;
+        }
+
         mini_conferences[to].push(from);
 
-        console.error("JOIN_MINI_CONFERENCE", from, to, mini_conferences);
         $(`.video_${from}`).prependTo(`#${to}`);
 
         if (from === Conference.myUserId()) {
+
+            // Join the room, start talking
+            const local_audio_track = Conference.getLocalAudioTrack();
+            if (local_audio_track) {
+                Conference.getLocalAudioTrack().unmute()
+            }
+
             Conference.getParticipants().forEach(function (participant) {
                 let participant_id = participant.getId();
                 let index = mini_conferences[to].indexOf(participant_id);
@@ -323,11 +344,23 @@ function onConferenceJoined() {
         let from = e.attributes["from"];
         let to = e.attributes["to"];
 
+        // Probably command sent twice, do not address it
+        if (mini_conferences[to].indexOf(from) === -1) {
+            console.error("Skipping handling of LEAVE_MINI_CONFERENCE", from, to)
+            return;
+        }
+
         console.error("LEAVE_MINI_CONFERENCE", from, mini_conferences);
         $(`.video_${from}`).appendTo(`#container`);
 
         if (from === Conference.myUserId()) {
-            console.error("IM Out!!!");
+
+            // Leave the room, stop talking
+            const local_audio_track = Conference.getLocalAudioTrack();
+            if (local_audio_track) {
+                Conference.getLocalAudioTrack().mute()
+            }
+
             Conference.getParticipants().forEach(function (participant) {
                 let participant_id = participant.getId();
                 let audio_el = document.getElementById(`${participant_id}audio`);
