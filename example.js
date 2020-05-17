@@ -147,7 +147,17 @@ function onRemoteTrackAdded(track) {
 
     const id = participant + track.getType();
 
-    console.error("ABOUT TO LOCALLY MUTE ", id, $(`#${id}`)[0]);
+    track.attach($(`#${id}`)[0]);
+
+
+    const local_inside_miniroom = (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1);
+    const remote_inside_miniroom = (mini_conferences["second_room"].indexOf(participant) > -1);
+    // Probably just track restart for some reason
+    if (local_inside_miniroom && remote_inside_miniroom) {
+        return;
+    }
+
+    console.error("Locally muting sound of ", participant);
     document.getElementById(id).volume = 0;
 
     track.attach($(`#${id}`)[0]);
@@ -335,6 +345,10 @@ function onConferenceJoined() {
                     audio_el.volume = 1;
                 }
                 $(`.video_${from}`).removeClass("local_muted");
+            }
+            else
+            {
+                $(`.video_${from}`).addClass("local_muted");
             }
         }
     });
