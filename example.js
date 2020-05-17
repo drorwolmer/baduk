@@ -180,7 +180,7 @@ function onRemoteTrackAdded(track) {
 
     if (track.getType() === "video") {
         $(video_parent).append(
-            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
+            `<div class="video person local_muted remote_participant video_${participant}"><div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div><div class="chat"></div><div class="in"></div><video muted autoplay='1' id='${id}' /></div>  `
         );
         $(`.video_${participant}`).data("id", participant);
     } else {
@@ -379,7 +379,7 @@ function onConferenceJoined() {
     user_id = Conference.myUserId();
 
 
-    $('.video_self').addClass(`video_${user_id}`).prepend(`<div class="id">${user_id}</div>`);
+    $('.video_self').addClass(`video_${user_id}`).prepend(`<div class="id">${user_id}</div><div class="chat"></div>`);
 
     // Try to load the display_name from the local cache
     const display_name = window.localStorage.getItem("DISPLAY_NAME");
@@ -388,6 +388,12 @@ function onConferenceJoined() {
     $(".video_self .id").click(function () {
         const display_name = window.prompt("Display Name???");
         change_local_display_name(display_name);
+    });
+
+    $(".video_self .in").click(function () {
+        const msg = window.prompt("Say something:");
+        Conference.sendMessage(msg);
+        // No need to emit an event here, we will get this event
     });
 
     isJoined = true;
@@ -481,9 +487,14 @@ function onConnectionSuccess() {
         $(`.video_${id} .id`).text(`${display_name} | ${id}`);
     });
 
-    Conference.on(JitsiMeetJS.events.conference.SUBJECT_CHANGED, function(subject){
+    Conference.on(JitsiMeetJS.events.conference.SUBJECT_CHANGED, function (subject) {
         console.error("SUBJECT_CHANGED", subject)
-    })
+    });
+
+    Conference.on(JitsiMeetJS.events.conference.MESSAGE_RECEIVED, function (id, text, ts) {
+        $(`.video_${id} .chat`).show().text(text).delay(3000).fadeOut(800);
+        console.error("MESSAGE_RECEIVED", id, text, ts);
+    });
 
     room.on(JitsiMeetJS.events.conference.USER_STATUS_CHANGED, onUserStatusChanged);
 
