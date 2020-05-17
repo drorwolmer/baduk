@@ -160,15 +160,19 @@ function onRemoteTrackAdded(track) {
     console.error("Locally muting sound of ", participant);
     document.getElementById(id).volume = 0;
 
-    track.attach($(`#${id}`)[0]);
+    console.error("before", $(`.video_${participant}`).attr("class"));
 
     if (track.getType() === "audio") {
         if (track.isMuted()) {
             $(`.video_${participant}`).addClass("muted").removeClass("local_muted");
         } else {
+            console.error("adding local_muted class");
             $(`.video_${participant}`).removeClass("muted").addClass("local_muted");
         }
     }
+
+    console.error("after", $(`.video_${participant}`).attr("class"));
+
 
 }
 
@@ -571,7 +575,7 @@ function onConnectionSuccess() {
     });
 
     Conference.on(JitsiMeetJS.events.conference.MESSAGE_RECEIVED, function (id, text, ts) {
-        $(`.video_${id} .chat`).show().text(text).delay(3000).fadeOut(800);
+        $(`.video_${id} .chat`).show().text(text).delay(10000).fadeOut(800);
         console.error("MESSAGE_RECEIVED", id, text, ts);
     });
 
