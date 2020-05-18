@@ -2,26 +2,32 @@
 
 const options = {
     hosts: {
-        domain: "beta.meet.jit.si",
-        muc: "conference.beta.meet.jit.si",
+        domain: "dror-testing.tlvengnetapp.com",
+        focus: 'focus.dror-testing.tlvengnetapp.com',
+        muc: "conference.dror-testing.tlvengnetapp.com"
+        // bridge: 'jitsi-videobridge.dror-testing.tlvengnetapp.com',
+
     },
-    bosh: '//beta.meet.jit.si/http-bind?room=ELHAMIN_BLOCKUS', // FIXME: use xep-0156 for that
-    websocket: 'wss://beta.meet.jit.si/xmpp-websocket', // FIXME: use xep-0156 for that
+    bosh: '//dror-testing.tlvengnetapp.com/http-bind?room=ELHAMIN_BLOCKUS', // FIXME: use xep-0156 for that
+    // websocket: 'wss://dror-testing.tlvengnetapp.com/xmpp-websocket', // FIXME: use xep-0156 for that
     clientNode: "http://jitsi.org/jitsimeet",
     desktopSharingChromeDisabled: true,
-    openBridgeChannel: "websocket",
+    openBridgeChannel: 'websocket',
     enableTalkWhileMuted: true,
     enableNoAudioDetection: true,
     enableNoisyMicDetection: true,
-    enableLipSync: true,
+    enableLipSync: false,
     disableAudioLevels: false,
-    disableSimulcast: false
+    disableSimulcast: false,
+    enableP2P: false,
+    // useStunTurn: true,
+    useIPv6: false
 
 };
 
 const mini_conferences = {
     second_room: []
-}
+};
 
 
 let connection = null;
@@ -259,8 +265,6 @@ function onConferenceJoined() {
                 if (local_track.getType() === "video") {
                     local_track.unmute();
                     local_track.attach(document.getElementById("localVideo"));
-                    //room.setSenderVideoConstraint(desiredSendResolution);
-
                 } else {
                     local_track.mute();
                     local_track.attach(document.getElementById("localAudio"));
@@ -305,137 +309,6 @@ function onConferenceJoined() {
             });
         }
     });
-
-    Conference.addCommandListener("JOIN_MINI_CONFERENCE", function (e) {
-
-        let from = e.attributes["from"];
-        let to = e.attributes["to"];
-
-        console.error("JOIN_MINI_CONFERENCE", from, to, mini_conferences);
-
-        if (mini_conferences[to].indexOf(from) > -1) {
-            // Probably command sent twice, do not address it
-            console.error("Skipping handling of JOIN_MINI_CONFERENCE", from, to)
-            return;
-        }
-
-        mini_conferences[to].push(from);
-
-        $(`.video_${from}`).prependTo(`#${to}`);
-
-        if (from === Conference.myUserId()) {
-
-            // Join the room, start talking
-            const local_audio_track = Conference.getLocalAudioTrack();
-            if (local_audio_track) {
-                Conference.getLocalAudioTrack().unmute()
-            }
-
-            Conference.getParticipants().forEach(function (participant) {
-                let participant_id = participant.getId();
-                let index = mini_conferences[to].indexOf(participant_id);
-                if (index > -1) {
-                    let audio_el = document.getElementById(`${participant_id}audio`);
-                    if (audio_el) {
-
-                        audio_el.volume = 1;
-                    }
-                    $(`.video_${participant_id}`).removeClass("local_muted");
-                }
-
-            });
-        } else {
-            let index = mini_conferences[to].indexOf(Conference.myUserId());
-            if (index > -1) {
-                let audio_el = document.getElementById(`${from}audio`);
-                if (audio_el) {
-                    audio_el.volume = 1;
-                }
-                $(`.video_${from}`).removeClass("local_muted");
-            }
-            else
-            {
-                $(`.video_${from}`).addClass("local_muted");
-            }
-        }
-    });
-
-
-    Conference.addCommandListener("LEAVE_MINI_CONFERENCE", function (e) {
-        let from = e.attributes["from"];
-        let to = e.attributes["to"];
-
-        // Probably command sent twice, do not address it
-        if (mini_conferences[to].indexOf(from) === -1) {
-            console.error("Skipping handling of LEAVE_MINI_CONFERENCE", from, to)
-            return;
-        }
-
-        console.error("LEAVE_MINI_CONFERENCE", from, mini_conferences);
-        $(`.video_${from}`).appendTo(`#container`);
-
-        if (from === Conference.myUserId()) {
-
-            // Leave the room, stop talking
-            const local_audio_track = Conference.getLocalAudioTrack();
-            if (local_audio_track) {
-                Conference.getLocalAudioTrack().mute()
-            }
-
-            Conference.getParticipants().forEach(function (participant) {
-                let participant_id = participant.getId();
-                let audio_el = document.getElementById(`${participant_id}audio`);
-                if (audio_el) {
-                    audio_el.volume = 0;
-                }
-                $(`.video_${participant_id}`).addClass("local_muted");
-            });
-        } else {
-            // Someone else left the mini-room, let's see if we're in that room
-            let index = mini_conferences[to].indexOf(Conference.myUserId());
-            if (index > -1) {
-                let audio_el = document.getElementById(`${from}audio`);
-                if (audio_el) {
-                    audio_el.volume = 0;
-                }
-                $(`.video_${from}`).addClass("local_muted");
-            }
-        }
-
-        let index = mini_conferences[to].indexOf(from);
-        if (index > -1) {
-            mini_conferences[to].splice(index, 1);
-        }
-    });
-
-    Conference.addEventListener("USER_ADDED_TO_SCREEN", function (e) {
-        console.error("USER_ADDED_TO_SCREEN", e);
-    });
-
-    Conference.addCommandListener("SET_HD_USERS", function (e) {
-        var user_list = e.attributes['user_list'].split(",");
-
-        console.error("setting users to hd", user_list);
-
-        if (user_list.indexOf(room.myUserId()) > -1) {
-            desiredSendResolution = 1080;
-            room.setSenderVideoConstraint(1080);
-        } else {
-            desiredSendResolution = 180;
-            room.setSenderVideoConstraint(180);
-        }
-
-        room.selectParticipants(user_list);
-    });
-
-    Conference.addCommandListener("SET_EMOJI", function (e) {
-        let emoji = e.attributes["emoji"];
-        let id = e.attributes["id"];
-        GLOBAL_EMOJI_STATE[id] = emoji
-        console.error("SET_EMOJI", id, emoji);
-        $(`.video_${id} .emoji`).text(emoji);
-    });
-
 
     $(".video_self .id").click(function (event) {
         event.stopPropagation();
@@ -560,6 +433,127 @@ function onConnectionSuccess() {
     }
 
     room = connection.initJitsiConference(room_name, options);
+
+    room.addCommandListener("JOIN_MINI_CONFERENCE", function (e) {
+
+        let from = e.attributes["from"];
+        let to = e.attributes["to"];
+
+        console.error("JOIN_MINI_CONFERENCE", from, to, mini_conferences);
+
+        if (mini_conferences[to].indexOf(from) > -1) {
+            // Probably command sent twice, do not address it
+            console.error("Skipping handling of JOIN_MINI_CONFERENCE", from, to)
+            return;
+        }
+
+        mini_conferences[to].push(from);
+
+        $(`.video_${from}`).prependTo(`#${to}`);
+
+        if (from === Conference.myUserId()) {
+
+            // Join the room, start talking
+            const local_audio_track = Conference.getLocalAudioTrack();
+            if (local_audio_track) {
+                Conference.getLocalAudioTrack().unmute()
+            }
+
+            Conference.getParticipants().forEach(function (participant) {
+                let participant_id = participant.getId();
+                let index = mini_conferences[to].indexOf(participant_id);
+                if (index > -1) {
+                    let audio_el = document.getElementById(`${participant_id}audio`);
+                    if (audio_el) {
+
+                        audio_el.volume = 1;
+                    }
+                    $(`.video_${participant_id}`).removeClass("local_muted");
+                }
+
+            });
+        } else {
+            let index = mini_conferences[to].indexOf(Conference.myUserId());
+            if (index > -1) {
+                let audio_el = document.getElementById(`${from}audio`);
+                if (audio_el) {
+                    audio_el.volume = 1;
+                }
+                $(`.video_${from}`).removeClass("local_muted");
+            } else {
+                $(`.video_${from}`).addClass("local_muted");
+            }
+        }
+    });
+
+    room.addCommandListener("LEAVE_MINI_CONFERENCE", function (e) {
+        let from = e.attributes["from"];
+        let to = e.attributes["to"];
+
+        // Probably command sent twice, do not address it
+        if (mini_conferences[to].indexOf(from) === -1) {
+            console.error("Skipping handling of LEAVE_MINI_CONFERENCE", from, to)
+            return;
+        }
+
+        console.error("LEAVE_MINI_CONFERENCE", from, mini_conferences);
+        $(`.video_${from}`).appendTo(`#container`);
+
+        if (from === Conference.myUserId()) {
+
+            // Leave the room, stop talking
+            const local_audio_track = Conference.getLocalAudioTrack();
+            if (local_audio_track) {
+                Conference.getLocalAudioTrack().mute()
+            }
+
+            Conference.getParticipants().forEach(function (participant) {
+                let participant_id = participant.getId();
+                let audio_el = document.getElementById(`${participant_id}audio`);
+                if (audio_el) {
+                    audio_el.volume = 0;
+                }
+                $(`.video_${participant_id}`).addClass("local_muted");
+            });
+        } else {
+            // Someone else left the mini-room, let's see if we're in that room
+            let index = mini_conferences[to].indexOf(Conference.myUserId());
+            if (index > -1) {
+                let audio_el = document.getElementById(`${from}audio`);
+                if (audio_el) {
+                    audio_el.volume = 0;
+                }
+                $(`.video_${from}`).addClass("local_muted");
+            }
+        }
+
+        let index = mini_conferences[to].indexOf(from);
+        if (index > -1) {
+            mini_conferences[to].splice(index, 1);
+        }
+    });
+
+    room.addCommandListener("SET_HD_USERS", function (e) {
+        var user_list = e.attributes['user_list'].split(",");
+
+        console.error("setting users to hd", user_list);
+
+        if (user_list.indexOf(room.myUserId()) > -1) {
+            room.setSenderVideoConstraint(1080);
+        } else {
+            room.setSenderVideoConstraint(180);
+        }
+
+        room.selectParticipants(user_list);
+    });
+
+    room.addCommandListener("SET_EMOJI", function (e) {
+        let emoji = e.attributes["emoji"];
+        let id = e.attributes["id"];
+        console.error("SET_EMOJI", id, emoji);
+        GLOBAL_EMOJI_STATE[id] = emoji
+        $(`.video_${id} .emoji`).text(emoji);
+    });
 
     room.addCommandListener("HARAMA", function (e) {
         haramotTimePoints.push({
@@ -802,7 +796,7 @@ JitsiMeetJS.mediaDevices.addEventListener(
     onDeviceListChanged
 );
 
-connection.connect(undefined, undefined, "ELHAMIN_BLOCK");
+connection.connect(undefined);
 
 
 if (JitsiMeetJS.mediaDevices.isDeviceChangeAvailable("output")) {
