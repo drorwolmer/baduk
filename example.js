@@ -110,13 +110,29 @@ function onUserJoined(participant) {
             <div class="emoji">${GLOBAL_EMOJI_STATE[participant]}</div>
             <div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div>
             <div class="chat"></div>
+            <div class="chat_private"></div>
             <div class="in"></div>
             <video autoplay='1' id='${participant}video' />
             <audio autoplay='1' id='${participant}audio' />
         </div>`
     );
 
+    $(".remote_participant .in").click(function (event) {
 
+        console.error("Clicked on participant")
+        event.stopPropagation();
+
+        var participantData = event.target.parentNode.querySelector(".id").innerHTML.split("|");
+        var nick = $.trim(participantData[0]);
+        var targetParticipantId = $.trim(participantData[1]);
+
+        const msg = window.prompt(`Say something to ${nick}:`);
+        console.error(nick, targetParticipantId, msg);
+
+        if (msg && targetParticipantId) {
+            room.sendPrivateTextMessage(targetParticipantId, msg);
+        }
+    })
 }
 
 /**
@@ -346,6 +362,15 @@ function onConferenceJoined() {
         }
     });
 
+    $(".video_self .in").click(function (event) {
+        event.stopPropagation();
+
+        const msg = window.prompt("Say something:");
+        if (msg) {
+            Conference.sendMessage(msg);
+            // No need to emit an event here, we will get this event
+        }
+    });
 
     setInterval(function () {
 
@@ -435,9 +460,9 @@ function onConnectionSuccess() {
         document.getElementById("body").classList.add("block");
     }
 
-    let room_name = "block_demo_block";
+    let room_name = "bbbblock_demo_block";
     if (window.location.href.indexOf("toilet") > -1) {
-        room_name = "block_demo_toiletsss";
+        room_name = "bbbblock_demo_toiletsss";
     }
 
     room = connection.initJitsiConference(room_name, options);
@@ -579,6 +604,10 @@ function onConnectionSuccess() {
         $(`.video_${id} .id`).text(`${display_name} | ${id}`);
     });
 
+    Conference.on(JitsiMeetJS.events.conference.PROPERTIES_CHANGED, function (e) {
+        console.error("PROP CHANGED", e);
+    })
+
     Conference.on(JitsiMeetJS.events.conference.SUBJECT_CHANGED, function (subject) {
         console.error("SUBJECT_CHANGED", subject)
     });
@@ -586,6 +615,11 @@ function onConnectionSuccess() {
     Conference.on(JitsiMeetJS.events.conference.MESSAGE_RECEIVED, function (id, text, ts) {
         $(`.video_${id} .chat`).show().text(text).delay(10000).fadeOut(800);
         console.error("MESSAGE_RECEIVED", id, text, ts);
+    });
+
+    Conference.on(JitsiMeetJS.events.conference.PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
+        $(`.video_${id} .chat_private`).show().text(text).delay(10000).fadeOut(800);
+        console.error("PRIVATE_MESSAGE_RECEIVED", id, text, ts);
     });
 
     room.on(JitsiMeetJS.events.conference.USER_STATUS_CHANGED, onUserStatusChanged);
@@ -824,4 +858,3 @@ if (JitsiMeetJS.mediaDevices.isDeviceChangeAvailable("output")) {
         }
     });
 }
-
