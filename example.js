@@ -116,7 +116,6 @@ function onUserJoined(participant) {
         </div>`
     );
 
-
 }
 
 /**
@@ -158,6 +157,9 @@ function onRemoteTrackAdded(track) {
 
     track.attach($(`#${id}`)[0]);
 
+    if (track.getType() === "audio" && !track.isMuted()) {
+        $(`.video_${participant}`).removeClass("muted");
+    }
 
     const local_inside_miniroom = (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1);
     const remote_inside_miniroom = (mini_conferences["second_room"].indexOf(participant) > -1);
