@@ -237,7 +237,7 @@ function onConferenceJoined() {
     }
     setLocalEmoji(emoji);
 
-    JitsiMeetJS.createLocalTracks({devices: ["audio", "video"], resolution: desiredSendResolution})
+    JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
         .then(function (local_tracks) {
 
             console.error("ON_LOCAL_TRACKS", local_tracks);
@@ -271,6 +271,8 @@ function onConferenceJoined() {
                 }
 
             }
+
+            Conference.setSenderVideoConstraint(desiredSendResolution);
 
         })
         .catch((error) => {
@@ -539,9 +541,11 @@ function onConnectionSuccess() {
         console.error("setting users to hd", user_list);
 
         if (user_list.indexOf(room.myUserId()) > -1) {
-            room.setSenderVideoConstraint(1080);
+            desiredSendResolution = 1080;
+            room.setSenderVideoConstraint(desiredSendResolution);
         } else {
-            room.setSenderVideoConstraint(180);
+            desiredSendResolution = 180;
+            room.setSenderVideoConstraint(desiredSendResolution);
         }
 
         room.selectParticipants(user_list);
