@@ -470,7 +470,7 @@ function onConferenceJoined() {
             var participant = participants[i];
             if (participant._connectionStatus === "interrupted") {
                 console.warn("Kicking participant because of interrupted connection", participant._id);
-                room.kickParticipant(participant._id);
+                //room.kickParticipant(participant._id);
             }
         }
 
@@ -538,6 +538,44 @@ function setHdUsers(user_list) {
     );
 }
 
+let participantSavedStates = {};
+
+function onParticipantConnectionStatusChange(participantId) {
+    console.error("CONN STATUS CHANGE", participantId);
+    console.error("CONN STATUS CHANGE", room.getParticipantById(participantId).getConnectionStatus());
+
+    var participantConnState = room.getParticipantById(participantId).getConnectionStatus();
+
+    if (participantConnState != "active") {
+        var participantDiv = document.getElementsByClassName(`video_${participantId}`)[0];
+        var participantDivParentId = participantDiv.parentNode.id;
+        var participantDivState = participantDiv.outerHTML;
+
+        participantSavedStates[participantId] = {
+            "state": participantDivState,
+            "parent": participantDivParentId
+        }
+
+        participantDiv.remove();
+    }
+    else {
+        if (participantId in participantSavedStates) {
+
+            var elements = document.getElementsByClassName(`video_${participantId}`);
+
+            if (elements.length > 0) {
+                return;
+            }
+
+            var savedState = participantSavedStates[participantId];
+            delete participantSavedStates[participantId];
+
+            var parent = document.getElementById(savedState["parent"])
+            parent.innerHTML += savedState["state"];
+        }
+    }
+}
+
 /**
  * That function is called when connection is established successfully
  */
@@ -549,9 +587,9 @@ function onConnectionSuccess() {
         document.getElementById("body").classList.add("block");
     }
 
-    let room_name = "block_demo_block";
+    let room_name = "bbbblock_demo_block";
     if (window.location.href.indexOf("toilet") > -1) {
-        room_name = "block_demo_toiletsss";
+        room_name = "bbbblock_demo_toiletsss";
     }
 
     room = connection.initJitsiConference(room_name, options);
@@ -586,6 +624,8 @@ function onConnectionSuccess() {
     room.on(JitsiMeetJS.events.conference.CONFERENCE_JOINED, onConferenceJoined);
     room.on(JitsiMeetJS.events.conference.USER_JOINED, onUserJoined);
     room.on(JitsiMeetJS.events.conference.USER_LEFT, onUserLeft);
+
+    room.on(JitsiMeetJS.events.conference.PARTICIPANT_CONN_STATUS_CHANGED, onParticipantConnectionStatusChange);
 
     // room.on(
     //     JitsiMeetJS.events.conference.TRACK_AUDIO_LEVEL_CHANGED,
