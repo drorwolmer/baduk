@@ -40,6 +40,7 @@ let max_haramot_per_user = 30;
 let harama_cooldown = 30.0;
 let total_haramot_sent = 0;
 
+let desiredSendResolution = 180;
 
 function onLocalTrackAudioEventChanged(e) {
     console.warn(`TRACK_AUDIO_LEVEL_CHANGED`, e);
@@ -230,7 +231,7 @@ function onConferenceJoined() {
     }
     setLocalEmoji(emoji);
 
-    JitsiMeetJS.createLocalTracks({devices: ["audio", "video"]})
+    JitsiMeetJS.createLocalTracks({devices: ["audio", "video"], resolution: desiredSendResolution})
         .then(function (local_tracks) {
 
             console.error("ON_LOCAL_TRACKS", local_tracks);
@@ -258,6 +259,8 @@ function onConferenceJoined() {
                 if (local_track.getType() === "video") {
                     local_track.unmute();
                     local_track.attach(document.getElementById("localVideo"));
+                    //room.setSenderVideoConstraint(desiredSendResolution);
+
                 } else {
                     local_track.mute();
                     local_track.attach(document.getElementById("localAudio"));
@@ -415,8 +418,10 @@ function onConferenceJoined() {
         console.error("setting users to hd", user_list);
 
         if (user_list.indexOf(room.myUserId()) > -1) {
+            desiredSendResolution = 1080;
             room.setSenderVideoConstraint(1080);
         } else {
+            desiredSendResolution = 180;
             room.setSenderVideoConstraint(180);
         }
 
@@ -606,7 +611,6 @@ function onConnectionSuccess() {
 // );
 
     room.join();
-    room.setSenderVideoConstraint(180);
 }
 
 /**
