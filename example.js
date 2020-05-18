@@ -18,7 +18,7 @@ const options = {
     enableNoisyMicDetection: true,
     enableLipSync: false,
     disableAudioLevels: false,
-    disableSimulcast: false,
+    disableSimulcast: true,
     enableP2P: false,
     // useStunTurn: true,
     useIPv6: false
@@ -124,7 +124,9 @@ function onUserJoined(participant) {
  * @param track JitsiTrack object
  */
 function onRemoteTrackAdded(track) {
+
     if (track.isLocal()) {
+        Conference.setSenderVideoConstraint(180);
         return;
     }
 
@@ -259,20 +261,24 @@ function onConferenceJoined() {
                     OnLocalTrackAudioOutputChanged
                 );
 
+                Conference.setSenderVideoConstraint(180);
 
-                Conference.addTrack(local_track);
+                Conference.addTrack(local_track).then(function () {
+                    if (local_track.getType() === "video") {
+                        local_track.unmute();
+                        local_track.attach(document.getElementById("localVideo"));
+                    } else {
+                        local_track.mute();
+                        local_track.attach(document.getElementById("localAudio"));
+                    }
 
-                if (local_track.getType() === "video") {
-                    local_track.unmute();
-                    local_track.attach(document.getElementById("localVideo"));
-                } else {
-                    local_track.mute();
-                    local_track.attach(document.getElementById("localAudio"));
-                }
+                    window.setTimeout(function () {
+                        Conference.setSenderVideoConstraint(180);
+                    }, 1000)
+                });
+
 
             }
-
-            Conference.setSenderVideoConstraint(desiredSendResolution);
 
         })
         .catch((error) => {
