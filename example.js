@@ -117,6 +117,7 @@ function onUserJoined(participant) {
         </div>`
     );
 
+    $('.remote_participant .in').off('click');
     $(".remote_participant .in").click(function (event) {
 
         console.error("Clicked on participant")
