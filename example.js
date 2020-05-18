@@ -111,7 +111,22 @@ function onUserJoined(participant) {
         </div>`
     );
 
+    $(".remote_participant .in").click(function (event) {
 
+        console.error("Clicked on participant")
+        event.stopPropagation();
+
+        var participantData = event.target.parentNode.querySelector(".id").innerHTML.split("|");
+        var nick = $.trim(participantData[0]);
+        var targetParticipantId = $.trim(participantData[1]);
+
+        const msg = window.prompt(`Say something to ${nick}:`);
+        console.error(nick, targetParticipantId, msg);
+
+        if (msg && targetParticipantId) {
+            room.sendPrivateTextMessage(targetParticipantId, msg);
+        }
+    })
 }
 
 /**
@@ -465,22 +480,6 @@ function onConferenceJoined() {
             setLocalEmoji(emoji);
         }
     });
-
-    $(".remote_participant").click(function (event) {
-
-        event.stopPropagation();
-
-        var participantData = event.target.parentNode.querySelector(".id").innerHTML.split("|");
-        var nick = $.trim(participantData[0]);
-        var targetParticipantId = $.trim(participantData[1]);
-
-        const msg = window.prompt(`Say something to ${nick}:`);
-        console.error(nick, targetParticipantId, msg);
-
-        if (msg && targetParticipantId) {
-            room.sendPrivateTextMessage(targetParticipantId, msg);
-        }
-    })
 
     $(".video_self .in").click(function (event) {
         event.stopPropagation();
