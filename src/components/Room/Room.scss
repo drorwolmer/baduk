@@ -1,0 +1,50 @@
+.room {
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+
+  &.block {
+    .bg {
+      background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
+    }
+  }
+
+  &.toilet {
+    .bg {
+      background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");
+    }
+  }
+
+  .main-area {
+    flex-grow: 2;
+    cursor: pointer;
+  }
+
+  .side-room {
+    border: 4px solid #fff;
+    min-height: 328px;
+    cursor: pointer;
+    position: relative;
+
+    .bg {
+      background: unset;
+      background-color: white;
+      opacity: .2;
+    }
+
+    .room-header {
+      height: 50px;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 16px;
+      border-bottom: solid 1px silver;
+    }
+
+    .room-users {
+      padding: 10px 20px;
+    }
+  }
+}
