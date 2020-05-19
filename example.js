@@ -200,6 +200,13 @@ function onRemoteTrackAdded(track) {
 
     const local_inside_miniroom = (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1);
     const remote_inside_miniroom = (mini_conferences["second_room"].indexOf(participant) > -1);
+
+
+    if (track.getType() === "video" && !track.isMuted())
+    {
+        $(`.video_${participant}`).removeClass("no_video");
+    }
+
     // Probably just track restart for some reason
     if (local_inside_miniroom && remote_inside_miniroom) {
         return;
@@ -208,8 +215,6 @@ function onRemoteTrackAdded(track) {
     console.error("Locally muting sound of ", participant);
     document.getElementById(id).volume = 0;
 
-    console.error("before", $(`.video_${participant}`).attr("class"));
-
     if (track.getType() === "audio") {
         if (track.isMuted()) {
             $(`.video_${participant}`).addClass("muted").removeClass("local_muted");
@@ -217,14 +222,7 @@ function onRemoteTrackAdded(track) {
             console.error("adding local_muted class");
             $(`.video_${participant}`).removeClass("muted").addClass("local_muted");
         }
-    } else {
-        if (!track.isMuted()) {
-            $(`.video_${participant}`).removeClass("no_video");
-        }
     }
-
-    console.error("after", $(`.video_${participant}`).attr("class"));
-
 
 }
 
