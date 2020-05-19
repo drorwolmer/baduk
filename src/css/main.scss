@@ -2,6 +2,10 @@ html, body, #root, .app {
   height: 100%;
 }
 
+body {
+  background-color: black;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -23,11 +27,19 @@ html, body, #root, .app {
   z-index: -1;
 }
 
-.video.button {
-  display: inline-block;
-  background: #000;
-  width: 100px;
-  height: 100px;
-  border: 1px solid #fff;
-  cursor: pointer;
+.player-soundtrack {
+  width: 1px;
+  height: 1px;
+  visibility: hidden;
+  overflow: hidden;
+  position: absolute;
 }
+
+//.video.button {
+//  display: inline-block;
+//  background: #000;
+//  width: 100px;
+//  height: 100px;
+//  border: 1px solid #fff;
+//  cursor: pointer;
+//}

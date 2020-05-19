@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux'
 import UserList from '../UserDisplay/UserList'
 import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
 import { joinSideRoom } from '../../modules/meeting'
+import './SideRoom.scss'
+
 
 export default ({ name }) => {
 

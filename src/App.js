@@ -1,19 +1,19 @@
 import React, { useState } from 'react'
-// import { ROOMS } from './consts'
+import YouTube from 'react-youtube'
 import Room from './components/Room'
-import MuteButton from './components/MuteButton'
+import BottomNav from './components/BottomNav'
+import { soundtrackPlayerConfig } from './config/config.videos'
+
 
 function App () {
-  const [roomName, setRoomName] = useState('BLOCK')
+  const initialRoom = window.location.href.indexOf('toilet') > -1 ? 'toilet' : 'block'
+  const [roomName, setRoomName] = useState(initialRoom)
 
   return (
     <div className="app">
-      <div className="rooms-menu">
-        <MuteButton/>
-        {/*<div className="video button room-button" onClick={() => setRoomName('BLOCK')}>Block</div>*/}
-        {/*<div className="video button room-button" onClick={() => setRoomName('TOILET')}>Toilets</div>*/}
-      </div>
-      <Room roomName={roomName}/>
+      <Room roomName={roomName} withVideoArt={roomName === 'block'}/>
+      <BottomNav roomName={roomName}/>
+      <YouTube {...soundtrackPlayerConfig}/>
     </div>
   )
 }

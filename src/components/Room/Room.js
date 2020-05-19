@@ -2,14 +2,16 @@ import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useSelector } from 'react-redux'
+import YouTube from 'react-youtube'
+import { videoArtPlayerConfig } from '../../config/config.videos'
 import { leaveSideRoom } from '../../modules/meeting'
 import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
-// import YouTubePlayer from '../YouTubePlayer'
 import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import './Room.scss'
 
-const Room = ({ roomName }) => {
+
+const Room = ({ roomName, withVideoArt }) => {
 
   const room = useSelector(state => state.room)
   const mainAreaUsers = useSelector(getUsersByActiveRoom('MAIN'))
@@ -20,8 +22,6 @@ const Room = ({ roomName }) => {
     return null
   }
 
-  // console.warn('mainAreaUsers=' + JSON.stringify(mainAreaUsers))
-
   const userInMainArea = localUser.activeRoom === 'MAIN'
 
   const onMeetingAreaClick = () => {
@@ -30,12 +30,16 @@ const Room = ({ roomName }) => {
 
   return (
     <div className={classNames('room', _.toLower(roomName))}>
-      {/*<div className="youtube-container">*/}
-      {/*  <YouTubePlayer/>*/}
-      {/*</div>*/}
       <div className="bg"/>
+      {withVideoArt && (
+        <div className="video-art-top">
+          <div className="big-video-container">
+            <YouTube {...videoArtPlayerConfig}/>
+          </div>
+        </div>
+      )}
       <div className="main-area" onClick={onMeetingAreaClick}>
-        <UserList users={mainAreaUsers} roomName="MAIN" />
+        <UserList users={mainAreaUsers} roomName="MAIN"/>
       </div>
       <div className="side-rooms">
         {_.map(room.sideRooms, (sideRoom, i) => (

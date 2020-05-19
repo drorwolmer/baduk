@@ -16,6 +16,6 @@ export default () => {
   }
 
   return (
-    <div className="video button" id="mute_toggle" onClick={toggleMute}>Mute/Unmute</div>
+    <div className="video button mute-toggle" onClick={toggleMute} />
   )
 }

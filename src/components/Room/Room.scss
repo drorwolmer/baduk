@@ -6,7 +6,10 @@
 
   &.block {
     .bg {
-      background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
+      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/96101534_242693803475256_4136626841232343040_n.jpg?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=D97pxAcCoTwAX_wEfY5&_nc_ht=scontent.fsdv3-1.fna&oh=6c2623e2228e7ef3e6d1e48f63826e0a&oe=5EEAA1AF&dl=1');
+      background-size: contain;
+      background-position: center top;
+      opacity: 0.5;
     }
   }
 
@@ -21,30 +24,27 @@
     cursor: pointer;
   }
 
-  .side-room {
-    border: 4px solid #fff;
-    min-height: 328px;
-    cursor: pointer;
-    position: relative;
+  .video-art-top {
+    margin: 15px 20px;
+    overflow: hidden;
+    background: black;
 
-    .bg {
-      background: unset;
-      background-color: white;
-      opacity: .2;
-    }
+    .big-video-container {
+      width: 100%;
+      height: 500px;
+      background: orange;
+      overflow: hidden;
 
-    .room-header {
-      height: 50px;
-      color: white;
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      font-size: 16px;
-      border-bottom: solid 1px silver;
-    }
+      .video-art-player {
+        height: 100%;
 
-    .room-users {
-      padding: 10px 20px;
+        iframe {
+          width: 100%;
+          height: 120%;
+          position: relative;
+          top: -50px;
+        }
+      }
     }
   }
 }

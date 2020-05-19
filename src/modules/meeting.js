@@ -12,10 +12,8 @@ const SET_EMOJI = 'SET_EMOJI'
 export const initJitsi = (options, dispatch) => {
   console.warn('initJitsi')
 
-  const onConnectionFailed = () => {}
-  const onDeviceListChanged = () => {}
+
   const onRemoteTrackMuteChanged = () => {}
-  const onUserStatusChanged = () => {}
 
   const JitsiMeetJS = window.JitsiMeetJS
 
@@ -41,39 +39,30 @@ export const initJitsi = (options, dispatch) => {
 
     // bind events
     const {
-      DISPLAY_NAME_CHANGED, SUBJECT_CHANGED, MESSAGE_RECEIVED, PRIVATE_MESSAGE_RECEIVED,
-      USER_STATUS_CHANGED, CONFERENCE_JOINED, USER_JOINED, TRACK_ADDED, TRACK_REMOVED, USER_LEFT
+      DISPLAY_NAME_CHANGED, MESSAGE_RECEIVED, PRIVATE_MESSAGE_RECEIVED,
+      CONFERENCE_JOINED, USER_JOINED, TRACK_ADDED, TRACK_REMOVED, USER_LEFT
     } = JitsiMeetJS.events.conference
 
     room.on(DISPLAY_NAME_CHANGED, (id, displayName) => {
-      console.error('DISPLAY_NAME_CHANGED', id, displayName)
       dispatch(updateUser(id, { displayName }))
     })
 
     room.addCommandListener(SET_EMOJI, e => {
       const emoji = e.attributes['emoji']
       const userId = e.attributes['id']
-      console.error('SET_EMOJI', userId, emoji)
+
       dispatch(updateUser(userId, { emoji }))
     })
 
-    room.on(SUBJECT_CHANGED, function (subject) {
-      console.error('SUBJECT_CHANGED', subject)
-    })
-
     room.on(MESSAGE_RECEIVED, function (id, text, ts) {
-      // $(`.video_${id} .chat`).show().text(text).delay(10000).fadeOut(800);
-      console.error('MESSAGE_RECEIVED', id, text, ts)
+      console.warn('MESSAGE_RECEIVED', id, text, ts)
       dispatch(pushMessage(id, text))
     })
 
     room.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
-      // $(`.video_${id} .chat_private`).show().text(text).delay(10000).fadeOut(800)
-      console.error('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
+      console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
       dispatch(pushMessage(id, text))
     })
-
-    room.on(USER_STATUS_CHANGED, onUserStatusChanged)
 
     room.on(CONFERENCE_JOINED, onConferenceJoined)
     room.on(USER_JOINED, onUserJoined)
@@ -86,9 +75,13 @@ export const initJitsi = (options, dispatch) => {
 
     window.room = room
 
-    dispatch(setRoom(ROOMS.BLOCK))
+    dispatch(setRoom(ROOMS.block))
 
     room.join()
+  }
+
+  const onConnectionFailed = e => {
+    console.error("Connection Failed!", e)
   }
 
   const disconnect = () => {
@@ -221,13 +214,7 @@ export const initJitsi = (options, dispatch) => {
   connection.addEventListener(CONNECTION_FAILED, onConnectionFailed)
   connection.addEventListener(CONNECTION_DISCONNECTED, disconnect)
 
-  JitsiMeetJS.mediaDevices.addEventListener(
-    JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
-    onDeviceListChanged
-  )
-
   connection.connect(undefined)
-
 }
 
 export const joinSideRoom = roomName => {
