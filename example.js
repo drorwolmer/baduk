@@ -232,6 +232,8 @@ function onRemoteTrackRemoved(track) {
 function onConferenceJoined() {
     console.warn("onConferenceJoined");
 
+    fillFreeSeats();
+
     isJoined = true;
 
     user_id = Conference.myUserId();
@@ -287,9 +289,11 @@ function onConferenceJoined() {
 
                 Conference.addTrack(local_track).then(function () {
                     if (local_track.getType() === "video") {
+                        // TODO(DROR): Remember video decisiotn
                         local_track.unmute();
                         local_track.attach(document.getElementById("localVideo"));
                     } else {
+                        // Always mute audio track
                         local_track.mute();
                         local_track.attach(document.getElementById("localAudio"));
                     }

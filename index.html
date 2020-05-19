@@ -140,7 +140,7 @@
         .video.local_muted video,
         .video.muted video {
             /*filter: blur(3px) saturate(1000%) grayscale(0.25);*/
-            filter: blur(5px);
+            /*filter: blur(5px);*/
         }
 
         .video .in {
@@ -148,10 +148,17 @@
             width: 340px;
             height: 240px;
             position: absolute;
-            opacity: 750%;
             z-index: 3;
             /*box-shadow: inset 0px 0px 0px 0px; rgba(0,0,0,0.7);*/
             box-shadow: inset 0 0 50px #000000;
+        }
+
+        #second_room .video .in {
+            background: black;
+        }
+
+        .inside_mini_conference #second_room .video .in {
+            background: none !important;
         }
 
         .video .id {
