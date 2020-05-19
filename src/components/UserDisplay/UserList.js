@@ -1,17 +1,14 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import _ from 'lodash'
 import UserDisplay from './index'
 
+const UserList = ({ users, isAudioActive }) => {
 
-const UserList = ({users, isAudioActive, roomName}) => {
-  return _.map(
-    _.orderBy(users, 'isLocal'),
-    (user, i) => {
-      return (
-        <UserDisplay key={`user-display-${i}`} {...user} isAudioActive={isAudioActive} />
-      )
-    }
-  )
+  const renderUser = useCallback(user => (
+    <UserDisplay key={`user-display-${user.id}`} {...user} isAudioActive={isAudioActive}/>
+  ), [users])
+
+  return _.map(_.orderBy(users, 'isLocal'), renderUser)
 }
 
 export default UserList

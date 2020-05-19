@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { ROOMS } from '../consts'
-import { getFromLocalStorage } from '../utils'
+import { getFromLocalStorage, getTracks } from '../utils'
 import { setRoom } from '../store/room'
 import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
 
@@ -80,17 +80,16 @@ export const initJitsi = (options, dispatch) => {
   }
 
   const onSideRoomJoined = e => {
-    const from = e.attributes['from']
+    const userId = e.attributes['from']
     const to = e.attributes['to']
 
-    dispatch(updateUser(from, { activeRoom: to }))
+    dispatch(updateUser(userId, { activeRoom: to }))
   }
 
   const onSideRoomLeft = e => {
-    const from = e.attributes['from']
-    const to = e.attributes['to']
+    const userId = e.attributes['from']
 
-    dispatch(updateUser(from, { activeRoom: 'MAIN' }))
+    dispatch(updateUser(userId, { activeRoom: 'MAIN' }))
   }
 
   /////////////////

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import _ from 'lodash'
 import { getTracks } from '../../utils'
 import classNames from 'classnames'
 import './UserDisplay.scss'
@@ -57,8 +56,6 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
     'muted': !isAudioActive && !isLocal,
     'local_muted': !isAudioActive && isLocal,
   })
-
-  // videoTrack && audioTrack && console.error('isSelf=', isSelf, ', videoMuted=', videoTrack.isMuted(), ', audioMuted=', audioTrack.isMuted())
 
   return (
     <div className={videoClassNames} onClick={onMuteClick}>
