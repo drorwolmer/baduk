@@ -125,7 +125,7 @@ function onUserJoined(participant) {
     $(video_parent).append(`
         <div class="video person no_video local_muted remote_participant muted video_${participant}">
             <div class="emoji">${GLOBAL_EMOJI_STATE[participant]}</div>
-            <div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div>
+            <div class="id">${the_actual_participnt.getDisplayName()}</div>
             <div class="chat"></div>
             <div class="chat_private"></div>
             <div class="in"></div>
@@ -340,6 +340,16 @@ function onConferenceJoined() {
             // TODO(DROR): These methods return a promise, whatever the fuck that means
             // Conference.getLocalAudioTrack().mute();
             Conference.getLocalVideoTrack().mute()
+        }
+    });
+
+    $("#fullscreen_toggle").click(function () {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
         }
     });
 
@@ -655,7 +665,7 @@ function onConnectionSuccess() {
 
     Conference.on(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, function (id, display_name) {
         console.error("DISPLAY_NAME_CHANGED", id, display_name);
-        $(`.video_${id} .id`).text(`${display_name} | ${id}`);
+        $(`.video_${id} .id`).text(`${display_name}`);
     });
 
     Conference.on(JitsiMeetJS.events.conference.DOMINANT_SPEAKER_CHANGED, function (id) {
