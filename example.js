@@ -55,12 +55,20 @@ function onLocalTrackAudioEventChanged(e) {
 }
 
 function onLocalTrackMuteChanged(track) {
-    console.warn(`Local TRACK_MUTE_CHANGED`, track.track.label, track.isMuted(), track);
+    console.error(`Local TRACK_MUTE_CHANGED`, track.track.label, track.isMuted(), track);
     if (track.type === "audio") {
         if (track.isMuted()) {
             $(".video_self").addClass("muted");
         } else {
             $(".video_self").removeClass("muted");
+        }
+    }
+    else
+    {
+        if (track.isMuted()) {
+            $(".video_self").addClass("no_video");
+        } else {
+            $(".video_self").removeClass("no_video");
         }
     }
 }
@@ -72,6 +80,12 @@ function onRemoteTrackMuteChanged(track) {
             $(`.video_${track.ownerEndpointId}`).addClass("muted");
         } else {
             $(`.video_${track.ownerEndpointId}`).removeClass("muted");
+        }
+    } else {
+        if (track.isMuted()) {
+            $(`.video_${track.ownerEndpointId}`).addClass("no_video");
+        } else {
+            $(`.video_${track.ownerEndpointId}`).removeClass("no_video");
         }
     }
 }
@@ -108,7 +122,7 @@ function onUserJoined(participant) {
     }
 
     $(video_parent).append(`
-        <div class="video person local_muted remote_participant muted video_${participant}">
+        <div class="video person no_video local_muted remote_participant muted video_${participant}">
             <div class="emoji">${GLOBAL_EMOJI_STATE[participant]}</div>
             <div class="id">${the_actual_participnt.getDisplayName()} | ${participant}</div>
             <div class="chat"></div>
@@ -200,6 +214,10 @@ function onRemoteTrackAdded(track) {
             console.error("adding local_muted class");
             $(`.video_${participant}`).removeClass("muted").addClass("local_muted");
         }
+    } else {
+        if (!track.isMuted()) {
+            $(`.video_${participant}`).removeClass("no_video");
+        }
     }
 
     console.error("after", $(`.video_${participant}`).attr("class"));
@@ -239,7 +257,7 @@ function onConferenceJoined() {
     user_id = Conference.myUserId();
 
     $("#container").append(
-        `<div class="video person video_self muted video_${user_id}">
+        `<div class="video no_video person video_self muted video_${user_id}">
             <div class="emoji"></div>
             <div class="id">${user_id}</div>
             <div class="chat"></div>
@@ -289,9 +307,11 @@ function onConferenceJoined() {
 
                 Conference.addTrack(local_track).then(function () {
                     if (local_track.getType() === "video") {
+                        console.error("GOT LOCAL VIDEO!!@#!@#@!")
                         // TODO(DROR): Remember video decisiotn
                         local_track.unmute();
                         local_track.attach(document.getElementById("localVideo"));
+                        $(".video_self").removeClass("no_video");
                     } else {
                         // Always mute audio track
                         local_track.mute();
@@ -456,7 +476,12 @@ function fillFreeSeats() {
     console.error("FILL_FREE_SEATS", n_free_seats);
     $(".video.free_seat").remove();
     for (let i = 0; i < n_free_seats; i++) {
-        $(`<div class="video free_seat">BOT!!!</div>`).appendTo("#second_room");
+        $(`
+            <div class="video free_seat">
+                <div class="id">Join the conversation</div>
+                <div class="in"></div>
+            </div>
+        `).appendTo("#second_room");
     }
 }
 
@@ -499,7 +524,7 @@ function onConnectionSuccess() {
 
         if (from === Conference.myUserId()) {
 
-            $("body").addClass("inside_mini_conference");
+            $("body").removeClass("outside_mini_conference").addClass("inside_mini_conference");
 
             // Join the room, start talking
             const local_audio_track = Conference.getLocalAudioTrack();
@@ -549,7 +574,7 @@ function onConnectionSuccess() {
 
         if (from === Conference.myUserId()) {
 
-            $("body").removeClass("inside_mini_conference");
+            $("body").addClass("outside_mini_conference").removeClass("inside_mini_conference");
 
             // Leave the room, stop talking
             const local_audio_track = Conference.getLocalAudioTrack();
