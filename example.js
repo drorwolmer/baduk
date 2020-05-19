@@ -12,7 +12,7 @@ const options = {
     // websocket: 'wss://dror-testing.tlvengnetapp.com/xmpp-websocket', // FIXME: use xep-0156 for that
     clientNode: "http://jitsi.org/jitsimeet",
     desktopSharingChromeDisabled: true,
-    openBridgeChannel: 'websocket',
+    openBridgeChannel: 'datachannel',
     enableTalkWhileMuted: true,
     enableNoAudioDetection: true,
     enableNoisyMicDetection: true,
@@ -598,6 +598,12 @@ function onConnectionSuccess() {
     Conference.on(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, function (id, display_name) {
         console.error("DISPLAY_NAME_CHANGED", id, display_name);
         $(`.video_${id} .id`).text(`${display_name} | ${id}`);
+    });
+
+    Conference.on(JitsiMeetJS.events.conference.DOMINANT_SPEAKER_CHANGED, function (id) {
+        console.error("DOMINANT_SPEAKER_CHANGED", id);
+        $(`.video`).removeClass("dominant");
+        $(`.video_${id}`).addClass("dominant");
     });
 
     Conference.on(JitsiMeetJS.events.conference.SUBJECT_CHANGED, function (subject) {
