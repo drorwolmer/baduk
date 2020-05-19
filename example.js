@@ -22,6 +22,9 @@ const options = {
     p2p: {
         enabled: false
     },
+    e2eping: {
+        pingInterval: -1
+    },
     // useStunTurn: true,
     useIPv6: false
 
