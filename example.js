@@ -453,6 +453,8 @@ function onUserLeft(id) {
     // console.error("About to remove", "#video_".concat(id));
     // console.error(document.querySelectorAll(".video_".concat(id)));
     document.querySelectorAll(".video_".concat(id)).forEach((e) => e.remove());
+
+    fillFreeSeats();
 }
 
 window.Conference = null;
