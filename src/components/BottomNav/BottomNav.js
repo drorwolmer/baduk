@@ -7,7 +7,7 @@ const BottomNav = ({ roomName }) => {
   const toggleMute = () => {
     const { video, audio } = getLocalTracks()
 
-    if (audio.isMuted()) {
+    if (video.isMuted()) {
       audio.unmute()
       video.unmute()
     } else {
