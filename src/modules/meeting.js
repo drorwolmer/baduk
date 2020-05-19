@@ -30,12 +30,10 @@ export const initJitsi = (options, dispatch) => {
   const onConnectionSuccess = () => {
     console.warn('onConnectionSuccess')
 
-    let room_name = 'block_demo_block'
-    if (window.location.href.indexOf('toilet') > -1) {
-      room_name = 'block_demo_toiletsss'
-    }
+    const roomKey = window.location.href.indexOf('toilet') > -1 ? 'toilet' : 'block'
+    const roomConfig = ROOMS[roomKey]
 
-    room = connection.initJitsiConference(room_name, options)
+    room = connection.initJitsiConference(roomConfig.jitsiRoomName, options)
 
     // bind events
     const {
@@ -75,7 +73,7 @@ export const initJitsi = (options, dispatch) => {
 
     window.room = room
 
-    dispatch(setRoom(ROOMS.block))
+    dispatch(setRoom(roomConfig))
 
     room.join()
   }

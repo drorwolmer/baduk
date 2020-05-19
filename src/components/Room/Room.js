@@ -10,7 +10,6 @@ import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import './Room.scss'
 
-
 const Room = ({ roomName, withVideoArt }) => {
 
   const room = useSelector(state => state.room)
@@ -40,8 +39,6 @@ const Room = ({ roomName, withVideoArt }) => {
       )}
       <div className="main-area" onClick={onMeetingAreaClick}>
         <UserList users={mainAreaUsers} roomName="MAIN"/>
-      </div>
-      <div className="side-rooms">
         {_.map(room.sideRooms, (sideRoom, i) => (
           <SideRoom key={`side-room-${i}`} {...sideRoom}/>
         ))}

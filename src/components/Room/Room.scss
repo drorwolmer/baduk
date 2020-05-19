@@ -15,7 +15,9 @@
 
   &.toilet {
     .bg {
-      background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");
+      background: url("https://cdn.homedsgn.com/wp-content/uploads/2013/01/Printing-House-13-800x532.jpg");
+      background-size: cover;
+      transform: scaleX(-1);
     }
   }
 
