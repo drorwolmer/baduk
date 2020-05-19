@@ -84,6 +84,7 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
   const videoClassNames = classNames('user-display video person', {
     'video_self': isLocal,
     'remote_participant': !isLocal,
+    'no_video': !videoTrack || videoTrack.isMuted(),
     'muted': !isAudioActive && !isLocal,
     'local_muted': !isAudioActive && isLocal,
   })
