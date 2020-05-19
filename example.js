@@ -65,9 +65,7 @@ function onLocalTrackMuteChanged(track) {
         } else {
             $(".video_self").removeClass("muted");
         }
-    }
-    else
-    {
+    } else {
         if (track.isMuted()) {
             $(".video_self").addClass("no_video");
         } else {
@@ -200,6 +198,12 @@ function onRemoteTrackAdded(track) {
 
     const local_inside_miniroom = (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1);
     const remote_inside_miniroom = (mini_conferences["second_room"].indexOf(participant) > -1);
+
+
+    if (track.getType() === "video" && !track.isMuted()) {
+        $(`.video_${participant}`).removeClass("no_video");
+    }
+
     // Probably just track restart for some reason
     if (local_inside_miniroom && remote_inside_miniroom) {
         return;
@@ -208,8 +212,6 @@ function onRemoteTrackAdded(track) {
     console.error("Locally muting sound of ", participant);
     document.getElementById(id).volume = 0;
 
-    console.error("before", $(`.video_${participant}`).attr("class"));
-
     if (track.getType() === "audio") {
         if (track.isMuted()) {
             $(`.video_${participant}`).addClass("muted").removeClass("local_muted");
@@ -217,14 +219,7 @@ function onRemoteTrackAdded(track) {
             console.error("adding local_muted class");
             $(`.video_${participant}`).removeClass("muted").addClass("local_muted");
         }
-    } else {
-        if (!track.isMuted()) {
-            $(`.video_${participant}`).removeClass("no_video");
-        }
     }
-
-    console.error("after", $(`.video_${participant}`).attr("class"));
-
 
 }
 
@@ -474,7 +469,7 @@ function setHdUsers(user_list) {
     );
 }
 
-const MAX_SEATS = 4;
+const MAX_SEATS = 5;
 
 function fillFreeSeats() {
     const n_free_seats = MAX_SEATS - mini_conferences["second_room"].length
@@ -529,6 +524,11 @@ function onConnectionSuccess() {
 
         if (from === Conference.myUserId()) {
 
+
+            if (soundtrack_player) {
+                soundtrack_player.setVolume(40);
+            }
+
             $("body").removeClass("outside_mini_conference").addClass("inside_mini_conference");
 
             // Join the room, start talking
@@ -578,6 +578,10 @@ function onConnectionSuccess() {
         $(`.video_${from}`).appendTo(`#container`);
 
         if (from === Conference.myUserId()) {
+
+            if (soundtrack_player) {
+                soundtrack_player.setVolume(100);
+            }
 
             $("body").addClass("outside_mini_conference").removeClass("inside_mini_conference");
 
