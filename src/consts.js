@@ -5,6 +5,6 @@ export const ROOMS = {
   },
   toilet: {
     jitsiRoomName: 'block_demo_toiletsss',
-    sideRooms: [{ name: 'second_room' }],
+    sideRooms: [{ name: 'second_room', maxSeats: 5 }],
   }
 }

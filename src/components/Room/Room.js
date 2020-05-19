@@ -2,12 +2,12 @@ import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useSelector } from 'react-redux'
-import YouTube from 'react-youtube'
 import { videoArtPlayerConfig } from '../../config/config.videos'
 import { leaveSideRoom } from '../../modules/meeting'
 import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
 import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
+import YouTubePlayer from '../YouTubePlayer'
 import './Room.scss'
 
 const Room = ({ roomName, withVideoArt }) => {
@@ -33,7 +33,7 @@ const Room = ({ roomName, withVideoArt }) => {
       {withVideoArt && (
         <div className="video-art-top">
           <div className="big-video-container">
-            <YouTube {...videoArtPlayerConfig}/>
+            <YouTubePlayer {...videoArtPlayerConfig}/>
           </div>
         </div>
       )}
