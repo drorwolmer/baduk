@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { ROOMS } from '../consts'
-import { getFromLocalStorage, getTracks } from '../utils'
+import { getFromLocalStorage } from '../utils'
 import { setRoom } from '../store/room'
 import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
 import { pushMessage } from '../store/messages'
@@ -296,4 +296,16 @@ export const sendPrivateMessage = (targetId, msg) => {
 
   console.error('sendPrivateTextMessage to ' + targetId)
   window.room.sendPrivateTextMessage(targetId, msg)
+}
+
+export const kickInterruptedConnections = () => {
+  if (!window.room) return
+
+  const participants = window.room.getParticipants()
+  _.forEach(participants, p => {
+    if (p._connectionStatus === 'interrupted') {
+      console.warn('Kicking participant because of interrupted connection', p._id)
+      window.room.kickParticipant(p._id)
+    }
+  })
 }
