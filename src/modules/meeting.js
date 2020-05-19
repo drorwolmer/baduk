@@ -4,6 +4,8 @@ import { getFromLocalStorage } from '../utils'
 import { setRoom } from '../store/room'
 import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
 
+const JOIN_MINI_CONFERENCE = 'JOIN_MINI_CONFERENCE'
+const LEAVE_MINI_CONFERENCE = 'LEAVE_MINI_CONFERENCE'
 
 export const initJitsi = (options, dispatch) => {
   console.warn('initJitsi')
@@ -67,11 +69,28 @@ export const initJitsi = (options, dispatch) => {
     room.on(TRACK_REMOVED, onRemoteTrackRemoved)
     room.on(USER_LEFT, onUserLeft)
 
+    room.addCommandListener(JOIN_MINI_CONFERENCE, onSideRoomJoined)
+    room.addCommandListener(LEAVE_MINI_CONFERENCE, onSideRoomLeft)
+
     window.room = room
 
     dispatch(setRoom(ROOMS.BLOCK))
 
     room.join()
+  }
+
+  const onSideRoomJoined = e => {
+    const from = e.attributes['from']
+    const to = e.attributes['to']
+
+    dispatch(updateUser(from, { activeRoom: to }))
+  }
+
+  const onSideRoomLeft = e => {
+    const from = e.attributes['from']
+    const to = e.attributes['to']
+
+    dispatch(updateUser(from, { activeRoom: 'MAIN' }))
   }
 
   /////////////////
@@ -218,4 +237,35 @@ export const initJitsi = (options, dispatch) => {
 
   connection.connect(undefined)
 
+}
+
+export const joinSideRoom = roomName => {
+  const room = window.room
+  if (!room) return
+
+  const userId = room.myUserId()
+
+  room.sendCommand('JOIN_MINI_CONFERENCE', {
+    attributes: {
+      from: userId,
+      to: roomName
+    }
+  })
+
+  // dispatch(updateUser(userId, { activeRoom: roomName }))
+}
+
+export const leaveSideRoom = roomName => {
+  const room = window.room
+  if (!room) return
+
+  room.removeCommand(JOIN_MINI_CONFERENCE)
+  room.sendCommandOnce(LEAVE_MINI_CONFERENCE, {
+    attributes: {
+      from: room.myUserId(),
+      to: roomName
+    }
+  })
+
+  // dispatch(updateUser(room.myUserId(), { activeRoom: 'MAIN' }))
 }

@@ -1,5 +1,6 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import logger from 'redux-logger'
+import thunk from 'redux-thunk'
 import { initJitsi } from '../modules/meeting'
 import remoteUsersReducer from './remoteUsers'
 import currentUserReducer from './currentUser'
@@ -17,8 +18,8 @@ const rootReducer = combineReducers({
 
 const store = createStore(
   rootReducer,
-  // applyMiddleware(logger),
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  applyMiddleware(logger, thunk),
+  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )
 
 // const options = {
@@ -64,6 +65,7 @@ const options = {
 
 }
 
+window.JitsiMeetJS.setLogLevel(window.JitsiMeetJS.logLevels.ERROR)
 initJitsi(options, store.dispatch)
 
 export default store

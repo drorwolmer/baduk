@@ -1,7 +1,8 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import UserList from '../UserDisplay/UserList'
-import { getLocalUser, getUsersByActiveRoom, updateUser } from '../../store/users'
+import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
+import { joinSideRoom } from '../../modules/meeting'
 
 export default ({ name }) => {
 
@@ -12,10 +13,8 @@ export default ({ name }) => {
 
   const localUserInRoom = localUser.activeRoom === name
 
-  const dispatch = useDispatch()
-
   const onClick = () => {
-    !localUserInRoom && dispatch(updateUser(localUser.id, { activeRoom: name }))
+    !localUserInRoom && joinSideRoom(name)
   }
 
   return (
@@ -23,7 +22,7 @@ export default ({ name }) => {
       <div className="bg"/>
       <div className="room-header">{name}</div>
       <div className="room-users">
-        <UserList users={users} roomName={name}/>
+        <UserList users={users} roomName={name} isAudioActive={localUserInRoom}/>
       </div>
     </div>
   )

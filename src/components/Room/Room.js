@@ -1,16 +1,15 @@
 import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
-import { useSelector, useDispatch } from 'react-redux'
-import { getLocalUser, updateUser, getUsersByActiveRoom } from '../../store/users'
+import { useSelector } from 'react-redux'
+import { leaveSideRoom } from '../../modules/meeting'
+import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
 // import YouTubePlayer from '../YouTubePlayer'
 import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import './Room.scss'
 
 const Room = ({ roomName }) => {
-
-  const dispatch = useDispatch()
 
   const room = useSelector(state => state.room)
   const mainAreaUsers = useSelector(getUsersByActiveRoom('MAIN'))
@@ -26,7 +25,7 @@ const Room = ({ roomName }) => {
   const userInMainArea = localUser.activeRoom === 'MAIN'
 
   const onMeetingAreaClick = () => {
-    !userInMainArea && dispatch(updateUser(localUser.id, { activeRoom: 'MAIN' }))
+    !userInMainArea && leaveSideRoom(localUser.activeRoom)
   }
 
   return (

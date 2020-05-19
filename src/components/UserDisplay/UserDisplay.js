@@ -13,7 +13,7 @@ const detachAndDispose = (track, ref) => {
   }
 }
 
-const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji }) => {
+const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAudioActive }) => {
 
   console.warn('rendering UserDisplay hasTracks = ' + hasTracks)
 
@@ -54,8 +54,8 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji }) => 
   const videoClassNames = classNames('video person', {
     'video_self': isLocal,
     'remote_participant': !isLocal,
-    'muted': locallyMuted && !isLocal,
-    'local_muted': locallyMuted && isLocal,
+    'muted': !isAudioActive && !isLocal,
+    'local_muted': !isAudioActive && isLocal,
   })
 
   // videoTrack && audioTrack && console.error('isSelf=', isSelf, ', videoMuted=', videoTrack.isMuted(), ', audioMuted=', audioTrack.isMuted())
@@ -68,10 +68,10 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji }) => 
       <div className="chat_private"/>
       <div className="in"/>
       {hasTracks && (
-        <video muted={locallyMuted} autoPlay="1" id={`user-video-${idSuffix}`} ref={videoRef}/>
+        <video autoPlay="1" id={`user-video-${idSuffix}`} ref={videoRef}/>
       )}
       {hasTracks && (
-        <audio muted={isLocal || locallyMuted} autoPlay="1" id="localAudio" ref={audioRef}/>
+        <audio muted={isLocal || !isAudioActive} autoPlay="1" id="localAudio" ref={audioRef}/>
       )}
     </div>
   )
