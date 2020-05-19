@@ -1,11 +1,9 @@
 import _ from 'lodash'
 import { ROOMS } from '../consts'
 import { getFromLocalStorage } from '../utils'
-import { setCurrentUser, updateCurrentUser } from '../store/currentUser'
-import { setLocalTracks } from '../store/localTracks'
-import { addRemoteUser, addRemoteTrack, removeRemoteTrack, removeRemoteUser } from '../store/remoteUsers'
 import { setRoom } from '../store/room'
-import { addUser, updateUser } from '../store/users'
+import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
+
 
 export const initJitsi = (options, dispatch) => {
   console.warn('initJitsi')
@@ -69,6 +67,8 @@ export const initJitsi = (options, dispatch) => {
     room.on(TRACK_REMOVED, onRemoteTrackRemoved)
     room.on(USER_LEFT, onUserLeft)
 
+    window.room = room
+
     dispatch(setRoom(ROOMS.BLOCK))
 
     room.join()
@@ -87,8 +87,7 @@ export const initJitsi = (options, dispatch) => {
     setLocalDisplayName(userId, displayName)
     setLocalEmoji(userId, emoji)
 
-    // dispatch(addUser({ id: userId, isLocal: true, displayName, emoji, activeRoom: 'MAIN' }))
-    dispatch(setCurrentUser({ userId, displayName, emoji, activeRoom: 'MAIN' }))
+    dispatch(addUser({ id: userId, isLocal: true, displayName, emoji, activeRoom: 'MAIN' }))
 
     JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] })
     .then(onLocalTracks)
@@ -115,7 +114,7 @@ export const initJitsi = (options, dispatch) => {
   }
 
   const onLocalTracks = in_tracks => {
-    const local_tracks = _.reduce(in_tracks, (memo, local_track) => {
+    _.map(in_tracks, (local_track) => {
       local_track.addEventListener(
         JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
         onLocalTrackMuteChanged
@@ -142,14 +141,9 @@ export const initJitsi = (options, dispatch) => {
           room.setSenderVideoConstraint(180)
         }, 1000)
       })
+    })
 
-      return {
-        ...memo,
-        [local_track.getType()]: local_track,
-      }
-    }, {})
-
-    dispatch(setLocalTracks(local_tracks))
+    dispatch(updateUser(room.myUserId(), { hasTracks: true }))
   }
 
   const onLocalTrackMuteChanged = () => {}
@@ -163,7 +157,7 @@ export const initJitsi = (options, dispatch) => {
     const user = room.getParticipantById(userId)
     console.warn('onUserJoined', user)
 
-    dispatch(addRemoteUser({ id: userId }))
+    dispatch(addUser({ id: userId, activeRoom: 'MAIN' }))
   }
 
   const onRemoteTrackAdded = track => {
@@ -186,7 +180,7 @@ export const initJitsi = (options, dispatch) => {
 
     const userId = track.getParticipantId()
 
-    dispatch(addRemoteTrack(userId, track))
+    dispatch(addRemoteUserTrack(userId))
   }
 
   const onRemoteTrackRemoved = track => {
@@ -195,16 +189,12 @@ export const initJitsi = (options, dispatch) => {
     }
     console.error('Remote TRACK_REMOVED', track, track.containers)
 
-    const userId = track.getParticipantId()
-
-    // container = track.containers[0]
-    //
-    // track.detach(container)
-    dispatch(removeRemoteTrack(userId, track))
+    // const userId = track.getParticipantId()
+    // dispatch(removeRemoteTrack(userId, track))
   }
 
   const onUserLeft = userId => {
-    dispatch(removeRemoteUser(userId))
+    dispatch(removeUser(userId))
   }
 
   // bind connection events

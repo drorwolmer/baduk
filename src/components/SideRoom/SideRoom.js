@@ -1,16 +1,21 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
-import CurrentUserDisplay from '../UserDisplay/CurrentUserDisplay'
-import { updateCurrentUser } from '../../store/currentUser'
+import { useDispatch, useSelector } from 'react-redux'
+import UserList from '../UserDisplay/UserList'
+import { getLocalUser, getUsersByActiveRoom, updateUser } from '../../store/users'
 
-export default ({ name, currentUser }) => {
+export default ({ name }) => {
 
-  const currentUserInRoom = currentUser.activeRoom === name
+  const users = useSelector(getUsersByActiveRoom(name))
+  // console.warn('sideRoomUsers=' + JSON.stringify(users))
+
+  const localUser = useSelector(getLocalUser)
+
+  const localUserInRoom = localUser.activeRoom === name
 
   const dispatch = useDispatch()
 
   const onClick = () => {
-    !currentUserInRoom && dispatch(updateCurrentUser({ activeRoom: name }))
+    !localUserInRoom && dispatch(updateUser(localUser.id, { activeRoom: name }))
   }
 
   return (
@@ -18,7 +23,7 @@ export default ({ name, currentUser }) => {
       <div className="bg"/>
       <div className="room-header">{name}</div>
       <div className="room-users">
-        {currentUserInRoom && (<CurrentUserDisplay/>)}
+        <UserList users={users} roomName={name}/>
       </div>
     </div>
   )

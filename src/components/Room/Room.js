@@ -2,10 +2,9 @@ import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import { useSelector, useDispatch } from 'react-redux'
-import { updateCurrentUser } from '../../store/currentUser'
+import { getLocalUser, updateUser, getUsersByActiveRoom } from '../../store/users'
 // import YouTubePlayer from '../YouTubePlayer'
-import UserDisplay from '../UserDisplay'
-import CurrentUserDisplay from '../UserDisplay/CurrentUserDisplay'
+import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import './Room.scss'
 
@@ -13,18 +12,21 @@ const Room = ({ roomName }) => {
 
   const dispatch = useDispatch()
 
-  const user = useSelector(state => state.currentUser)
   const room = useSelector(state => state.room)
-  const remoteTracks = useSelector(state => state.remoteUsers)
+  const mainAreaUsers = useSelector(getUsersByActiveRoom('MAIN'))
 
-  if (!user) {
+  const localUser = useSelector(getLocalUser)
+
+  if (_.isEmpty(localUser)) {
     return null
   }
 
-  const userInMainArea = user.activeRoom === 'MAIN'
+  // console.warn('mainAreaUsers=' + JSON.stringify(mainAreaUsers))
+
+  const userInMainArea = localUser.activeRoom === 'MAIN'
 
   const onMeetingAreaClick = () => {
-    !userInMainArea && dispatch(updateCurrentUser({ activeRoom: 'MAIN' }))
+    !userInMainArea && dispatch(updateUser(localUser.id, { activeRoom: 'MAIN' }))
   }
 
   return (
@@ -34,19 +36,11 @@ const Room = ({ roomName }) => {
       {/*</div>*/}
       <div className="bg"/>
       <div className="main-area" onClick={onMeetingAreaClick}>
-        {userInMainArea && (<CurrentUserDisplay/>)}
-        {_.map(remoteTracks, (remote, userId) => {
-          return (
-            <UserDisplay key={`remote-user-display-${userId}`}
-                         videoTrack={remote.video}
-                         audioTrack={remote.audio}
-                         userId={userId}/>
-          )
-        })}
+        <UserList users={mainAreaUsers} roomName="MAIN" />
       </div>
       <div className="side-rooms">
         {_.map(room.sideRooms, (sideRoom, i) => (
-          <SideRoom key={`side-room-${i}`} {...sideRoom} currentUser={user}/>
+          <SideRoom key={`side-room-${i}`} {...sideRoom}/>
         ))}
       </div>
     </div>
