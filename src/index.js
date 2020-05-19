@@ -6,7 +6,7 @@ import App from './App'
 import * as serviceWorker from './serviceWorker'
 import { Provider } from 'react-redux'
 import jitsiConfig from './config/config.dev'
-import { initJitsi, kickInterruptedConnections } from './modules/meeting'
+import { initJitsi, kickInterruptedConnections, unload } from './modules/meeting'
 import store from './store'
 
 
@@ -16,6 +16,10 @@ window.JitsiMeetJS.setLogLevel(window.JitsiMeetJS.logLevels.ERROR)
 initJitsi(jitsiConfig, store.dispatch)
 
 setInterval(kickInterruptedConnections, 5000);
+
+// TODO (ASAF) - check if both needed
+window.addEventListener("beforeunload", unload)
+window.addEventListener("unload", unload)
 
 // init React
 ReactDOM.render(

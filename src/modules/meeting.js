@@ -13,8 +13,6 @@ export const initJitsi = (options, dispatch) => {
   console.warn('initJitsi')
 
   const onConnectionFailed = () => {}
-  const disconnect = () => {}
-  const unload = () => {}
   const onDeviceListChanged = () => {}
   const onRemoteTrackMuteChanged = () => {}
   const onUserStatusChanged = () => {}
@@ -25,7 +23,11 @@ export const initJitsi = (options, dispatch) => {
 
   const connection = new JitsiMeetJS.JitsiConnection(null, null, options)
 
+  window.connection = connection
+
   let room
+
+  const { CONNECTION_ESTABLISHED, CONNECTION_FAILED, CONNECTION_DISCONNECTED} = JitsiMeetJS.events.connection
 
   const onConnectionSuccess = () => {
     console.warn('onConnectionSuccess')
@@ -87,6 +89,12 @@ export const initJitsi = (options, dispatch) => {
     dispatch(setRoom(ROOMS.BLOCK))
 
     room.join()
+  }
+
+  const disconnect = () => {
+    connection.removeEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
+    connection.removeEventListener(CONNECTION_FAILED, onConnectionFailed)
+    connection.removeEventListener(CONNECTION_DISCONNECTED, disconnect)
   }
 
   const onSideRoomJoined = e => {
@@ -209,18 +217,9 @@ export const initJitsi = (options, dispatch) => {
   }
 
   // bind connection events
-  connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_ESTABLISHED,
-    onConnectionSuccess
-  )
-  connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_FAILED,
-    onConnectionFailed
-  )
-  connection.addEventListener(
-    JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
-    disconnect
-  )
+  connection.addEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
+  connection.addEventListener(CONNECTION_FAILED, onConnectionFailed)
+  connection.addEventListener(CONNECTION_DISCONNECTED, disconnect)
 
   JitsiMeetJS.mediaDevices.addEventListener(
     JitsiMeetJS.events.mediaDevices.DEVICE_LIST_CHANGED,
@@ -237,7 +236,7 @@ export const joinSideRoom = roomName => {
 
   const userId = room.myUserId()
 
-  room.sendCommand('JOIN_MINI_CONFERENCE', {
+  room.sendCommand(JOIN_MINI_CONFERENCE, {
     attributes: {
       from: userId,
       to: roomName
@@ -308,4 +307,12 @@ export const kickInterruptedConnections = () => {
       window.room.kickParticipant(p._id)
     }
   })
+}
+
+export const unload = () => {
+  if (!window.room) return
+
+  _.each(window.room.getLocalTracks(), track => track.dispose())
+  window.room.leave()
+  window.connection.disconnect()
 }
