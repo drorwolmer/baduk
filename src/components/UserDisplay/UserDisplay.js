@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import _ from 'lodash'
+import { getTracks } from '../../utils'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 
@@ -9,22 +10,6 @@ const detachAndDispose = (track, ref) => {
   if (track && ref.current) {
     track.detach(ref.current)
     track.dispose()
-  }
-}
-
-const getTracks = (userId, isLocal) => {
-  if (isLocal) return {
-    audio: window.room.getLocalAudioTrack(),
-    video: window.room.getLocalVideoTrack()
-  }
-
-  const participant = window.room.getParticipantById(userId)
-  const tracks = participant.getTracks()
-  // const types = _.map(tracks, t => t.getType())
-  // console.warn('remote tracks = ' + JSON.stringify(types))
-  return {
-    audio: _.find(tracks, t => t.getType() === 'audio'),
-    video: _.find(tracks, t => t.getType() === 'video'),
   }
 }
 

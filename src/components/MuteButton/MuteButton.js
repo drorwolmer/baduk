@@ -1,12 +1,10 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { getLocalTracks } from '../../utils'
 
 export default () => {
 
-  const localTracks = useSelector(state => state.localTracks)
-
   const toggleMute = () => {
-    const { video, audio } = localTracks
+    const { video, audio } = getLocalTracks()
 
     if (audio.isMuted()) {
       audio.unmute()
