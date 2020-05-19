@@ -482,6 +482,8 @@ function onConnectionSuccess() {
 
         if (from === Conference.myUserId()) {
 
+            $("body").addClass("inside_mini_conference");
+
             // Join the room, start talking
             const local_audio_track = Conference.getLocalAudioTrack();
             if (local_audio_track) {
@@ -529,6 +531,8 @@ function onConnectionSuccess() {
         $(`.video_${from}`).appendTo(`#container`);
 
         if (from === Conference.myUserId()) {
+
+            $("body").removeClass("inside_mini_conference");
 
             // Leave the room, stop talking
             const local_audio_track = Conference.getLocalAudioTrack();
