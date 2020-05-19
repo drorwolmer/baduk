@@ -1,7 +1,7 @@
 export const ROOMS = {
   BLOCK: {
     jitsiRoomName: 'block_demo_block',
-    sideRooms: [{ name: 'Shahta' }],
+    sideRooms: [{ name: 'second_room' }],
   },
   TOILET: {
     jitsiRoomName: '"block_demo_toiletsss"',
