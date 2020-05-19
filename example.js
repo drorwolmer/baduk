@@ -471,7 +471,7 @@ function setHdUsers(user_list) {
     );
 }
 
-const MAX_SEATS = 5;
+const MAX_SEATS = 4;
 
 function fillFreeSeats() {
     const n_free_seats = MAX_SEATS - mini_conferences["second_room"].length
