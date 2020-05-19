@@ -3,6 +3,7 @@ import { ROOMS } from '../consts'
 import { getFromLocalStorage, getTracks } from '../utils'
 import { setRoom } from '../store/room'
 import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
+import { pushMessage } from '../store/messages'
 
 const JOIN_MINI_CONFERENCE = 'JOIN_MINI_CONFERENCE'
 const LEAVE_MINI_CONFERENCE = 'LEAVE_MINI_CONFERENCE'
@@ -50,7 +51,7 @@ export const initJitsi = (options, dispatch) => {
     room.addCommandListener(SET_EMOJI, e => {
       const emoji = e.attributes['emoji']
       const userId = e.attributes['id']
-      console.error('SET_EMOJI', id, emoji)
+      console.error('SET_EMOJI', userId, emoji)
       dispatch(updateUser(userId, { emoji }))
     })
 
@@ -61,11 +62,13 @@ export const initJitsi = (options, dispatch) => {
     room.on(MESSAGE_RECEIVED, function (id, text, ts) {
       // $(`.video_${id} .chat`).show().text(text).delay(10000).fadeOut(800);
       console.error('MESSAGE_RECEIVED', id, text, ts)
+      dispatch(pushMessage(id, text))
     })
 
     room.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
       // $(`.video_${id} .chat_private`).show().text(text).delay(10000).fadeOut(800)
       console.error('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
+      dispatch(pushMessage(id, text))
     })
 
     room.on(USER_STATUS_CHANGED, onUserStatusChanged)
@@ -244,6 +247,21 @@ export const joinSideRoom = roomName => {
   // dispatch(updateUser(userId, { activeRoom: roomName }))
 }
 
+export const leaveSideRoom = roomName => {
+  const room = window.room
+  if (!room) return
+
+  room.removeCommand(JOIN_MINI_CONFERENCE)
+  room.sendCommandOnce(LEAVE_MINI_CONFERENCE, {
+    attributes: {
+      from: room.myUserId(),
+      to: roomName
+    }
+  })
+
+  // dispatch(updateUser(room.myUserId(), { activeRoom: 'MAIN' }))
+}
+
 export const setLocalDisplayName = (userId, displayName) => {
   if (!window.room) return
 
@@ -267,17 +285,15 @@ export const setLocalEmoji = (userId, emoji) => {
   window.localStorage.setItem('EMOJI', emoji)
 }
 
-export const leaveSideRoom = roomName => {
-  const room = window.room
-  if (!room) return
+export const sendPublicMessage = (msg) => {
+  if (!window.room) return
 
-  room.removeCommand(JOIN_MINI_CONFERENCE)
-  room.sendCommandOnce(LEAVE_MINI_CONFERENCE, {
-    attributes: {
-      from: room.myUserId(),
-      to: roomName
-    }
-  })
+  window.room.sendMessage(msg)
+}
 
-  // dispatch(updateUser(room.myUserId(), { activeRoom: 'MAIN' }))
+export const sendPrivateMessage = (targetId, msg) => {
+  if (!window.room) return
+
+  console.error('sendPrivateTextMessage to ' + targetId)
+  window.room.sendPrivateTextMessage(targetId, msg)
 }

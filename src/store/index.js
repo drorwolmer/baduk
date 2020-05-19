@@ -2,18 +2,14 @@ import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
 import logger from 'redux-logger'
 import thunk from 'redux-thunk'
 import { initJitsi } from '../modules/meeting'
-import remoteUsersReducer from './remoteUsers'
-import currentUserReducer from './currentUser'
-import localTracksReducer from './localTracks'
 import roomReducer from './room'
 import usersReducer from './users'
+import messagesReducer from './messages'
 
 const rootReducer = combineReducers({
   users: usersReducer,
   room: roomReducer,
-  currentUser: currentUserReducer,
-  remoteUsers: remoteUsersReducer,
-  localTracks: localTracksReducer,
+  messages: messagesReducer,
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -22,8 +18,7 @@ const store = createStore(
   rootReducer,
   composeEnhancers(
     applyMiddleware(logger, thunk)
-  ),
-  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  )
 )
 
 const options = {
