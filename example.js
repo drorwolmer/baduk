@@ -321,7 +321,7 @@ function onConferenceJoined() {
         }
     });
 
-    $("#second_room").click(function () {
+    $(document).on("click", ".free_seat", function () {
         if (mini_conferences["second_room"].indexOf(Conference.myUserId()) > -1) {
             Conference.removeCommand("JOIN_MINI_CONFERENCE");
             Conference.sendCommandOnce("LEAVE_MINI_CONFERENCE", {
@@ -445,6 +445,17 @@ function setHdUsers(user_list) {
     );
 }
 
+const MAX_SEATS = 5;
+
+function fillFreeSeats() {
+    const n_free_seats = MAX_SEATS - mini_conferences["second_room"].length
+    console.error("FILL_FREE_SEATS", n_free_seats);
+    $(".video.free_seat").remove();
+    for (let i = 0; i < n_free_seats; i++) {
+        $(`<div class="video free_seat">BOT!!!</div>`).appendTo("#second_room");
+    }
+}
+
 /**
  * That function is called when connection is established successfully
  */
@@ -479,6 +490,8 @@ function onConnectionSuccess() {
         mini_conferences[to].push(from);
 
         $(`.video_${from}`).prependTo(`#${to}`);
+
+        fillFreeSeats();
 
         if (from === Conference.myUserId()) {
 
@@ -564,6 +577,9 @@ function onConnectionSuccess() {
         if (index > -1) {
             mini_conferences[to].splice(index, 1);
         }
+
+        fillFreeSeats();
+
     });
 
     room.addCommandListener("SET_HD_USERS", function (e) {
