@@ -39,7 +39,7 @@
         }
 
         .toilet #muteYouTubeVideoPlayer2 {
-            background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");
+            background: url("https://cdn.homedsgn.com/wp-content/uploads/2013/01/Printing-House-13-800x532.jpg");
             background-size: cover;
         }
 
@@ -59,12 +59,11 @@
             /*width: 24%;*/
             /*height: 13.5%;*/
             /*background: red;*/
-            width: 340px;
+            width: 200px;
+            height: 200px;
             vertical-align: top;
-            height: 240px;
             /*border: 1px solid blue;*/
             /*float: left;*/
-            border-radius: 50px;
             /*border-radius: 50%;*/
             /*box-shadow: 0 0 5px 10px #000;*/
             /*-webkit-filter: blur(8px); !*SATLA MODE1!!!*!*/
@@ -75,26 +74,32 @@
             /*float:left;*/
             z-index: 1;
             position: relative;
-            box-shadow: 0px 0px 23px 2px rgba(0, 0, 0, 0.98);
             cursor: default;
 
-            /*THIS IS THE BACKGROUND FOR THE FOLKS WITHOUT VIDEO*/
-            background: url('https://1.bp.blogspot.com/-fBzUF3-kifE/VHtWOb_dbfI/AAAAAAAAFtk/A6jYBS4jzbw/s1600/MARCEL_DETTMANN_EFDEMIN_BORS_BIRGINIA.jpg');
-            background-size: cover;
+
         }
 
         .video.free_seat {
-            background: url('questiong.jpg');
+            cursor: pointer;
+        }
+
+        .video.free_seat .in {
+            background: url('https://image.freepik.com/fotos-kostenlos/neon-wc-schild-zeichen-von-mann-und-frau-an-der-wand_90380-450.jpg');
             background-size: cover;
+            background-position: center;
+            /*box-shadow: inset 0 0 50px #fff !important;*/
+            /*opacity: 0.5;*/
+
         }
 
-        #second_room .video.dominant {
-            border: 10px solid red !important;
+        #second_room .video.dominant .in {
+            /*border: 10px solid red !important;*/
+            box-shadow: inset 0 0 50px red !important;
         }
 
-        .video.video_self {
-            border: 3px solid red;
-        }
+        /*.video.video_self {*/
+        /*    border: 3px solid red;*/
+        /*}*/
 
         .video.video-logo {
             width: 480px;
@@ -104,10 +109,12 @@
             border-radius: 50px;
         }
 
-        .video.person,
-        .video .in {
+        .video .in,
+        .video video {
             /*border-radius: 44% 56% 52% 48% / 63% 65% 35% 37%;*/
-            border-radius: 25px;
+            /*border-radius: 25px;*/
+            border-radius: 200px;
+
         }
 
         .video.remote_participant {
@@ -135,6 +142,7 @@
             /*border: 1px solid red;*/
             object-fit: cover;
             /*filter: saturate(500%) grayscale(0.25);*/
+
         }
 
         .video.local_muted video,
@@ -145,21 +153,29 @@
 
         .video .in {
             /*background:orange;*/
-            width: 340px;
-            height: 240px;
+            width: 100%;
+            height: 100%;
             position: absolute;
             z-index: 3;
             /*box-shadow: inset 0px 0px 0px 0px; rgba(0,0,0,0.7);*/
             box-shadow: inset 0 0 50px #000000;
+
         }
 
-        #second_room .video .in {
-            background: black;
+        .video.no_video .in {
+            /*THIS IS THE BACKGROUND FOR THE FOLKS WITHOUT VIDEO*/
+            background: url('https://1.bp.blogspot.com/-fBzUF3-kifE/VHtWOb_dbfI/AAAAAAAAFtk/A6jYBS4jzbw/s1600/MARCEL_DETTMANN_EFDEMIN_BORS_BIRGINIA.jpg');
+            background-size: cover;
         }
 
-        .inside_mini_conference #second_room .video .in {
-            background: none !important;
+        body.outside_mini_conference #second_room .video.person .in {
+            background: url('anon.jpg') !important;
+            background-size: cover !important;
         }
+
+        /*.inside_mini_conference #second_room .video.person .in {*/
+        /*    background: none !important;*/
+        /*}*/
 
         .video .id {
             background: green;
@@ -169,6 +185,12 @@
             width: 100%;
             text-align: center;
             /*font-size:0.5em;*/
+            visibility: hidden;
+        }
+
+        .video:hover .id {
+
+            visibility: visible;
         }
 
         .video .chat {
@@ -254,6 +276,20 @@
             height: 100px;
             border: 1px solid #fff;
             cursor: pointer;
+            position: absolute;
+            bottom: 15px;
+            z-index: 1000;
+            margin: 15px;
+            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.5); !important;
+            border-radius: 100px;
+        }
+
+        .button.float-left {
+            left: 15px;
+        }
+
+        .button.float-right {
+            right: 15px;
         }
 
         .toilet .button-to-toilet {
@@ -281,6 +317,11 @@
             background-size: cover;
         }
 
+        .video#mute_toggle {
+            background: url('https://happyintlv.net/imagecache/c_crop,h_200,w_200/wp-content/uploads/2015/06/BLOCK3.jpg');
+            background-size: contain;
+        }
+
         /*#muteYouTubeVideoPlayer2 {*/
         /*    width: 480px;*/
         /*    height: 320px;*/
@@ -293,25 +334,37 @@
 
         #second_room {
             /*backdrop-filter: blur(10px);*/
-            border: 10px solid #fff;
-            width: 100%;
-            height: 500px;
-            cursor: pointer;
+            /*border: 1px solid #fff;*/
+
+            /*background: url('https://live.staticflickr.com/2823/10079959305_bdb4106983_b.jpg');*/
+            /*background-size: cover;*/
+            /*background-position: center;*/
+            background: rgba(0, 0, 0, 0.5);
+            background-clip: content-box;
+            background-position: bottom;
+            text-align: center;
+            /*border-right: 3px solid rgba(0,0,0,1);*/
+            float: left;
+            width: 275px;
+            height: 100%;
         }
+
+        .container-fluid
+        {
+            padding:0;
+            margin:0;
+        }
+
+        /*#second_room .video {*/
+        /*    width:250px;*/
+        /*    height: 250px;*/
+        /*}*/
     </style>
 </head>
-<body id="body">
+<body id="body" class="outside_mini_conference">
 <div style="z-index: -1;" id="muteYouTubeVideoPlayer2"></div>
 <div class="container-fluid">
-    <div id="container">
-        <div class="video video-logo">d</div>
-
-        <div class="video stream stream-big float-left">
-            <div class="big-video-container">
-                <div id="muteYouTubeVideoPlayer"></div>
-            </div>
-        </div>
-
+    <div id="top-nav">
         <div class="video button button-to-block float-right">
             <a href="?room=block"> </a>
         </div>
@@ -320,12 +373,24 @@
             <a href="?room=toilet"> </a>
         </div>
 
-        <div class="video button" id="mute_toggle">Mute/Unmute</div>
+        <div class="video button float-left" id="mute_toggle"></div>
     </div>
-
     <div id="second_room">
 
     </div>
+    <div id="container">
+
+        <div class="video video-logo">d</div>
+
+        <div class="video stream stream-big float-left">
+            <div class="big-video-container">
+                <div id="muteYouTubeVideoPlayer"></div>
+            </div>
+        </div>
+
+
+    </div>
+
 
     <script async src="https://www.youtube.com/iframe_api"></script>
     <script>
