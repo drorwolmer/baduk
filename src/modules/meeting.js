@@ -6,6 +6,7 @@ import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/us
 
 const JOIN_MINI_CONFERENCE = 'JOIN_MINI_CONFERENCE'
 const LEAVE_MINI_CONFERENCE = 'LEAVE_MINI_CONFERENCE'
+const SET_EMOJI = 'SET_EMOJI'
 
 export const initJitsi = (options, dispatch) => {
   console.warn('initJitsi')
@@ -41,10 +42,16 @@ export const initJitsi = (options, dispatch) => {
       USER_STATUS_CHANGED, CONFERENCE_JOINED, USER_JOINED, TRACK_ADDED, TRACK_REMOVED, USER_LEFT
     } = JitsiMeetJS.events.conference
 
-    room.on(DISPLAY_NAME_CHANGED, function (id, display_name) {
-      console.error('DISPLAY_NAME_CHANGED', id, display_name)
-      // $(`.video_${id} .id`).text(`${display_name} | ${id}`);
-      // dispatch(updateCurrentUser({displayName: display_name}))
+    room.on(DISPLAY_NAME_CHANGED, (id, displayName) => {
+      console.error('DISPLAY_NAME_CHANGED', id, displayName)
+      dispatch(updateUser(id, { displayName }))
+    })
+
+    room.addCommandListener(SET_EMOJI, e => {
+      const emoji = e.attributes['emoji']
+      const userId = e.attributes['id']
+      console.error('SET_EMOJI', id, emoji)
+      dispatch(updateUser(userId, { emoji }))
     })
 
     room.on(SUBJECT_CHANGED, function (subject) {
@@ -112,23 +119,6 @@ export const initJitsi = (options, dispatch) => {
     .catch((error) => {
       throw error
     })
-  }
-
-  const setLocalDisplayName = (userId, displayName) => {
-    room.setDisplayName(displayName)
-    window.localStorage.setItem('DISPLAY_NAME', displayName)
-    room.eventEmitter.emit(JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, userId, displayName)
-  }
-
-  const setLocalEmoji = (userId, emoji) => {
-    window.localStorage.setItem('EMOJI', emoji)
-    room.sendCommand('SET_EMOJI', {
-        attributes: {
-          'id': userId,
-          'emoji': emoji
-        }
-      }
-    )
   }
 
   const onLocalTracks = in_tracks => {
@@ -252,6 +242,29 @@ export const joinSideRoom = roomName => {
   })
 
   // dispatch(updateUser(userId, { activeRoom: roomName }))
+}
+
+export const setLocalDisplayName = (userId, displayName) => {
+  if (!window.room) return
+
+  console.warn('setLocalDisplayName')
+
+  window.room.setDisplayName(displayName)
+  window.localStorage.setItem('DISPLAY_NAME', displayName)
+  window.room.eventEmitter.emit(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, userId, displayName)
+}
+
+export const setLocalEmoji = (userId, emoji) => {
+  if (!window.room) return
+
+  window.room.sendCommand(SET_EMOJI, {
+      attributes: {
+        'id': userId,
+        'emoji': emoji
+      }
+    }
+  )
+  window.localStorage.setItem('EMOJI', emoji)
 }
 
 export const leaveSideRoom = roomName => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { getTracks } from '../../utils'
+import { setLocalDisplayName, setLocalEmoji } from '../../modules/meeting'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 
@@ -22,7 +23,6 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
   const [videoTrack, setVideoTrack] = useState(null)
   const [audioTrack, setAudioTrack] = useState(null)
   const [locallyMuted, setLocallyMuted] = useState(isLocal)
-
 
   useEffect(() => {
     if (hasTracks) {
@@ -48,6 +48,26 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
     setLocallyMuted(!locallyMuted)
   }
 
+  const onNameClick = e => {
+    e.stopPropagation()
+
+    // setLocalDisplayName(userId, 'sniirr')
+    const newName = window.prompt('Display Name???')
+    if (newName) {
+      setLocalDisplayName(userId, newName)
+    }
+  }
+
+  const onEmojiClick = e => {
+    e.stopPropagation()
+
+    // setLocalDisplayName(userId, 'sniirr')
+    const newEmoji = window.prompt('what emoji? https://getemoji.com/')
+    if (newEmoji) {
+      setLocalEmoji(userId, newEmoji)
+    }
+  }
+
   const idSuffix = isLocal ? 'self' : userId
 
   const videoClassNames = classNames('video person', {
@@ -59,8 +79,8 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
 
   return (
     <div className={videoClassNames} onClick={onMuteClick}>
-      <div className="emoji">{emoji}</div>
-      <div className="id">{displayName} | ${userId}</div>
+      <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
+      <div className="id" onClick={onNameClick}>{displayName} | ${userId}</div>
       <div className="chat"/>
       <div className="chat_private"/>
       <div className="in"/>
