@@ -65,9 +65,7 @@ function onLocalTrackMuteChanged(track) {
         } else {
             $(".video_self").removeClass("muted");
         }
-    }
-    else
-    {
+    } else {
         if (track.isMuted()) {
             $(".video_self").addClass("no_video");
         } else {
@@ -202,8 +200,7 @@ function onRemoteTrackAdded(track) {
     const remote_inside_miniroom = (mini_conferences["second_room"].indexOf(participant) > -1);
 
 
-    if (track.getType() === "video" && !track.isMuted())
-    {
+    if (track.getType() === "video" && !track.isMuted()) {
         $(`.video_${participant}`).removeClass("no_video");
     }
 
@@ -472,7 +469,7 @@ function setHdUsers(user_list) {
     );
 }
 
-const MAX_SEATS = 4;
+const MAX_SEATS = 5;
 
 function fillFreeSeats() {
     const n_free_seats = MAX_SEATS - mini_conferences["second_room"].length
@@ -527,6 +524,11 @@ function onConnectionSuccess() {
 
         if (from === Conference.myUserId()) {
 
+
+            if (soundtrack_player) {
+                soundtrack_player.setVolume(40);
+            }
+
             $("body").removeClass("outside_mini_conference").addClass("inside_mini_conference");
 
             // Join the room, start talking
@@ -576,6 +578,10 @@ function onConnectionSuccess() {
         $(`.video_${from}`).appendTo(`#container`);
 
         if (from === Conference.myUserId()) {
+
+            if (soundtrack_player) {
+                soundtrack_player.setVolume(100);
+            }
 
             $("body").addClass("outside_mini_conference").removeClass("inside_mini_conference");
 

@@ -21,31 +21,28 @@
             crossorigin="anonymous"
     />
     <style type="text/css">
+        body, html {
+  height: 100%;
+}
         body {
             background: #000;
+
         }
 
         #muteYouTubeVideoPlayer2 {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            /*background: red;*/
-            opacity: 0.9;
+            /*position: absolute;*/
+            /*left: 0;*/
+            /*top: 0;*/
+            /*width: 100%;*/
+            /*height: 100%;*/
+            /*display: block;*/
+            /*!*background: red;*!*/
+            /*opacity: 0.9;*/
 
-            background-size: cover;
+            /*background-size: cover;*/
+            /*dis*/
         }
 
-        .toilet #muteYouTubeVideoPlayer2 {
-            background: url("https://cdn.homedsgn.com/wp-content/uploads/2013/01/Printing-House-13-800x532.jpg");
-            background-size: cover;
-        }
-
-        .block #muteYouTubeVideoPlayer2 {
-            background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/95844238_10159168427578514_8721768046215036928_o.jpg?_nc_cat=106&_nc_sid=8024bb&_nc_ohc=kFwwA8KjbjIAX8hrYw4&_nc_ht=scontent.fsdv3-1.fna&oh=c9c008444626afc953bf97043deda51a&oe=5EE0348F");
-        }
 
         .toilet .video.logo {
             display: none;
@@ -84,7 +81,8 @@
         }
 
         .video.free_seat .in {
-            background: url('https://image.freepik.com/fotos-kostenlos/neon-wc-schild-zeichen-von-mann-und-frau-an-der-wand_90380-450.jpg');
+            /*background: url('https://image.freepik.com/fotos-kostenlos/neon-wc-schild-zeichen-von-mann-und-frau-an-der-wand_90380-450.jpg');*/
+            background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97802024_240626827171480_2267265698860367872_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=RPxfRBd9JyQAX_xQAZU&_nc_ht=scontent.fsdv3-1.fna&oh=6186f5d99ab384bff9889ff60f22c520&oe=5EEB559F&dl=1');
             background-size: cover;
             background-position: center;
             /*box-shadow: inset 0 0 50px #fff !important;*/
@@ -121,11 +119,11 @@
 
         }
 
-        .video.stream.stream-big {
-            display: none;
-            width: 640px;
-            height: 440px;
-        }
+        /*.video.stream.stream-big {*/
+        /*    !*display: none;*!*/
+        /*    width: 640px;*/
+        /*    height: 440px;*/
+        /*}*/
 
         .video video {
             width: 100%;
@@ -249,19 +247,32 @@
             /*color: red !important;*/
         }
 
-        .video iframe {
-            width: 840px;
-            height: 580px;
+        #video-art-top {
+            display: none;
+            /*padding:50px 0;*/
+            /*background: red;*/
+            /*width: 100%;*/
+            margin: 15px 20px;
+            /*height: 500px;*/
+            overflow: hidden;
+            background: black;
+        }
+
+
+        .big-video-container {
+            width: 100%;
+            height: 500px;
+            background: orange;
+            overflow: hidden;
+            /*background-color: orange;*/
+        }
+
+        #video-art-top iframe {
+            width: 100%;
+            height: 120%;
             position: relative;
             top: -50px;
             /*border: 1px solid red;*/
-        }
-
-        .big-video-container {
-            width: 640px;
-            height: 480px;
-            overflow: hidden;
-            /*background-color: orange;*/
         }
 
         .toilet .stream,
@@ -269,35 +280,35 @@
             display: none;
         }
 
-        .button {
+        #bottm-nav .button {
             display: inline-block;
             background: #000;
             width: 100px;
             height: 100px;
-            border: 1px solid #fff;
+            /*border: 1px solid #fff;*/
             cursor: pointer;
-            position: absolute;
-            bottom: 15px;
+            /*position: absolute;*/
+            /*bottom: 15px;*/
             z-index: 1000;
-            margin: 15px;
-            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.5); !important;
+            margin: 5px;
+            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.5) !important;
             border-radius: 100px;
         }
 
-        .button.float-left {
-            left: 15px;
+        /*.button.float-left {*/
+        /*    left: 15px;*/
+        /*}*/
+
+        /*.button.float-right {*/
+        /*    right: 15px;*/
+        /*}*/
+
+        body.toilet  .button-to-toilet {
+            display: none !important;
         }
 
-        .button.float-right {
-            right: 15px;
-        }
-
-        .toilet .button-to-toilet {
-            display: none;
-        }
-
-        .block .button-to-block {
-            display: none;
+        body.block .button-to-block {
+            display: none !important;
         }
 
         .button a {
@@ -308,13 +319,16 @@
         }
 
         .toilet .button a {
-            background: url("https://media.timeout.com/images/105153350/image.jpg");
+            background: url("https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-1/p720x720/89639139_10158946144253514_3904395197873651712_n.png?_nc_cat=104&_nc_sid=dbb9e7&_nc_ohc=aw-mkMHwrTsAX9M5TXL&_nc_ht=scontent.fsdv3-1.fna&oh=5e8fad9ff04f91f9546e0dfc0849d968&oe=5EEA6065");
             background-size: cover;
         }
 
         .block .button a {
-            background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");
+            /*background: url("https://res.cloudinary.com/electronic-beats/stage/uploads/2015/06/clubtoilets_header.jpg");*/
+            /*background-size: cover;*/
+            background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97802024_240626827171480_2267265698860367872_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=RPxfRBd9JyQAX_xQAZU&_nc_ht=scontent.fsdv3-1.fna&oh=6186f5d99ab384bff9889ff60f22c520&oe=5EEB559F&dl=1');
             background-size: cover;
+            background-position: center;
         }
 
         .video#mute_toggle {
@@ -347,12 +361,60 @@
             float: left;
             width: 275px;
             height: 100%;
+            margin-right:25px;
         }
 
-        .container-fluid
-        {
-            padding:0;
-            margin:0;
+
+        body.block #video-art-top {
+            display: block;
+        }
+
+        body.block #second_room {
+            display: none;
+        }
+
+        .container-fluid {
+            padding: 0;
+            margin: 0;
+        }
+
+        #full-width-bg {
+            z-index: -1;
+            background: black;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+
+        }
+
+        body.block #full-width-bg {
+            background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/96101534_242693803475256_4136626841232343040_n.jpg?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=D97pxAcCoTwAX_wEfY5&_nc_ht=scontent.fsdv3-1.fna&oh=6c2623e2228e7ef3e6d1e48f63826e0a&oe=5EEAA1AF&dl=1');
+            background-size: contain;
+            background-position: center top;
+            opacity: 0.5;
+        }
+
+
+        body.toilet #full-width-bg {
+            background: url("https://cdn.homedsgn.com/wp-content/uploads/2013/01/Printing-House-13-800x532.jpg");
+            background-size: cover;
+            transform: scaleX(-1);
+        }
+
+        #player-soundtrack {
+            width: 1px;
+            height: 1px;
+            visibility: hidden;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #bottm-nav {
+            width: 100%;
+            position: absolute;
+            bottom: 15px;
+            text-align: center;
         }
 
         /*#second_room .video {*/
@@ -362,77 +424,78 @@
     </style>
 </head>
 <body id="body" class="outside_mini_conference">
-<div style="z-index: -1;" id="muteYouTubeVideoPlayer2"></div>
+<div style="z-index: -1;" id="full-width-bg"></div>
 <div class="container-fluid">
-    <div id="top-nav">
-        <div class="video button button-to-block float-right">
+    <div id="bottm-nav">
+        <div class="video button button-to-block ">
             <a href="?room=block"> </a>
         </div>
 
-        <div class="video button button-to-toilet float-right">
+        <div class="video button button-to-toilet">
             <a href="?room=toilet"> </a>
         </div>
 
-        <div class="video button float-left" id="mute_toggle"></div>
+        <div class="video button" id="mute_toggle"></div>
     </div>
     <div id="second_room">
 
     </div>
-    <div id="container">
-
-        <div class="video video-logo">d</div>
-
-        <div class="video stream stream-big float-left">
-            <div class="big-video-container">
-                <div id="muteYouTubeVideoPlayer"></div>
-            </div>
+    <div id="video-art-top">
+        <div class="big-video-container">
+            <div id="muteYouTubeVideoPlayer"></div>
         </div>
+    </div>
+    <div id="container">
 
 
     </div>
 
+    <div id="player-soundtrack"></div>
+
 
     <script async src="https://www.youtube.com/iframe_api"></script>
     <script>
+        var soundtrack_player;
+        // https://www.youtube.com/watch?v=T92xtvU4WRc
         function onYouTubeIframeAPIReady() {
-            // var player1;
-            // player1 = new YT.Player('muteYouTubeVideoPlayer2', {
-            //     // videoId: 'NPo9MvroDmo', // YouTube Video ID
-            //     // videoId: 'QtXx3Qubmys',
-            //     videoId: '6MyjFHd04R8',
-            //     playlist: 'QtXx3Qubmys',
-            //     width: 2000,               // Player width (in px)
-            //     height: 2000,              // Player height (in px)
-            //     playerVars: {
-            //         autoplay: 1,        // Auto-play the video on load
-            //         controls: 0,        // Show pause/play buttons in player
-            //         showinfo: 0,        // Hide the video title
-            //         modestbranding: 1,  // Hide the Youtube Logo
-            //         loop: 1,            // Run the video in a loop
-            //         fs: 1,              // Hide the full screen button
-            //         cc_load_policy: 1, // Hide closed captions
-            //         iv_load_policy: 3,  // Hide the Video Annotations
-            //         autohide: 1,         // Hide video controls when playing,
-            //         disablekb: 1
-            //     },
-            //     events: {
-            //         onReady: function(e) {
-            //             console.error(e);
-            //             e.target.mute();
-            //             // e.target.setPlaybackRate(0.25);
-            //             // e.target.setVolume(50);
-            //         }
-            //     }
-            // });
+            soundtrack_player = new YT.Player('player-soundtrack', {
+                // videoId: 'NPo9MvroDmo', // YouTube Video ID
+                // videoId: 'QtXx3Qubmys',
+                videoId: 'T92xtvU4WRc',
+                playlist: 'QtXx3Qubmys',
+                width: 1,               // Player width (in px)
+                height: 1,              // Player height (in px)
+                playerVars: {
+                    autoplay: 1,        // Auto-play the video on load
+                    controls: 0,        // Show pause/play buttons in player
+                    showinfo: 0,        // Hide the video title
+                    modestbranding: 1,  // Hide the Youtube Logo
+                    loop: 1,            // Run the video in a loop
+                    fs: 1,              // Hide the full screen button
+                    cc_load_policy: 1, // Hide closed captions
+                    iv_load_policy: 3,  // Hide the Video Annotations
+                    autohide: 1,         // Hide video controls when playing,
+                    disablekb: 1,
+                    start: 100
+                },
+                events: {
+                    onReady: function (e) {
+                        // console.error(e);
+                        // e.target.mute();
+                        // e.target.setPlaybackRate(0.25);
+                        e.target.setVolume(100);
+                    }
+                }
+            });
+
             if (window.location.href.indexOf("toilet") === -1) {
-                var player2;
                 var utcstart = 1589278643;
                 var utcnow = Math.round(new Date().getTime() / 1000);
                 var offset = utcnow - utcstart;
-                player1 = new YT.Player("muteYouTubeVideoPlayer", {
-                    videoId: "zMG7K5_Jv2M", // YouTube Video ID
-                    width: 640, // Player width (in px)
-                    height: 480, // Player height (in px)
+                var video_art_player = new YT.Player("muteYouTubeVideoPlayer", {
+                    videoId: "3V9bPvna3nM", // YouTube Video ID
+                    // width: 640, // Player width (in px)
+                    // height: 480, // Player height (in px)
                     playerVars: {
                         autoplay: 1, // Auto-play the video on load
                         controls: 0, // Show pause/play buttons in player
@@ -444,13 +507,14 @@
                         iv_load_policy: 3, // Hide the Video Annotations
                         autohide: 1, // Hide video controls when playing,
                         disablekb: 1,
-                        start: offset,
+                        playlist: '3V9bPvna3nM', // for the loop
+                        // start: offset,
                         origin: "https://foosa-a977b5f6.localhost.run",
                     },
                     events: {
                         onReady: function (e) {
                             // e.target.mute();
-                            e.target.setVolume(30);
+                            // e.target.setVolume(30);
                             e.target.playVideo();
                         },
                         // onStateChange: function (e) {
