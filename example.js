@@ -19,7 +19,9 @@ const options = {
     enableLipSync: false,
     disableAudioLevels: false,
     disableSimulcast: true,
-    enableP2P: false,
+    p2p: {
+        enabled: false
+    },
     // useStunTurn: true,
     useIPv6: false
 
