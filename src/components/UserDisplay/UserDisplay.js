@@ -91,7 +91,7 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
   return (
     <div className={videoClassNames} onClick={onClick}>
       <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
-      <div className="id" onClick={onNameClick}>{displayName} | ${userId}</div>
+      <div className="id" onClick={onNameClick}>{displayName}</div>
       {_.map(messages, ({ msg, key }) => (
         <div key={key} className="chat">{msg}</div>
       ))}

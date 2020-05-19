@@ -1,8 +1,31 @@
 import React from 'react'
-import MuteButton from '../MuteButton/MuteButton'
+import { getLocalTracks } from '../../utils'
 import './BottomNav.scss'
 
 const BottomNav = ({ roomName }) => {
+
+  const toggleMute = () => {
+    const { video, audio } = getLocalTracks()
+
+    if (audio.isMuted()) {
+      audio.unmute()
+      video.unmute()
+    } else {
+      audio.mute()
+      video.mute()
+    }
+  }
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      }
+    }
+  }
+
   return (
     <div className="bottom-nav">
       {roomName !== 'block' && (
@@ -15,7 +38,8 @@ const BottomNav = ({ roomName }) => {
           <a href="?room=toilet"> </a>
         </div>
       )}
-      <MuteButton/>
+      <div className="video button mute-toggle" onClick={toggleMute}/>
+      <div className="video button fullscreen-toggle" onClick={toggleFullscreen}/>
     </div>
   )
 }
