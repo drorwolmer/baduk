@@ -17,11 +17,12 @@ export const deleteMessage = key => ({
   payload: { key },
 })
 
-export const getUserMessages = userId => state => _.filter(state.messages, m => m.userId === userId)
+export const getUserMessages = userId => state => _.filter(state.messages, m => m.id === userId)
+export const getAllMessages = state => state.messages
 
 const roomReducer = makeReducer({
   PUSH_MESSAGE: (state, action) => {
-    return [...state, action.payload]
+    return [...state, action.payload.msg]
   },
   DELETE_MESSAGE: (state, action) => {
     return _.filter(state, m => m.key !== action.payload.key)

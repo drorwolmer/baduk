@@ -113,9 +113,9 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
         <div className={videoClassNames} onClick={onClick}>
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
             <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
-            {_.map(messages, ({msg, key}) => (
-                <div key={key} className="chat">{msg}</div>
-            ))}
+            {/*{_.map(messages, ({msg, key}) => (*/}
+            {/*    <div key={key} className="chat">{msg}</div>*/}
+            {/*))}*/}
             <div className="in"/>
             {has_video && (
                 <video autoPlay="1" ref={videoRef}/>

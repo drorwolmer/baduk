@@ -1,0 +1,17 @@
+.text-message {
+  color: #fff;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+  margin: 10px 5px;
+  background: rgba(255,255,255,0.1);
+  padding:10px;
+  border-radius: 15px;
+
+  span {
+    display: block;
+  }
+
+  span.nick {
+    font-weight: bold;
+    size: 1.2em;
+  }
+}
