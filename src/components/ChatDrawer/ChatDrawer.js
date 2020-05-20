@@ -11,7 +11,7 @@ const ChatDrawer = ({}) => {
 
     return (
         <div className="right-sidebar">
-            {_.map(_.orderBy(messages, 'ts'), (msg) => {
+            {_.map(_.orderBy(messages, 'ts', 'desc'), (msg) => {
                 return (
                     <ChatMessage key={msg.ts} ts={msg.ts} text={msg.text} id={msg.id} recipient={msg.recipient}/>
                 )

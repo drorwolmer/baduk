@@ -1,5 +1,6 @@
 {
   "name": "baduk",
+  "homepage": "/baduk",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
