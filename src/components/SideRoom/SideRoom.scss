@@ -1,0 +1,22 @@
+.side-room {
+  background: rgba(0, 0, 0, 0.5);
+  background-clip: content-box;
+  background-position: bottom;
+  text-align: center;
+  float: left;
+  width: 275px;
+  height: 100%;
+  margin-right: 25px;
+  cursor: default;
+  overflow-y: auto;
+
+  .free-seat {
+    cursor: pointer;
+
+    .in {
+      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97802024_240626827171480_2267265698860367872_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=RPxfRBd9JyQAX_xQAZU&_nc_ht=scontent.fsdv3-1.fna&oh=6186f5d99ab384bff9889ff60f22c520&oe=5EEB559F&dl=1');
+      background-size: cover;
+      background-position: center;
+    }
+  }
+}

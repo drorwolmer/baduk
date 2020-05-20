@@ -1,0 +1,56 @@
+.room {
+  height: 100%;
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+
+  .main-area {
+    flex-grow: 2;
+    cursor: pointer;
+  }
+
+  .video-art-top {
+    margin: 15px 20px;
+    overflow: hidden;
+    background: black;
+
+    .big-video-container {
+      width: 100%;
+      height: 500px;
+      background: orange;
+      overflow: hidden;
+
+      .video-art-player {
+        height: 100%;
+
+        iframe {
+          width: 100%;
+          height: 120%;
+          position: relative;
+          top: -50px;
+        }
+      }
+    }
+  }
+
+  &.block {
+    .bg {
+      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/96101534_242693803475256_4136626841232343040_n.jpg?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=D97pxAcCoTwAX_wEfY5&_nc_ht=scontent.fsdv3-1.fna&oh=6c2623e2228e7ef3e6d1e48f63826e0a&oe=5EEAA1AF&dl=1');
+      background-size: contain;
+      background-position: center top;
+      opacity: 0.5;
+    }
+  }
+
+  &.toilet {
+    .bg {
+      background: url("https://cdn.homedsgn.com/wp-content/uploads/2013/01/Printing-House-13-800x532.jpg");
+      background-size: cover;
+      transform: scaleX(-1);
+    }
+
+    .main-area {
+      height: 100%;
+    }
+  }
+}

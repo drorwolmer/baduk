@@ -1,0 +1,91 @@
+.user-display {
+  display: inline-block;
+  width: 200px;
+  height: 200px;
+  vertical-align: top;
+  overflow: hidden;
+  padding: 0 !important;
+  margin: 5px;
+  z-index: 1;
+  position: relative;
+  cursor: default;
+
+  .in, video {
+    border-radius: 50%;
+  }
+
+  .in {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 3;
+    box-shadow: inset 0 0 50px #000000;
+  }
+
+  video {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 0;
+    object-fit: cover;
+  }
+
+  .id {
+    z-index: 5;
+    position: absolute;
+    width: 100%;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: white;
+  }
+
+  .chat {
+    background: white;
+    top: 2em;
+    z-index: 5;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    opacity: 0.75;
+  }
+
+  .emoji {
+    position: absolute;
+    z-index: 9;
+    font-size: 3em;
+    right: 10px;
+    top: 0;
+    animation: spin 2s linear infinite;
+  }
+
+  &.local-user {
+
+  }
+
+  &.remote-user {
+
+  }
+
+  &.no_video {
+    .in {
+      background: url('https://1.bp.blogspot.com/-fBzUF3-kifE/VHtWOb_dbfI/AAAAAAAAFtk/A6jYBS4jzbw/s1600/MARCEL_DETTMANN_EFDEMIN_BORS_BIRGINIA.jpg');
+      background-size: cover;
+    }
+  }
+
+  &:hover {
+    .id {
+      visibility: visible;
+    }
+  }
+
+  @keyframes spin {
+    25% {
+      -webkit-transform: rotate(-10deg);
+      transform: rotate(-10deg);
+    }
+    75% {
+      -webkit-transform: rotate(10deg);
+      transform: rotate(10deg);
+    }
+  }
+}

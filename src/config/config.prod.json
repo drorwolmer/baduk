@@ -1,0 +1,24 @@
+{
+  "hosts": {
+    "domain": "dror-testing.tlvengnetapp.com",
+    "focus": "focus.dror-testing.tlvengnetapp.com",
+    "muc": "conference.dror-testing.tlvengnetapp.com"
+  },
+  "bosh": "//dror-testing.tlvengnetapp.com/http-bind?room=ELHAMIN_BLOCKUS",
+  "clientNode": "http://jitsi.org/jitsimeet",
+  "desktopSharingChromeDisabled": true,
+  "openBridgeChannel": "datachannel",
+  "enableTalkWhileMuted": true,
+  "enableNoAudioDetection": true,
+  "enableNoisyMicDetection": true,
+  "enableLipSync": false,
+  "disableAudioLevels": false,
+  "disableSimulcast": true,
+  "p2p": {
+    "enabled": false
+  },
+  "e2eping": {
+    "pingInterval": -1
+  },
+  "useIPv6": false
+}
