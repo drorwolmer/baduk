@@ -23,7 +23,7 @@ const BottomNav = ({ roomName }) => {
     return (
         <div className="bottom-nav">
             {roomName !== 'block' && (
-                <div className="button button-to-toilet" onClick={goToRoom(ROOMS.block)}/>
+                <div className="button button-to-block" onClick={goToRoom(ROOMS.block)}/>
             )}
             {roomName !== 'toilet' && (
                 <div className="button button-to-toilet" onClick={goToRoom(ROOMS.toilet)}/>
