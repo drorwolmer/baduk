@@ -533,10 +533,17 @@
                     },
                     events: {
                         onReady: function (e) {
+                            console.error("video art on ready", e);
                             // e.target.mute();
                             // e.target.setVolume(30);
                             e.target.playVideo();
                         },
+                        onStateChange: function (e) {
+                            console.error("video art video state changed", e);
+                        },
+                        onError: function (e) {
+                            console.error("video art on error", e);
+                        }
                         // onStateChange: function (e) {
                         //     if (e.data == YT.PlayerState.PLAYING) {
                         //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
