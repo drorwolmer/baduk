@@ -72,7 +72,7 @@
     }
   }
 
-  &.dominant {
+  .side-room &.dominant {
     .in {
       box-shadow: inset 0 0 50px red !important;
     }
