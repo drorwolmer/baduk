@@ -1,27 +1,30 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Room from './components/Room'
 import BottomNav from './components/BottomNav'
+import { playSoundtrack } from './config/config.dev'
 import { soundtrackPlayerConfig } from './config/config.videos'
 import { useSelector } from 'react-redux'
 import { getLocalUser } from './store/users'
 import YouTubePlayer from './components/YouTubePlayer'
-
+import { getRoom } from './store/room'
 
 function App () {
-  const initialRoom = window.location.href.indexOf('toilet') > -1 ? 'toilet' : 'block'
-  const [roomName, setRoomName] = useState(initialRoom)
 
-  const localUser = useSelector(getLocalUser)
+    const { roomName } = useSelector(getRoom)
 
-  const soundtrackVolume = localUser && localUser.activeRoom === 'MAIN' ? 100 : 40
+    const localUser = useSelector(getLocalUser)
 
-  return (
-    <div className="app">
-      <Room roomName={roomName} withVideoArt={roomName === 'block'}/>
-      <BottomNav roomName={roomName}/>
-      {/*<YouTubePlayer {...soundtrackPlayerConfig} volume={soundtrackVolume}/>*/}
-    </div>
-  )
+    const soundtrackVolume = localUser && localUser.activeRoom === 'MAIN' ? 100 : 40
+
+    return (
+        <div className="app">
+            <Room roomName={roomName} withVideoArt={roomName === 'block'}/>
+            <BottomNav roomName={roomName}/>
+            {playSoundtrack && (
+                <YouTubePlayer {...soundtrackPlayerConfig} volume={soundtrackVolume}/>
+            )}
+        </div>
+    )
 }
 
 export default App

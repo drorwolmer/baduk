@@ -77,7 +77,7 @@ const usersReducer = makeReducer({
         const dominantUserId = action.payload.userId
 
 
-        console.error("UPDATE_DOMINANT_SPEAKER", action)
+        console.warn("UPDATE_DOMINANT_SPEAKER", action)
 
         _.forEach(state, (user) => {
             user.isDominantSpeaker = (user.id === dominantUserId)

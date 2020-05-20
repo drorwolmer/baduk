@@ -4,7 +4,6 @@ import './css/main.scss'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import { Provider } from 'react-redux'
-import jitsiConfig from './config/config.dev'
 import { initJitsi, kickInterruptedConnections, unload } from './modules/meeting'
 import store from './store'
 
@@ -12,7 +11,7 @@ import store from './store'
 // init Jitsi
 window.JitsiMeetJS.setLogLevel(window.JitsiMeetJS.logLevels.ERROR)
 
-initJitsi(jitsiConfig, store.dispatch)
+initJitsi(store)
 
 setInterval(kickInterruptedConnections, 5000);
 

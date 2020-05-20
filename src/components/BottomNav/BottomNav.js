@@ -1,9 +1,12 @@
 import React from 'react'
-import {getLocalTracks} from '../../utils'
 import './BottomNav.scss'
-import {onVideoMuteToggle} from "../../modules/meeting";
+import { onVideoMuteToggle, changeConference } from '../../modules/meeting'
+import { ROOMS } from '../../consts'
+import { useDispatch } from 'react-redux'
 
-const BottomNav = ({roomName}) => {
+const BottomNav = ({ roomName }) => {
+
+    const dispatch = useDispatch()
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
@@ -15,20 +18,18 @@ const BottomNav = ({roomName}) => {
         }
     }
 
+    const goToRoom = roomConfig => () => dispatch(changeConference(roomConfig))
+
     return (
         <div className="bottom-nav">
             {roomName !== 'block' && (
-                <div className="video button button-to-block ">
-                    <a href="?room=block"> </a>
-                </div>
+                <div className="button button-to-toilet" onClick={goToRoom(ROOMS.block)}/>
             )}
             {roomName !== 'toilet' && (
-                <div className="video button button-to-toilet">
-                    <a href="?room=toilet"> </a>
-                </div>
+                <div className="button button-to-toilet" onClick={goToRoom(ROOMS.toilet)}/>
             )}
-            <div className="video button mute-toggle" onClick={onVideoMuteToggle}/>
-            <div className="video button fullscreen-toggle" onClick={toggleFullscreen}/>
+            <div className="button mute-toggle" onClick={onVideoMuteToggle}/>
+            <div className="button fullscreen-toggle" onClick={toggleFullscreen}/>
         </div>
     )
 }
