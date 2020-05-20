@@ -468,6 +468,7 @@
     <script async src="https://www.youtube.com/iframe_api"></script>
     <script>
         var soundtrack_player;
+        var video_art_player;
 
         // https://www.youtube.com/watch?v=T92xtvU4WRc
         function onYouTubeIframeAPIReady() {
@@ -497,6 +498,9 @@
                         // e.target.mute();
                         // e.target.setPlaybackRate(0.25);
                         e.target.setVolume(100);
+                    },
+                    onStateChange: function (e) {
+                        console.error("video state changed");
                     }
                 }
             });
@@ -505,7 +509,7 @@
                 var utcstart = 1589278643;
                 var utcnow = Math.round(new Date().getTime() / 1000);
                 var offset = utcnow - utcstart;
-                var video_art_player = new YT.Player("muteYouTubeVideoPlayer", {
+                video_art_player = new YT.Player("muteYouTubeVideoPlayer", {
                     videoId: "3V9bPvna3nM", // YouTube Video ID
                     // width: 640, // Player width (in px)
                     // height: 480, // Player height (in px)
