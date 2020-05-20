@@ -1,11 +1,13 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import _ from 'lodash'
-import {getTracks} from '../../utils'
-import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName, setLocalEmoji} from '../../modules/meeting'
-import {getUserMessages} from '../../store/messages'
+import { getTracks } from '../../utils'
+import { sendPrivateMessage, sendPublicMessage, setLocalDisplayName } from '../../modules/meeting'
+import { getUserMessages } from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
+import Popup from '../Popup'
+import EmojiSelection from '../EmojiSelection'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -16,7 +18,7 @@ const detachAndDispose = (track, ref) => {
     }
 }
 
-const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker}) => {
+const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
 
     const videoRef = useRef(null)
     const audioRef = useRef(null)
@@ -24,12 +26,14 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
     const [videoTrack, setVideoTrack] = useState(null)
     const [audioTrack, setAudioTrack] = useState(null)
 
+    const [popup, setPopup] = useState(null)
+
     const messages = useSelector(getUserMessages(userId))
 
     useEffect(() => {
 
         if (has_video) {
-            const {video} = getTracks(userId, isLocal)
+            const { video } = getTracks(userId, isLocal)
             attach(video, videoRef)
             setVideoTrack(video)
         }
@@ -44,7 +48,7 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
     useEffect(() => {
 
         if (has_audio) {
-            const {audio} = getTracks(userId, isLocal)
+            const { audio } = getTracks(userId, isLocal)
             attach(audio, audioRef)
             setAudioTrack(audio)
         }
@@ -78,7 +82,7 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
     const onNameClick = e => {
         e.stopPropagation()
 
-        if (!isLocal) return;
+        if (!isLocal) return
 
         const newName = window.prompt('Display Name???')
         if (newName) {
@@ -86,17 +90,14 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
         }
     }
 
+    const hidePopup = () => setPopup(null)
+
     const onEmojiClick = e => {
         e.stopPropagation()
 
-        if (!isLocal) return;
+        if (!isLocal) return
 
-        // TODO(DROR): Add a menu item here instead of prompt
-
-        const newEmoji = window.prompt('what emoji? https://getemoji.com/')
-        if (newEmoji) {
-            setLocalEmoji(userId, newEmoji)
-        }
+        setPopup(<EmojiSelection onSelection={hidePopup}/>)
     }
 
     const videoClassNames = classNames('user-display video person', {
@@ -105,7 +106,7 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
         'no_video': !has_video || muted_video,
         'no_audio': !has_audio || muted_audio,
         'muted': !isAudioActive && !isLocal,
-        "dominant": isDominantSpeaker,
+        'dominant': isDominantSpeaker,
         'local_muted': !isAudioActive && isLocal,
     })
 
@@ -122,6 +123,9 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
             )}
             {has_audio && (
                 <audio muted={isLocal || !isAudioActive} autoPlay="1" ref={audioRef}/>
+            )}
+            {!_.isNil(popup) && (
+                <Popup onOutsideClick={hidePopup}>{popup}</Popup>
             )}
         </div>
     )

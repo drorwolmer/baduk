@@ -151,7 +151,7 @@ const onConferenceJoined = dispatch => () => {
 
     // Send the cached display_name and emoji to other participants
     setLocalDisplayName(userId, displayName)
-    setLocalEmoji(userId, emoji)
+    setLocalEmoji(emoji)
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
     window.JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] })
@@ -375,13 +375,13 @@ export const setLocalDisplayName = (userId, displayName) => {
     window.JitsiConference.eventEmitter.emit(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, userId, displayName)
 }
 
-export const setLocalEmoji = (userId, emoji) => {
+export const setLocalEmoji = (emoji) => {
     if (!window.JitsiConference) return
 
     // This will send the event name to other participants
     window.JitsiConference.sendCommand(SET_EMOJI_CMD, {
             attributes: {
-                'id': userId,
+                'id': window.JitsiConference.myUserId(),
                 'emoji': emoji
             }
         }

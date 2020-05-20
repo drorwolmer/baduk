@@ -3,10 +3,8 @@
   width: 200px;
   height: 200px;
   vertical-align: top;
-  overflow: hidden;
   padding: 0 !important;
   margin: 15px;
-  z-index: 1;
   position: relative;
   cursor: default;
 
@@ -49,6 +47,7 @@
   }
 
   .emoji {
+    cursor: pointer;
     position: absolute;
     z-index: 9;
     font-size: 3em;
