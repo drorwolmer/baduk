@@ -468,7 +468,6 @@
     <script async src="https://www.youtube.com/iframe_api"></script>
     <script>
         var soundtrack_player;
-        var video_art_player;
 
         // https://www.youtube.com/watch?v=T92xtvU4WRc
         function onYouTubeIframeAPIReady() {
@@ -494,16 +493,10 @@
                 },
                 events: {
                     onReady: function (e) {
-                        console.error("on ready player", e);
+                        // console.error(e);
                         // e.target.mute();
                         // e.target.setPlaybackRate(0.25);
                         e.target.setVolume(100);
-                    },
-                    onStateChange: function (e) {
-                        console.error("video state changed", e);
-                    },
-                    onError: function (e) {
-                        console.error("on error", e);
                     }
                 }
             });
@@ -512,7 +505,7 @@
                 var utcstart = 1589278643;
                 var utcnow = Math.round(new Date().getTime() / 1000);
                 var offset = utcnow - utcstart;
-                video_art_player = new YT.Player("muteYouTubeVideoPlayer", {
+                var video_art_player = new YT.Player("muteYouTubeVideoPlayer", {
                     videoId: "3V9bPvna3nM", // YouTube Video ID
                     // width: 640, // Player width (in px)
                     // height: 480, // Player height (in px)
@@ -533,17 +526,10 @@
                     },
                     events: {
                         onReady: function (e) {
-                            console.error("video art on ready", e);
                             // e.target.mute();
                             // e.target.setVolume(30);
                             e.target.playVideo();
                         },
-                        onStateChange: function (e) {
-                            console.error("video art video state changed", e);
-                        },
-                        onError: function (e) {
-                            console.error("video art on error", e);
-                        }
                         // onStateChange: function (e) {
                         //     if (e.data == YT.PlayerState.PLAYING) {
                         //         e.target.setPlaybackQuality('hd720');  // <-- WORKS!
