@@ -1,15 +1,15 @@
 import _ from 'lodash'
 import { makeReducer } from '../utils'
 
-export const pushMessage = (userId, msg) => dispatch => {
-  const key = `${userId}-${(new Date()).getTime()}`
+export const pushMessage = (msg) => dispatch => {
+  const key = `${msg.id}-${(new Date()).getTime()}`
 
   dispatch({
     type: 'PUSH_MESSAGE',
-    payload: { userId, msg, key },
+    payload: { msg },
   })
 
-  setTimeout(() => dispatch(deleteMessage(key)), 7000)
+  // setTimeout(() => dispatch(deleteMessage(key)), 7000)
 }
 
 export const deleteMessage = key => ({

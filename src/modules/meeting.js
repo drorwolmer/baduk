@@ -76,13 +76,23 @@ export const initJitsi = (options, dispatch) => {
         JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
             // TODO(DROR): ts can be none here,
             console.warn('MESSAGE_RECEIVED', id, text, ts)
-            dispatch(pushMessage(id, text))
+            dispatch(pushMessage({
+                id: id,
+                text: text,
+                ts: ts ? new Date(Date.parse(ts)) : new Date(),  // ts is only sent when we refresh
+                recipient: "public"
+            }))
         })
 
         JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
             // TODO(DROR): ts can be none here,
             console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
-            dispatch(pushMessage(id, text))
+            dispatch(pushMessage({
+                id: id,
+                text: text,
+                ts: new Date(), // as we have a different ID, we will never receive this...
+                recipient: "me"
+            }))
         })
 
         JitsiConference.on(CONFERENCE_JOINED, onConferenceJoined)
