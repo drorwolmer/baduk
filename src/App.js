@@ -19,7 +19,7 @@ function App () {
     <div className="app">
       <Room roomName={roomName} withVideoArt={roomName === 'block'}/>
       <BottomNav roomName={roomName}/>
-      <YouTubePlayer {...soundtrackPlayerConfig} volume={soundtrackVolume}/>
+      {/*<YouTubePlayer {...soundtrackPlayerConfig} volume={soundtrackVolume}/>*/}
     </div>
   )
 }

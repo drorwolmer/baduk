@@ -27,11 +27,7 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
     const messages = useSelector(getUserMessages(userId))
 
     useEffect(() => {
-        if (has_audio) {
-            const {audio} = getTracks(userId, isLocal)
-            attach(audio, audioRef)
-            setAudioTrack(audio)
-        }
+
         if (has_video) {
             const {video} = getTracks(userId, isLocal)
             attach(video, videoRef)
@@ -41,10 +37,24 @@ const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, mu
         return () => {
             if (has_audio || has_video) {
                 detachAndDispose(videoTrack, videoRef)
+            }
+        }
+    }, [has_video, videoRef])
+
+    useEffect(() => {
+
+        if (has_audio) {
+            const {audio} = getTracks(userId, isLocal)
+            attach(audio, audioRef)
+            setAudioTrack(audio)
+        }
+
+        return () => {
+            if (has_audio) {
                 detachAndDispose(audioTrack, audioRef)
             }
         }
-    }, [has_audio, has_video, videoRef, audioRef])
+    }, [has_audio, audioRef])
 
     const onClick = e => {
         e.stopPropagation()

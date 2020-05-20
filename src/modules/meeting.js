@@ -117,7 +117,7 @@ export const initJitsi = (options, dispatch) => {
 
         console.error(JOIN_MINI_CONFERENCE_CMD, userId, to)
 
-        if (userId == window.JitsiConference.myUserId()) {
+        if (userId === window.JitsiConference.myUserId()) {
             const {audio} = getLocalTracks()
             if (audio) {
                 audio.unmute()
