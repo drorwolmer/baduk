@@ -500,7 +500,10 @@
                         e.target.setVolume(100);
                     },
                     onStateChange: function (e) {
-                        console.error("video state changed");
+                        console.error("video state changed", e);
+                    },
+                    onError: function (e) {
+                        console.error("on error", e);
                     }
                 }
             });
