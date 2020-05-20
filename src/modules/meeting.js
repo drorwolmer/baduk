@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {ROOMS} from '../consts'
-import {getFromLocalStorage} from '../utils'
+import {getFromLocalStorage, getLocalTracks} from '../utils'
 import {setRoom} from '../store/room'
 import {addUser, updateUser, addRemoteUserTrack, removeUser, updateDominantSpeaker} from '../store/users'
 import {pushMessage} from '../store/messages'
@@ -11,13 +11,23 @@ const SET_EMOJI_CMD = 'SET_EMOJI'
 const DEFAULT_EMOJI = '😷'
 const DEFAULT_USERNAME = 'anonymous'
 
+export const onVideoMuteToggle = () => {
+    const {video} = getLocalTracks()
+    if (!video) {
+        return
+    }
+    if (video.isMuted()) {
+        video.unmute()
+        window.localStorage.setItem("SHOW_VIDEO", "true")
+    } else {
+        video.mute()
+        window.localStorage.setItem("SHOW_VIDEO", "false")
+    }
+}
+
 export const initJitsi = (options, dispatch) => {
 
     console.warn('initJitsi')
-
-
-    const onRemoteTrackMuteChanged = () => {
-    }
 
     const JitsiMeetJS = window.JitsiMeetJS
 
@@ -64,11 +74,13 @@ export const initJitsi = (options, dispatch) => {
         })
 
         JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
+            // TODO(DROR): ts can be none here,
             console.warn('MESSAGE_RECEIVED', id, text, ts)
             dispatch(pushMessage(id, text))
         })
 
         JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
+            // TODO(DROR): ts can be none here,
             console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
             dispatch(pushMessage(id, text))
         })
@@ -105,6 +117,13 @@ export const initJitsi = (options, dispatch) => {
 
         console.error(JOIN_MINI_CONFERENCE_CMD, userId, to)
 
+        if (userId == window.JitsiConference.myUserId()) {
+            const {audio} = getLocalTracks()
+            if (audio) {
+                audio.unmute()
+            }
+        }
+
         dispatch(updateUser(userId, {activeRoom: to}))
     }
 
@@ -112,6 +131,11 @@ export const initJitsi = (options, dispatch) => {
         const userId = e.attributes['from']
 
         console.error(LEAVE_MINI_CONFERENCE_CMD, userId)
+
+        if (userId === JitsiConference.myUserId()) {
+            const {audio} = getLocalTracks()
+            audio && audio.mute()
+        }
 
         dispatch(updateUser(userId, {activeRoom: 'MAIN'}))
     }
@@ -150,28 +174,39 @@ export const initJitsi = (options, dispatch) => {
 
     const onLocalTracks = in_tracks => {
         _.map(in_tracks, (local_track) => {
+
             local_track.addEventListener(
                 JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-                onLocalTrackMuteChanged
-            )
-            local_track.addEventListener(
-                JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-                onLocalTrackStopped
-            )
-            local_track.addEventListener(
-                JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
-                OnLocalTrackAudioOutputChanged
+                onTrackMuteChanged
             )
 
             // Send lower quality video by default
             JitsiConference.setSenderVideoConstraint(180)
 
-            JitsiConference.addTrack(local_track).then(() => {
-                if (local_track.getType() === 'video') {
+            if (local_track.getType() === "video") {
+                const last_video_preference = getFromLocalStorage('SHOW_VIDEO', "false")
+                if (last_video_preference === "true") {
+                    console.error("unmuting video")
                     local_track.unmute()
                 } else {
                     local_track.mute()
                 }
+            } else {
+                // Always start with audio muted
+                local_track.mute().then(() => {
+                    console.error("audio muted...")
+                })
+            }
+
+            JitsiConference.addTrack(local_track).then(() => {
+
+                console.error("FOO", local_track)
+
+                dispatch(updateUser(JitsiConference.myUserId(), {
+                    hasTracks: true,
+                    [`muted_${local_track.getType()}`]: local_track.isMuted(),
+                    [`has_${local_track.getType()}`]: true
+                }))
 
                 // Send lower quality video by default, incase the first time didn't work
                 window.setTimeout(function () {
@@ -204,6 +239,20 @@ export const initJitsi = (options, dispatch) => {
         }))
     }
 
+    const onTrackMuteChanged = (track) => {
+        console.error("TRACK_MUTE_CHANGED", track)
+
+        if (!track) {
+            return
+        }
+        const userId = track.ownerEndpointId ? track.ownerEndpointId : window.JitsiConference.myUserId()
+
+        dispatch(updateUser(userId, {
+            [`muted_${track.getType()}`]: track.isMuted()
+        }))
+
+    }
+
     const onRemoteTrackAdded = track => {
         if (track.isLocal()) {
             JitsiConference.setSenderVideoConstraint(180)
@@ -212,7 +261,7 @@ export const initJitsi = (options, dispatch) => {
 
         console.warn('Remote TRACK_ADDED', track.getParticipantId(), track.isMuted(), track)
 
-        track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onRemoteTrackMuteChanged)
+        track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onTrackMuteChanged)
         track.addEventListener(JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, () =>
             console.warn('remote track stoped')
         )
@@ -224,7 +273,7 @@ export const initJitsi = (options, dispatch) => {
 
         const userId = track.getParticipantId()
 
-        dispatch(addRemoteUserTrack(userId))
+        dispatch(addRemoteUserTrack(userId, track.getType(), track.isMuted()))
     }
 
     const onRemoteTrackRemoved = track => {

@@ -1,119 +1,120 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
-import { getTracks } from '../../utils'
-import { sendPrivateMessage, sendPublicMessage, setLocalDisplayName, setLocalEmoji } from '../../modules/meeting'
-import { getUserMessages } from '../../store/messages'
+import {getTracks} from '../../utils'
+import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName, setLocalEmoji} from '../../modules/meeting'
+import {getUserMessages} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
-import { useSelector } from 'react-redux'
+import {useSelector} from 'react-redux'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
 const detachAndDispose = (track, ref) => {
-  if (track && ref.current) {
-    track.detach(ref.current)
-    track.dispose()
-  }
+    if (track && ref.current) {
+        track.detach(ref.current)
+        track.dispose()
+    }
 }
 
-const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
+const UserDisplay = ({id: userId, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker}) => {
 
-  const videoRef = useRef(null)
-  const audioRef = useRef(null)
+    const videoRef = useRef(null)
+    const audioRef = useRef(null)
 
-  const [videoTrack, setVideoTrack] = useState(null)
-  const [audioTrack, setAudioTrack] = useState(null)
+    const [videoTrack, setVideoTrack] = useState(null)
+    const [audioTrack, setAudioTrack] = useState(null)
 
-  const messages = useSelector(getUserMessages(userId))
+    const messages = useSelector(getUserMessages(userId))
 
-  useEffect(() => {
-    if (hasTracks) {
-      const { audio, video } = getTracks(userId, isLocal)
+    useEffect(() => {
+        if (has_audio) {
+            const {audio} = getTracks(userId, isLocal)
+            attach(audio, audioRef)
+            setAudioTrack(audio)
+        }
+        if (has_video) {
+            const {video} = getTracks(userId, isLocal)
+            attach(video, videoRef)
+            setVideoTrack(video)
+        }
 
-      console.error("use_effect", audio, video)
+        return () => {
+            if (has_audio || has_video) {
+                detachAndDispose(videoTrack, videoRef)
+                detachAndDispose(audioTrack, audioRef)
+            }
+        }
+    }, [has_audio, has_video, videoRef, audioRef])
 
-      attach(audio, audioRef)
-      attach(video, videoRef)
-      setAudioTrack(audio)
-      setVideoTrack(video)
+    const onClick = e => {
+        e.stopPropagation()
+
+        if (isLocal) {
+            //send public message
+            const msg = window.prompt('Say something:')
+            if (msg) {
+                sendPublicMessage(msg)
+            }
+        } else {
+            // send private message
+            const msg = window.prompt(`Say something to ${displayName}:`)
+            if (msg) {
+                sendPrivateMessage(userId, msg)
+            }
+        }
+
     }
 
-    return () => {
-      if (hasTracks) {
-        detachAndDispose(videoTrack, videoRef)
-        detachAndDispose(audioTrack, audioRef)
-      }
-    }
-  }, [hasTracks, videoRef, audioRef])
+    const onNameClick = e => {
+        e.stopPropagation()
 
-  const onClick = e => {
-    e.stopPropagation()
+        if (!isLocal) return;
 
-    if (isLocal) {
-      //send public message
-      const msg = window.prompt('Say something:')
-      if (msg) {
-        sendPublicMessage(msg)
-      }
-    } else {
-      // send private message
-      const msg = window.prompt(`Say something to ${displayName}:`)
-      if (msg) {
-        sendPrivateMessage(userId, msg)
-      }
+        const newName = window.prompt('Display Name???')
+        if (newName) {
+            setLocalDisplayName(userId, newName)
+        }
     }
 
-  }
+    const onEmojiClick = e => {
+        e.stopPropagation()
 
-  const onNameClick = e => {
-    e.stopPropagation()
+        if (!isLocal) return;
 
-    if (!isLocal) return;
+        // TODO(DROR): Add a menu item here instead of prompt
 
-    const newName = window.prompt('Display Name???')
-    if (newName) {
-      setLocalDisplayName(userId, newName)
+        const newEmoji = window.prompt('what emoji? https://getemoji.com/')
+        if (newEmoji) {
+            setLocalEmoji(userId, newEmoji)
+        }
     }
-  }
 
-  const onEmojiClick = e => {
-    e.stopPropagation()
+    const videoClassNames = classNames('user-display video person', {
+        'video_self': isLocal,
+        'remote_participant': !isLocal,
+        'no_video': !has_video || muted_video,
+        'no_audio': !has_audio || muted_audio,
+        'muted': !isAudioActive && !isLocal,
+        "dominant": isDominantSpeaker,
+        'local_muted': !isAudioActive && isLocal,
+    })
 
-    if (!isLocal) return;
-
-    // TODO(DROR): Add a menu item here instead of prompt
-
-    const newEmoji = window.prompt('what emoji? https://getemoji.com/')
-    if (newEmoji) {
-      setLocalEmoji(userId, newEmoji)
-    }
-  }
-
-  const videoClassNames = classNames('user-display video person', {
-    'video_self': isLocal,
-    'remote_participant': !isLocal,
-    'no_video': !videoTrack || videoTrack.isMuted(),
-    'muted': !isAudioActive && !isLocal,
-    "dominant": isDominantSpeaker,
-    'local_muted': !isAudioActive && isLocal,
-  })
-
-  return (
-    <div className={videoClassNames} onClick={onClick}>
-      <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
-      <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
-      {_.map(messages, ({ msg, key }) => (
-        <div key={key} className="chat">{msg}</div>
-      ))}
-      <div className="in"/>
-      {hasTracks && (
-        <video autoPlay="1" ref={videoRef}/>
-      )}
-      {hasTracks && (
-        <audio muted={isLocal || !isAudioActive} autoPlay="1" ref={audioRef}/>
-      )}
-    </div>
-  )
+    return (
+        <div className={videoClassNames} onClick={onClick}>
+            <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
+            <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
+            {_.map(messages, ({msg, key}) => (
+                <div key={key} className="chat">{msg}</div>
+            ))}
+            <div className="in"/>
+            {has_video && (
+                <video autoPlay="1" ref={videoRef}/>
+            )}
+            {has_audio && (
+                <audio muted={isLocal || !isAudioActive} autoPlay="1" ref={audioRef}/>
+            )}
+        </div>
+    )
 }
 
 export default UserDisplay

@@ -16,9 +16,9 @@ export const updateUser = (userId, update) => ({
     payload: {userId, update},
 })
 
-export const addRemoteUserTrack = userId => ({
+export const addRemoteUserTrack = (userId, trackType, isMuted) => ({
     type: 'ADD_REMOTE_USER_TRACK',
-    payload: {userId},
+    payload: {userId, trackType, isMuted},
 })
 
 export const updateDominantSpeaker = userId => ({
@@ -60,25 +60,16 @@ const usersReducer = makeReducer({
         const {userId, update} = action.payload
         const user = state[userId] || {}
 
-        // TODO(ASAF): Should this shit be in here or anywhere else?
-
-        // mute or unmute local audio track based on the mini conference
-        const local_audio_track = window.JitsiConference.getLocalAudioTrack();
-        if (user.isLocal && update.activeRoom && local_audio_track) {
-            if (update.activeRoom === "MAIN") {
-                local_audio_track.mute()
-            } else {
-                local_audio_track.unmute()
-            }
-        }
-
         return reduceUpdateUser(state, user, update)
     },
     ADD_REMOTE_USER_TRACK: (state, action) => {
-        const {userId} = action.payload
+        const {userId, trackType, isMuted} = action.payload
         const user = state[userId] || {}
 
-        const update = user.remoteTracks === 1 ? {remoteTracks: 2, hasTracks: true} : {remoteTracks: 1}
+        const update = {
+            [`has_${trackType}`]: true,
+            [`muted_${trackType}`]: isMuted
+        }
 
         return reduceUpdateUser(state, user, update)
     },
@@ -88,7 +79,7 @@ const usersReducer = makeReducer({
 
         console.error("UPDATE_DOMINANT_SPEAKER", action)
 
-        _.forEach(state, (user)=>{
+        _.forEach(state, (user) => {
             user.isDominantSpeaker = (user.id === dominantUserId)
         })
 
