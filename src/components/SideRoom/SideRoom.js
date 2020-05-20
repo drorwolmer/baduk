@@ -30,7 +30,7 @@ export default ({ name, maxSeats }) => {
       {_.map(Array(emptySeatCount), (o, i) => {
         return (
           <div className={classNames("user-display free-seat")} onClick={onFreeSeatClick}>
-            <div className="id">Join the conversation</div>
+            <div className="id">Speak up</div>
             <div className="in"/>
           </div>
         )

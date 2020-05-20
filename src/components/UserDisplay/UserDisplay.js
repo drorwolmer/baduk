@@ -16,7 +16,7 @@ const detachAndDispose = (track, ref) => {
   }
 }
 
-const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAudioActive }) => {
+const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
 
   const videoRef = useRef(null)
   const audioRef = useRef(null)
@@ -29,6 +29,8 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
   useEffect(() => {
     if (hasTracks) {
       const { audio, video } = getTracks(userId, isLocal)
+
+      console.error("use_effect", audio, video)
 
       attach(audio, audioRef)
       attach(video, videoRef)
@@ -66,6 +68,8 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
   const onNameClick = e => {
     e.stopPropagation()
 
+    if (!isLocal) return;
+
     const newName = window.prompt('Display Name???')
     if (newName) {
       setLocalDisplayName(userId, newName)
@@ -74,6 +78,10 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
 
   const onEmojiClick = e => {
     e.stopPropagation()
+
+    if (!isLocal) return;
+
+    // TODO(DROR): Add a menu item here instead of prompt
 
     const newEmoji = window.prompt('what emoji? https://getemoji.com/')
     if (newEmoji) {
@@ -86,13 +94,14 @@ const UserDisplay = ({ id: userId, isLocal, hasTracks, displayName, emoji, isAud
     'remote_participant': !isLocal,
     'no_video': !videoTrack || videoTrack.isMuted(),
     'muted': !isAudioActive && !isLocal,
+    "dominant": isDominantSpeaker,
     'local_muted': !isAudioActive && isLocal,
   })
 
   return (
     <div className={videoClassNames} onClick={onClick}>
       <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
-      <div className="id" onClick={onNameClick}>{displayName}</div>
+      <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
       {_.map(messages, ({ msg, key }) => (
         <div key={key} className="chat">{msg}</div>
       ))}

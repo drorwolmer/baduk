@@ -1,16 +1,24 @@
 {
   "hosts": {
-    "domain": "beta.meet.jit.si",
-    "muc": "conference.beta.meet.jit.si"
+    "domain": "dror-testing.tlvengnetapp.com",
+    "focus": "focus.dror-testing.tlvengnetapp.com",
+    "muc": "conference.dror-testing.tlvengnetapp.com"
   },
-  "bosh": "//beta.meet.jit.si/http-bind?room=ELHAMIN_BLOCKUS",
-  "websocket": "wss://beta.meet.jit.si/xmpp-websocket",
+  "bosh": "//dror-testing.tlvengnetapp.com/http-bind?room=ELHAMIN_BLOCKUS",
   "clientNode": "http://jitsi.org/jitsimeet",
   "desktopSharingChromeDisabled": true,
-  "openBridgeChannel": "websocket",
+  "openBridgeChannel": "datachannel",
   "enableTalkWhileMuted": true,
   "enableNoAudioDetection": true,
   "enableNoisyMicDetection": true,
-  "enableLipSync": true,
-  "disableAudioLevels": false
+  "enableLipSync": false,
+  "disableAudioLevels": false,
+  "disableSimulcast": true,
+  "p2p": {
+    "enabled": false
+  },
+  "e2eping": {
+    "pingInterval": -1
+  },
+  "useIPv6": false
 }

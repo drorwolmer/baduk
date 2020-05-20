@@ -1,303 +1,343 @@
 import _ from 'lodash'
-import { ROOMS } from '../consts'
-import { getFromLocalStorage } from '../utils'
-import { setRoom } from '../store/room'
-import { addUser, updateUser, addRemoteUserTrack, removeUser } from '../store/users'
-import { pushMessage } from '../store/messages'
+import {ROOMS} from '../consts'
+import {getFromLocalStorage} from '../utils'
+import {setRoom} from '../store/room'
+import {addUser, updateUser, addRemoteUserTrack, removeUser, updateDominantSpeaker} from '../store/users'
+import {pushMessage} from '../store/messages'
 
-const JOIN_MINI_CONFERENCE = 'JOIN_MINI_CONFERENCE'
-const LEAVE_MINI_CONFERENCE = 'LEAVE_MINI_CONFERENCE'
-const SET_EMOJI = 'SET_EMOJI'
+const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
+const LEAVE_MINI_CONFERENCE_CMD = 'LEAVE_MINI_CONFERENCE'
+const SET_EMOJI_CMD = 'SET_EMOJI'
+const DEFAULT_EMOJI = '😷'
+const DEFAULT_USERNAME = 'anonymous'
 
 export const initJitsi = (options, dispatch) => {
-  console.warn('initJitsi')
+
+    console.warn('initJitsi')
 
 
-  const onRemoteTrackMuteChanged = () => {}
+    const onRemoteTrackMuteChanged = () => {
+    }
 
-  const JitsiMeetJS = window.JitsiMeetJS
+    const JitsiMeetJS = window.JitsiMeetJS
 
-  JitsiMeetJS.init(options)
+    JitsiMeetJS.init(options)
 
-  const connection = new JitsiMeetJS.JitsiConnection(null, null, options)
+    const JitsiConnection = new JitsiMeetJS.JitsiConnection(null, null, options)
 
-  window.connection = connection
+    window.JitsiConnection = JitsiConnection
 
-  let room
+    let JitsiConference
 
-  const { CONNECTION_ESTABLISHED, CONNECTION_FAILED, CONNECTION_DISCONNECTED} = JitsiMeetJS.events.connection
+    const {CONNECTION_ESTABLISHED, CONNECTION_FAILED, CONNECTION_DISCONNECTED} = JitsiMeetJS.events.connection
 
-  const onConnectionSuccess = () => {
-    console.warn('onConnectionSuccess')
+    const onConnectionSuccess = () => {
+        console.warn('onConnectionSuccess')
 
-    const roomKey = window.location.href.indexOf('toilet') > -1 ? 'toilet' : 'block'
-    const roomConfig = ROOMS[roomKey]
+        const roomKey = window.location.href.indexOf('toilet') > -1 ? 'toilet' : 'block'
+        const roomConfig = ROOMS[roomKey]
 
-    room = connection.initJitsiConference(roomConfig.jitsiRoomName, options)
+        JitsiConference = JitsiConnection.initJitsiConference(roomConfig.jitsiRoomName, options)
 
-    // bind events
-    const {
-      DISPLAY_NAME_CHANGED, MESSAGE_RECEIVED, PRIVATE_MESSAGE_RECEIVED,
-      CONFERENCE_JOINED, USER_JOINED, TRACK_ADDED, TRACK_REMOVED, USER_LEFT
-    } = JitsiMeetJS.events.conference
+        // bind events
+        const {
+            DISPLAY_NAME_CHANGED, MESSAGE_RECEIVED, PRIVATE_MESSAGE_RECEIVED,
+            CONFERENCE_JOINED, USER_JOINED, TRACK_ADDED, TRACK_REMOVED, USER_LEFT,
+            DOMINANT_SPEAKER_CHANGED
+        } = JitsiMeetJS.events.conference
 
-    room.on(DISPLAY_NAME_CHANGED, (id, displayName) => {
-      dispatch(updateUser(id, { displayName }))
-    })
+        JitsiConference.on(DISPLAY_NAME_CHANGED, (id, displayName) => {
+            dispatch(updateUser(id, {displayName}))
+        })
 
-    room.addCommandListener(SET_EMOJI, e => {
-      const emoji = e.attributes['emoji']
-      const userId = e.attributes['id']
+        JitsiConference.on(DOMINANT_SPEAKER_CHANGED, (id) => {
+            dispatch(updateDominantSpeaker(id))
+        })
 
-      dispatch(updateUser(userId, { emoji }))
-    })
+        JitsiConference.addCommandListener(SET_EMOJI_CMD, e => {
+            const userId = e.attributes['id']
+            const emoji = e.attributes['emoji']
 
-    room.on(MESSAGE_RECEIVED, function (id, text, ts) {
-      console.warn('MESSAGE_RECEIVED', id, text, ts)
-      dispatch(pushMessage(id, text))
-    })
+            console.error(SET_EMOJI_CMD, userId, emoji)
 
-    room.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
-      console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
-      dispatch(pushMessage(id, text))
-    })
+            dispatch(updateUser(userId, {emoji}))
+        })
 
-    room.on(CONFERENCE_JOINED, onConferenceJoined)
-    room.on(USER_JOINED, onUserJoined)
-    room.on(TRACK_ADDED, onRemoteTrackAdded)
-    room.on(TRACK_REMOVED, onRemoteTrackRemoved)
-    room.on(USER_LEFT, onUserLeft)
+        JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
+            console.warn('MESSAGE_RECEIVED', id, text, ts)
+            dispatch(pushMessage(id, text))
+        })
 
-    room.addCommandListener(JOIN_MINI_CONFERENCE, onSideRoomJoined)
-    room.addCommandListener(LEAVE_MINI_CONFERENCE, onSideRoomLeft)
+        JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
+            console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
+            dispatch(pushMessage(id, text))
+        })
 
-    window.room = room
+        JitsiConference.on(CONFERENCE_JOINED, onConferenceJoined)
+        JitsiConference.on(USER_JOINED, onUserJoined)
+        JitsiConference.on(TRACK_ADDED, onRemoteTrackAdded)
+        JitsiConference.on(TRACK_REMOVED, onRemoteTrackRemoved)
+        JitsiConference.on(USER_LEFT, onUserLeft)
 
-    dispatch(setRoom(roomConfig))
+        JitsiConference.addCommandListener(JOIN_MINI_CONFERENCE_CMD, onSideRoomJoined)
+        JitsiConference.addCommandListener(LEAVE_MINI_CONFERENCE_CMD, onSideRoomLeft)
 
-    room.join()
-  }
+        window.JitsiConference = JitsiConference
 
-  const onConnectionFailed = e => {
-    console.error("Connection Failed!", e)
-  }
+        dispatch(setRoom(roomConfig))
 
-  const disconnect = () => {
-    connection.removeEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
-    connection.removeEventListener(CONNECTION_FAILED, onConnectionFailed)
-    connection.removeEventListener(CONNECTION_DISCONNECTED, disconnect)
-  }
+        JitsiConference.join()
+    }
 
-  const onSideRoomJoined = e => {
-    const userId = e.attributes['from']
-    const to = e.attributes['to']
+    const onConnectionFailed = e => {
+        console.error("Connection Failed!", e)
+    }
 
-    dispatch(updateUser(userId, { activeRoom: to }))
-  }
+    const disconnect = () => {
+        JitsiConnection.removeEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
+        JitsiConnection.removeEventListener(CONNECTION_FAILED, onConnectionFailed)
+        JitsiConnection.removeEventListener(CONNECTION_DISCONNECTED, disconnect)
+    }
 
-  const onSideRoomLeft = e => {
-    const userId = e.attributes['from']
+    const onSideRoomJoined = e => {
+        const userId = e.attributes['from']
+        const to = e.attributes['to']
 
-    dispatch(updateUser(userId, { activeRoom: 'MAIN' }))
-  }
+        console.error(JOIN_MINI_CONFERENCE_CMD, userId, to)
 
-  /////////////////
-  // LOCAL USER
-  /////////////////
-  const onConferenceJoined = () => {
-    console.warn('onConferenceJoined')
+        dispatch(updateUser(userId, {activeRoom: to}))
+    }
 
-    const userId = room.myUserId()
-    const displayName = getFromLocalStorage('DISPLAY_NAME', 'ANONYMOUS')
-    const emoji = getFromLocalStorage('EMOJI', '😷')
+    const onSideRoomLeft = e => {
+        const userId = e.attributes['from']
 
-    setLocalDisplayName(userId, displayName)
-    setLocalEmoji(userId, emoji)
+        console.error(LEAVE_MINI_CONFERENCE_CMD, userId)
 
-    dispatch(addUser({ id: userId, isLocal: true, displayName, emoji, activeRoom: 'MAIN' }))
+        dispatch(updateUser(userId, {activeRoom: 'MAIN'}))
+    }
 
-    JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] })
-    .then(onLocalTracks)
-    .catch((error) => {
-      throw error
-    })
-  }
+    /////////////////
+    // LOCAL USER
+    /////////////////
+    const onConferenceJoined = () => {
+        console.warn('onConferenceJoined')
 
-  const onLocalTracks = in_tracks => {
-    _.map(in_tracks, (local_track) => {
-      local_track.addEventListener(
-        JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
-        onLocalTrackMuteChanged
-      )
-      local_track.addEventListener(
-        JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
-        onLocalTrackStopped
-      )
-      local_track.addEventListener(
-        JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
-        OnLocalTrackAudioOutputChanged
-      )
+        const userId = JitsiConference.myUserId()
 
-      room.setSenderVideoConstraint(180)
+        const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
+        const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
+        // TODO(DROR): Remember camera state
 
-      room.addTrack(local_track).then(() => {
-        if (local_track.getType() === 'video') {
-          local_track.unmute()
-        } else {
-          local_track.mute()
+        dispatch(addUser({
+            id: userId,
+            isLocal: true,
+            displayName: displayName,
+            emoji: emoji,
+            activeRoom: 'MAIN'
+        }))
+
+        // Send the cached display_name and emoji to other participants
+        setLocalDisplayName(userId, displayName)
+        setLocalEmoji(userId, emoji)
+
+        // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
+        JitsiMeetJS.createLocalTracks({devices: ['audio', 'video']})
+            .then(onLocalTracks)
+            .catch((error) => {
+                throw error
+            })
+    }
+
+    const onLocalTracks = in_tracks => {
+        _.map(in_tracks, (local_track) => {
+            local_track.addEventListener(
+                JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
+                onLocalTrackMuteChanged
+            )
+            local_track.addEventListener(
+                JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
+                onLocalTrackStopped
+            )
+            local_track.addEventListener(
+                JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+                OnLocalTrackAudioOutputChanged
+            )
+
+            // Send lower quality video by default
+            JitsiConference.setSenderVideoConstraint(180)
+
+            JitsiConference.addTrack(local_track).then(() => {
+                if (local_track.getType() === 'video') {
+                    local_track.unmute()
+                } else {
+                    local_track.mute()
+                }
+
+                // Send lower quality video by default, incase the first time didn't work
+                window.setTimeout(function () {
+                    JitsiConference.setSenderVideoConstraint(180)
+                }, 1000)
+            })
+        })
+
+        dispatch(updateUser(JitsiConference.myUserId(), {hasTracks: true}))
+    }
+
+    const onLocalTrackMuteChanged = () => {
+    }
+    const onLocalTrackStopped = () => {
+    }
+    const OnLocalTrackAudioOutputChanged = () => {
+    }
+
+    /////////////////
+    // REMOTE USERS
+    /////////////////
+    const onUserJoined = userId => {
+        const user = JitsiConference.getParticipantById(userId)
+        console.warn('onUserJoined', user)
+
+        dispatch(addUser({
+            id: userId,
+            activeRoom: 'MAIN',
+            displayName: user.getDisplayName()
+        }))
+    }
+
+    const onRemoteTrackAdded = track => {
+        if (track.isLocal()) {
+            JitsiConference.setSenderVideoConstraint(180)
+            return
         }
 
-        window.setTimeout(function () {
-          room.setSenderVideoConstraint(180)
-        }, 1000)
-      })
-    })
+        console.warn('Remote TRACK_ADDED', track.getParticipantId(), track.isMuted(), track)
 
-    dispatch(updateUser(room.myUserId(), { hasTracks: true }))
-  }
+        track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onRemoteTrackMuteChanged)
+        track.addEventListener(JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, () =>
+            console.warn('remote track stoped')
+        )
+        track.addEventListener(
+            JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
+            (deviceId) =>
+                console.warn(`track audio output device was changed to ${deviceId}`)
+        )
 
-  const onLocalTrackMuteChanged = () => {}
-  const onLocalTrackStopped = () => {}
-  const OnLocalTrackAudioOutputChanged = () => {}
+        const userId = track.getParticipantId()
 
-  /////////////////
-  // REMOTE USERS
-  /////////////////
-  const onUserJoined = userId => {
-    const user = room.getParticipantById(userId)
-    console.warn('onUserJoined', user)
-
-    dispatch(addUser({ id: userId, activeRoom: 'MAIN' }))
-  }
-
-  const onRemoteTrackAdded = track => {
-    if (track.isLocal()) {
-      room.setSenderVideoConstraint(180)
-      return
+        dispatch(addRemoteUserTrack(userId))
     }
 
-    console.warn('Remote TRACK_ADDED', track.getParticipantId(), track.isMuted(), track)
+    const onRemoteTrackRemoved = track => {
+        if (track.isLocal()) {
+            return
+        }
+        console.error('Remote TRACK_REMOVED', track, track.containers)
 
-    track.addEventListener(JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onRemoteTrackMuteChanged)
-    track.addEventListener(JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, () =>
-      console.warn('remote track stoped')
-    )
-    track.addEventListener(
-      JitsiMeetJS.events.track.TRACK_AUDIO_OUTPUT_CHANGED,
-      (deviceId) =>
-        console.warn(`track audio output device was changed to ${deviceId}`)
-    )
-
-    const userId = track.getParticipantId()
-
-    dispatch(addRemoteUserTrack(userId))
-  }
-
-  const onRemoteTrackRemoved = track => {
-    if (track.isLocal()) {
-      return
+        // const userId = track.getParticipantId()
+        // dispatch(removeRemoteTrack(userId, track))
     }
-    console.error('Remote TRACK_REMOVED', track, track.containers)
 
-    // const userId = track.getParticipantId()
-    // dispatch(removeRemoteTrack(userId, track))
-  }
+    const onUserLeft = userId => {
+        dispatch(removeUser(userId))
+    }
 
-  const onUserLeft = userId => {
-    dispatch(removeUser(userId))
-  }
+    // bind connection events
+    JitsiConnection.addEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
+    JitsiConnection.addEventListener(CONNECTION_FAILED, onConnectionFailed)
+    JitsiConnection.addEventListener(CONNECTION_DISCONNECTED, disconnect)
 
-  // bind connection events
-  connection.addEventListener(CONNECTION_ESTABLISHED, onConnectionSuccess)
-  connection.addEventListener(CONNECTION_FAILED, onConnectionFailed)
-  connection.addEventListener(CONNECTION_DISCONNECTED, disconnect)
-
-  connection.connect(undefined)
+    JitsiConnection.connect(undefined)
 }
 
 export const joinSideRoom = roomName => {
-  const room = window.room
-  if (!room) return
+    const room = window.JitsiConference
+    if (!room) return
 
-  const userId = room.myUserId()
+    const userId = room.myUserId()
 
-  room.sendCommand(JOIN_MINI_CONFERENCE, {
-    attributes: {
-      from: userId,
-      to: roomName
-    }
-  })
+    room.sendCommand(JOIN_MINI_CONFERENCE_CMD, {
+        attributes: {
+            from: userId,
+            to: roomName
+        }
+    })
 
-  // dispatch(updateUser(userId, { activeRoom: roomName }))
+    // dispatch(updateUser(userId, { activeRoom: roomName }))
 }
 
 export const leaveSideRoom = roomName => {
-  const room = window.room
-  if (!room) return
+    const room = window.JitsiConference
+    if (!room) return
 
-  room.removeCommand(JOIN_MINI_CONFERENCE)
-  room.sendCommandOnce(LEAVE_MINI_CONFERENCE, {
-    attributes: {
-      from: room.myUserId(),
-      to: roomName
-    }
-  })
+    room.removeCommand(JOIN_MINI_CONFERENCE_CMD)
+    room.sendCommandOnce(LEAVE_MINI_CONFERENCE_CMD, {
+        attributes: {
+            from: room.myUserId(),
+            to: roomName
+        }
+    })
 
-  // dispatch(updateUser(room.myUserId(), { activeRoom: 'MAIN' }))
+    // dispatch(updateUser(room.myUserId(), { activeRoom: 'MAIN' }))
 }
 
 export const setLocalDisplayName = (userId, displayName) => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  console.warn('setLocalDisplayName')
+    console.warn('setLocalDisplayName')
 
-  window.room.setDisplayName(displayName)
-  window.localStorage.setItem('DISPLAY_NAME', displayName)
-  window.room.eventEmitter.emit(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, userId, displayName)
+    // This will send the event name to other participants
+    window.JitsiConference.setDisplayName(displayName)
+
+    // Save this on localStorage
+    window.localStorage.setItem('DISPLAY_NAME', displayName)
+
+    // Because DISPLAY_NAME_CHANGED is not fired for local users, fire it
+    window.JitsiConference.eventEmitter.emit(window.JitsiMeetJS.events.conference.DISPLAY_NAME_CHANGED, userId, displayName)
 }
 
 export const setLocalEmoji = (userId, emoji) => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  window.room.sendCommand(SET_EMOJI, {
-      attributes: {
-        'id': userId,
-        'emoji': emoji
-      }
-    }
-  )
-  window.localStorage.setItem('EMOJI', emoji)
+    // This will send the event name to other participants
+    window.JitsiConference.sendCommand(SET_EMOJI_CMD, {
+            attributes: {
+                'id': userId,
+                'emoji': emoji
+            }
+        }
+    )
+    window.localStorage.setItem('EMOJI', emoji)
 }
 
 export const sendPublicMessage = (msg) => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  window.room.sendMessage(msg)
+    window.JitsiConference.sendMessage(msg)
 }
 
 export const sendPrivateMessage = (targetId, msg) => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  console.error('sendPrivateTextMessage to ' + targetId)
-  window.room.sendPrivateTextMessage(targetId, msg)
+    console.error('sendPrivateTextMessage to ' + targetId)
+    window.JitsiConference.sendPrivateTextMessage(targetId, msg)
 }
 
 export const kickInterruptedConnections = () => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  const participants = window.room.getParticipants()
-  _.forEach(participants, p => {
-    if (p._connectionStatus === 'interrupted') {
-      console.warn('Kicking participant because of interrupted connection', p._id)
-      window.room.kickParticipant(p._id)
-    }
-  })
+    const participants = window.JitsiConference.getParticipants()
+    _.forEach(participants, p => {
+        if (p._connectionStatus === 'interrupted') {
+            console.warn('Kicking participant because of interrupted connection', p._id)
+            window.JitsiConference.kickParticipant(p._id)
+        }
+    })
 }
 
 export const unload = () => {
-  if (!window.room) return
+    if (!window.JitsiConference) return
 
-  _.each(window.room.getLocalTracks(), track => track.dispose())
-  window.room.leave()
-  window.connection.disconnect()
+    _.each(window.JitsiConference.getLocalTracks(), track => track.dispose())
+    window.JitsiConference.leave()
+    window.connection.disconnect()
 }

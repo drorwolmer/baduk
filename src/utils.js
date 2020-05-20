@@ -15,18 +15,18 @@ export const getFromLocalStorage = (key, defaultValue) => {
 }
 
 export const getLocalTracks = () => {
-  if (!window.room) return {}
+  if (!window.JitsiConference) return {}
 
   return {
-    audio: window.room.getLocalAudioTrack(),
-    video: window.room.getLocalVideoTrack()
+    audio: window.JitsiConference.getLocalAudioTrack(),
+    video: window.JitsiConference.getLocalVideoTrack()
   }
 }
 
 export const getTracks = (userId, isLocal) => {
   if (isLocal) return getLocalTracks()
 
-  const participant = window.room.getParticipantById(userId)
+  const participant = window.JitsiConference.getParticipantById(userId)
   const tracks = participant.getTracks()
   // const types = _.map(tracks, t => t.getType())
   // console.warn('remote tracks = ' + JSON.stringify(types))

@@ -4,11 +4,17 @@
   background-position: bottom;
   text-align: center;
   float: left;
-  width: 275px;
+  //width: 275px;
   height: 100%;
-  margin-right: 25px;
+  //margin-right: 25px;
   cursor: default;
   overflow-y: auto;
+
+  .user-display {
+    display: block;
+    //margin-left: auto;
+    //margin-right:auto;
+  }
 
   .free-seat {
     cursor: pointer;
