@@ -39,10 +39,10 @@ const Room = ({roomName, withVideoArt}) => {
                 </div>
             )}
             <div className="main-area" onClick={onMeetingAreaClick}>
-                <UserList users={mainAreaUsers} roomName="MAIN"/>
                 {_.map(room.sideRooms, (sideRoom, i) => (
                     <SideRoom key={`side-room-${i}`} {...sideRoom}/>
                 ))}
+                <UserList users={mainAreaUsers} roomName="MAIN"/>
                 <ChatDrawer/>
             </div>
         </div>

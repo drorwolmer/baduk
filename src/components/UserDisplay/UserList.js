@@ -8,7 +8,11 @@ const UserList = ({ users, isAudioActive }) => {
     <UserDisplay key={`user-display-${user.id}`} {...user} isAudioActive={isAudioActive}/>
   ), [users])
 
-  return _.map(_.orderBy(users, 'id'), renderUser)
+  return (
+      <div className="users-display">
+        {_.map(_.orderBy(users, 'id'), renderUser)}
+      </div>
+  )
 }
 
 export default UserList
