@@ -8,7 +8,7 @@ import {
     removeUser,
     updateDominantSpeaker,
 } from '../store/users'
-import {pushMessage} from '../store/messages'
+import {deleteAllMessages, pushMessage} from '../store/messages'
 import {jitsi as jitsiConfig} from '../config/config.dev'
 
 const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
@@ -145,6 +145,7 @@ export const changeConference = roomConfig => dispatch => {
 
     window.JitsiConference.leave()
         .then(() => {
+            dispatch(deleteAllMessages())
             joinConference(dispatch, roomConfig)
         })
 }
