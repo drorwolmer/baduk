@@ -243,7 +243,7 @@ const onRemoteTrackAdded = dispatch => track => {
 
     console.warn('Remote TRACK_ADDED', track.getParticipantId(), track.isMuted(), track)
 
-    track.addEventListener(window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onTrackMuteChanged)
+    track.addEventListener(window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED, onTrackMuteChanged(dispatch))
     track.addEventListener(window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED, () =>
         console.warn('remote track stoped')
     )
