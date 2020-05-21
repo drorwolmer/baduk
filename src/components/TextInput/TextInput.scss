@@ -1,0 +1,11 @@
+.text-input {
+  input {
+    background: none;
+    border: none;
+    border-bottom: solid 1px #7b7b7b;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

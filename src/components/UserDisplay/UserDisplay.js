@@ -10,6 +10,7 @@ import Popup from '../Popup'
 import AutoHide from '../AutoHide'
 import EmojiSelection from '../EmojiSelection'
 import SpeechBubble from '../SpeechBubble'
+import TextInput from '../TextInput'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -86,10 +87,18 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
 
         if (!isLocal) return
 
-        const newName = window.prompt('Display Name???')
-        if (newName) {
-            setLocalDisplayName(userId, newName)
-        }
+        const TextInputBubble = () => (
+            <SpeechBubble className="centered no-pointer">
+                <TextInput placeholder="Choose name"
+                           submit={newName => {
+                               setLocalDisplayName(userId, newName)
+                               hidePopup()
+                           }}
+                           dismiss={hidePopup}/>
+            </SpeechBubble>
+        )
+
+        setPopup(<TextInputBubble/>)
     }
 
     const hidePopup = () => setPopup(null)
