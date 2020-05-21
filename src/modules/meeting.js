@@ -188,7 +188,7 @@ const onConferenceJoined = dispatch => () => {
     }
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
-    console.error("will run createLocalTracks")
+    console.error("will run createLocalTracks");
     window.JitsiMeetJS.createLocalTracks(create_local_track_options)
         .then(onLocalTracks(dispatch))
         .catch((error) => {
