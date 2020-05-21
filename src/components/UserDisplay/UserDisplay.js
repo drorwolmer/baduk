@@ -114,6 +114,12 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
     const onEmojiClick = e => {
         e.stopPropagation()
 
+        if (e.shiftKey) {
+            // emoji clicked when shift is pressed
+            console.warn('emoji shift+click')
+            return
+        }
+
         if (!isLocal) return
 
         setPopup(<EmojiSelection onSelection={hidePopup}/>)
