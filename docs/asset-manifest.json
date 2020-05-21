@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/baduk/static/css/main.903cb2c2.chunk.css",
-    "main.js": "/baduk/static/js/main.9871bd63.chunk.js",
-    "main.js.map": "/baduk/static/js/main.9871bd63.chunk.js.map",
+    "main.css": "/baduk/static/css/main.3a63e65b.chunk.css",
+    "main.js": "/baduk/static/js/main.ba225ba3.chunk.js",
+    "main.js.map": "/baduk/static/js/main.ba225ba3.chunk.js.map",
     "runtime-main.js": "/baduk/static/js/runtime-main.fa55bcdb.js",
     "runtime-main.js.map": "/baduk/static/js/runtime-main.fa55bcdb.js.map",
     "static/js/2.0116d4ef.chunk.js": "/baduk/static/js/2.0116d4ef.chunk.js",
     "static/js/2.0116d4ef.chunk.js.map": "/baduk/static/js/2.0116d4ef.chunk.js.map",
     "index.html": "/baduk/index.html",
-    "precache-manifest.42352709dda2491eb42d04624bf400c4.js": "/baduk/precache-manifest.42352709dda2491eb42d04624bf400c4.js",
+    "precache-manifest.e2e31fc3543de4a257926d4ed653fdd2.js": "/baduk/precache-manifest.e2e31fc3543de4a257926d4ed653fdd2.js",
     "service-worker.js": "/baduk/service-worker.js",
-    "static/css/main.903cb2c2.chunk.css.map": "/baduk/static/css/main.903cb2c2.chunk.css.map",
+    "static/css/main.3a63e65b.chunk.css.map": "/baduk/static/css/main.3a63e65b.chunk.css.map",
     "static/js/2.0116d4ef.chunk.js.LICENSE.txt": "/baduk/static/js/2.0116d4ef.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.fa55bcdb.js",
     "static/js/2.0116d4ef.chunk.js",
-    "static/css/main.903cb2c2.chunk.css",
-    "static/js/main.9871bd63.chunk.js"
+    "static/css/main.3a63e65b.chunk.css",
+    "static/js/main.ba225ba3.chunk.js"
   ]
 }
