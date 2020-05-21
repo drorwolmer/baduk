@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/baduk/precache-manifest.7dc02d6bb0acd82bd1076abd4231de96.js"
+  "/baduk/precache-manifest.81e098f6d0e4f90abdbea22c6f531aa7.js"
 );
 
 self.addEventListener('message', (event) => {
