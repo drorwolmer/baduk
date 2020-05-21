@@ -184,7 +184,7 @@ const onConferenceJoined = dispatch => () => {
     const create_local_track_options = {
         devices: ["video", "audio"],
         cameraDeviceId: getFromLocalStorage("video_device_id", null),
-        onLocalTracks: getFromLocalStorage("audio_device_id", null),
+        micDeviceId: getFromLocalStorage("audio_device_id", null),
     }
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
