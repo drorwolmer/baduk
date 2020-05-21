@@ -153,8 +153,17 @@ const onConferenceJoined = dispatch => () => {
     setLocalDisplayName(userId, displayName)
     setLocalEmoji(emoji)
 
+    // We want to explicitly ask for the device we last used
+    // for dror for example, switching rooms selects the snap camera instead of the regular
+    // This fixes it
+    const create_local_track_options = {
+        devices: ["video", "audio"],
+        cameraDeviceId: getFromLocalStorage("video_device_id", null),
+        onLocalTracks: getFromLocalStorage("audio_device_id", null),
+    }
+
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
-    window.JitsiMeetJS.createLocalTracks({ devices: ['audio', 'video'] })
+    window.JitsiMeetJS.createLocalTracks(create_local_track_options)
     .then(onLocalTracks(dispatch))
     .catch((error) => {
         throw error
@@ -162,7 +171,12 @@ const onConferenceJoined = dispatch => () => {
 }
 
 const onLocalTracks = dispatch => in_tracks => {
+
+    console.error("onLocalTracks", in_tracks)
+
     _.map(in_tracks, (local_track) => {
+
+        window.localStorage.setItem(`${local_track.getType()}_device_id`, local_track.getDeviceId())
 
         local_track.addEventListener(
             window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,

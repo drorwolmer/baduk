@@ -25,7 +25,7 @@ const ChatMessage = ({id: userId, text, ts, recipient}) => {
 
     return (
         <div className={messageClassNames}>
-            <span class="nick">{getNick(userId)} ({nice_date(ts)})</span><span class="text">{text}</span>
+            <span className="nick">{getNick(userId)} ({nice_date(ts)})</span><span className="text">{text}</span>
         </div>
     )
 }
