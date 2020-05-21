@@ -6,10 +6,14 @@ import * as serviceWorker from './serviceWorker'
 import { Provider } from 'react-redux'
 import { initJitsi, kickInterruptedConnections, unload } from './modules/meeting'
 import store from './store'
+import { setInitialRoom } from './store/room'
+
 
 
 // init Jitsi
 window.JitsiMeetJS.setLogLevel(window.JitsiMeetJS.logLevels.ERROR)
+
+store.dispatch(setInitialRoom())
 
 initJitsi(store)
 

@@ -63,21 +63,31 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
         }
     }, [has_audio, audioRef])
 
+    const renderInputBubble = ({ className, placeholder, submit, onHeightChange }) => (
+        <SpeechBubble className={className}>
+            <TextInput placeholder={placeholder}
+                       submit={submit}
+                       onHeightChange={onHeightChange}
+                       dismiss={hidePopup}/>
+        </SpeechBubble>
+    )
+
     const onClick = e => {
         e.stopPropagation()
 
         if (isLocal) {
             //send public message
-            const msg = window.prompt('Say something:')
-            if (msg) {
-                sendPublicMessage(msg)
-            }
+            setPopup(renderInputBubble({
+                placeholder: 'Say something',
+                submit: sendPublicMessage,
+            }))
         } else {
             // send private message
-            const msg = window.prompt(`Say something to ${displayName}:`)
-            if (msg) {
-                sendPrivateMessage(globalUID, displayName, msg)
-            }
+            setPopup(renderInputBubble({
+                className: 'centered no-pointer',
+                placeholder: `Say something to ${displayName}:`,
+                submit: msg => sendPrivateMessage(globalUID, displayName, msg),
+            }))
         }
 
     }
@@ -87,18 +97,11 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
 
         if (!isLocal) return
 
-        const TextInputBubble = () => (
-            <SpeechBubble className="centered no-pointer">
-                <TextInput placeholder="Choose name"
-                           submit={newName => {
-                               setLocalDisplayName(userId, newName)
-                               hidePopup()
-                           }}
-                           dismiss={hidePopup}/>
-            </SpeechBubble>
-        )
-
-        setPopup(<TextInputBubble/>)
+        setPopup(renderInputBubble({
+            className: 'centered no-pointer',
+            placeholder: 'Choose name',
+            submit: newName => setLocalDisplayName(userId, newName),
+        }))
     }
 
     const hidePopup = () => setPopup(null)
@@ -123,12 +126,14 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
         [`globalUID_${globalUID}`]: true
     })
 
+    const popupOpen = !_.isNil(popup)
+
     return (
         <div className={videoClassNames} onClick={onClick}>
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
             <div className="id" onClick={onNameClick}>{displayName}</div>
             {bubbleMessage && (
-                <AutoHide ttl={7000} refreshKey={bubbleMessage.ts}>
+                <AutoHide ttl={7000} refreshKey={bubbleMessage.ts} hidden={popupOpen}>
                     <SpeechBubble>{bubbleMessage.text}</SpeechBubble>
                 </AutoHide>
             )}
@@ -139,7 +144,7 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
             {has_audio && (
                 <audio muted={isLocal || !isAudioActive} autoPlay="1" ref={audioRef}/>
             )}
-            {!_.isNil(popup) && (
+            {popupOpen && (
                 <Popup onOutsideClick={hidePopup}>{popup}</Popup>
             )}
         </div>

@@ -1,11 +1,11 @@
 .text-input {
-  input {
-    background: none;
-    border: none;
-    border-bottom: solid 1px #7b7b7b;
+  width: 155px;
+  background: none;
+  border: none;
+  position: relative;
+  text-align: left;
 
-    &:focus {
-      outline: none;
-    }
+  &:focus {
+    outline: none;
   }
 }
