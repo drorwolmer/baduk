@@ -142,6 +142,9 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
     return (
         <div className={videoClassNames} onClick={onClick}>
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
+            {has_audio && !muted_audio && (
+                <div className="emoji mic">🎤</div>
+            )}
             <div className="id" onClick={onNameClick}>{displayName}</div>
             {bubbleMessage && (
                 <AutoHide ttl={7000} refreshKey={bubbleMessage.ts} hidden={popupOpen}>
