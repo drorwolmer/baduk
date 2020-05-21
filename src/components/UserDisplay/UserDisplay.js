@@ -21,7 +21,7 @@ const detachAndDispose = (track, ref) => {
     }
 }
 
-const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
+const UserDisplay = ({ id: userId, globalUID, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
 
     const videoRef = useRef(null)
     const audioRef = useRef(null)
@@ -31,7 +31,7 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
 
     const [popup, setPopup] = useState(null)
 
-    const bubbleMessage = useSelector(getUserLastPublicMessage(userId))
+    const bubbleMessage = useSelector(getUserLastPublicMessage(globalUID))
 
     useEffect(() => {
 
@@ -76,7 +76,7 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
             // send private message
             const msg = window.prompt(`Say something to ${displayName}:`)
             if (msg) {
-                sendPrivateMessage(userId, msg)
+                sendPrivateMessage(globalUID, displayName, msg)
             }
         }
 

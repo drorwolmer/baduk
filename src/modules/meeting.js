@@ -1,12 +1,19 @@
 import _ from 'lodash'
-import {getFromLocalStorage, getLocalTracks} from '../utils'
+import {getFromLocalStorage, getLocalTracks, randomString} from '../utils'
 import {getRoom, setRoom} from '../store/room'
-import {addUser, updateUser, addRemoteUserTrack, removeUser, updateDominantSpeaker} from '../store/users'
+import {
+    addUser,
+    updateUser,
+    addRemoteUserTrack,
+    removeUser,
+    updateDominantSpeaker,
+} from '../store/users'
 import {pushMessage} from '../store/messages'
 import {jitsi as jitsiConfig} from '../config/config.dev'
 
 const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
 const LEAVE_MINI_CONFERENCE_CMD = 'LEAVE_MINI_CONFERENCE'
+const SET_GLOBAL_UID_CMD = 'SET_GLOBAL_UID'
 const SET_EMOJI_CMD = 'SET_EMOJI'
 const DEFAULT_EMOJI = '😷'
 const DEFAULT_USERNAME = 'anonymous'
@@ -82,14 +89,24 @@ const joinConference = (dispatch, roomConfig) => {
         dispatch(updateUser(userId, {emoji}))
     })
 
+    JitsiConference.addCommandListener(SET_GLOBAL_UID_CMD, e => {
+
+        const conference_id = e.attributes['conference_id']
+        const globalUID = e.attributes['globalUID']
+
+        console.warn(SET_GLOBAL_UID_CMD, conference_id, globalUID, e.attributes)
+
+        dispatch(updateUser(conference_id, {globalUID}))
+    })
+
     JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
         // TODO(DROR): ts can be none here,
         console.warn('MESSAGE_RECEIVED', id, text, ts)
         const msg_object = JSON.parse(text)
 
-        const all_ids = getAllIds()
-        msg_object.from_me = (_.indexOf(all_ids, msg_object.id) > -1)
-        msg_object.to_me = (_.indexOf(all_ids, msg_object.recipient) > -1)
+        const globalUID = getFromLocalStorage('GLOBAL_UID')
+        msg_object.from_me = msg_object.globalUID === globalUID
+        msg_object.to_me = msg_object.recipient === globalUID
 
         if (msg_object.from_me || msg_object.to_me || msg_object.recipient === "public") {
             dispatch(pushMessage({
@@ -100,15 +117,6 @@ const joinConference = (dispatch, roomConfig) => {
 
     })
 
-    // JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
-    //     // TODO(DROR): ts can be none here,
-    //     console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
-    //     dispatch(pushMessage({
-    //         text: text,
-    //         ts: new Date(), // as we have a different ID, we will never receive this...
-    //         recipient: 'me'
-    //     }))
-    // })
 
     JitsiConference.on(CONFERENCE_JOINED, onConferenceJoined(dispatch))
     JitsiConference.on(USER_JOINED, onUserJoined(dispatch))
@@ -154,6 +162,7 @@ const onConferenceJoined = dispatch => () => {
 
     const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
     const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
+    const globalUID = getFromLocalStorage('GLOBAL_UID', randomString(16))
     // TODO(DROR): Remember camera state
 
     dispatch(addUser({
@@ -168,6 +177,7 @@ const onConferenceJoined = dispatch => () => {
     // Send the cached display_name and emoji to other participants
     setLocalDisplayName(userId, displayName)
     setLocalEmoji(emoji)
+    setGlobalUID(globalUID)
 
     // We want to explicitly ask for the device we last used
     // for dror for example, switching rooms selects the snap camera instead of the regular
@@ -422,27 +432,40 @@ export const setLocalEmoji = (emoji) => {
     window.localStorage.setItem('EMOJI', emoji)
 }
 
-export const sendPublicMessage = (msg) => {
-    sendPrivateMessage("public", msg);
-}
-
-export const sendPrivateMessage = (targetId, msg) => {
+export const setGlobalUID = (globalUID) => {
     if (!window.JitsiConference) return
 
+    // This will send the event name to other participants
+    window.JitsiConference.sendCommand(SET_GLOBAL_UID_CMD, {
+            attributes: {
+                'globalUID': globalUID,
+                'conference_id': window.JitsiConference.myUserId()
+            }
+        }
+    )
+    window.localStorage.setItem('GLOBAL_UID', globalUID)
+}
+
+export const sendPublicMessage = (msg) => {
+    sendPrivateMessage("public", "public", msg);
+}
+
+export const sendPrivateMessage = (targetGlobalUID, targetDisplayName, msg) => {
+    if (!window.JitsiConference) return
+
+    console.error("sendPrivate", targetGlobalUID, targetDisplayName, msg)
+
     // TODO(DROR,ASAF): Can we access the state here?
-    const userId = window.JitsiConference.myUserId()
     const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
     const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
 
 
-    const targetDisplayName = targetId === "public" ? "public" : window.JitsiConference.getParticipantById(targetId).getDisplayName()
-
     const msg_object = {
-        id: userId,
+        globalUID: getFromLocalStorage('GLOBAL_UID'),
         displayName: displayName,
         targetDisplayName: targetDisplayName,
         emoji: emoji,
-        recipient: targetId,
+        recipient: targetGlobalUID,
         text: msg
     }
 

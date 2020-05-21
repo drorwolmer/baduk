@@ -28,6 +28,8 @@ export const updateDominantSpeaker = userId => ({
 
 export const getUser = userId => state => _.get(state.users, userId)
 
+export const getUserByGlobalUID = globalUID => state => _.find(state.users, {globalUID: globalUID})
+
 export const getLocalUser = state => _.find(state.users, {isLocal: true})
 
 export const getRemoteUsers = state => _.pickBy(state.users, u => !u.isLocal)
