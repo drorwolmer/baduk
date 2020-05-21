@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import _ from 'lodash'
 import { getTracks } from '../../utils'
 import { sendPrivateMessage, sendPublicMessage, setLocalDisplayName } from '../../modules/meeting'
-import { getUserMessages } from '../../store/messages'
+import { getUserLastPublicMessage } from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 import { useSelector } from 'react-redux'
 import Popup from '../Popup'
 import EmojiSelection from '../EmojiSelection'
+import SpeechBubble from '../SpeechBubble'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -28,7 +29,7 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
 
     const [popup, setPopup] = useState(null)
 
-    const messages = useSelector(getUserMessages(userId))
+    const bubbleMessage = useSelector(getUserLastPublicMessage(userId))
 
     useEffect(() => {
 
@@ -114,9 +115,9 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
         <div className={videoClassNames} onClick={onClick}>
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
             <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
-            {/*{_.map(messages, ({msg, key}) => (*/}
-            {/*    <div key={key} className="chat">{msg}</div>*/}
-            {/*))}*/}
+            {bubbleMessage && (
+                <SpeechBubble text={bubbleMessage.text}/>
+            )}
             <div className="in"/>
             {has_video && (
                 <video autoPlay="1" ref={videoRef}/>

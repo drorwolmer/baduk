@@ -1,0 +1,32 @@
+.bubble-wrapper {
+  position: absolute;
+  width: 185px;
+  left: 185px;
+  top: 120px;
+  transform: translateY(-50%);
+  z-index: 100;
+
+  .speech-bubble {
+    display: inline-block;
+    padding: 10px 15px;
+    background: rgba(256, 256, 256, .8);
+    border-radius: .4em;
+    color: black;
+    word-break: break-word;
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 60%;
+      width: 0;
+      height: 0;
+      border: 0.938em solid transparent;
+      border-right-color: rgba(256, 256, 256, .9);
+      border-left: 0;
+      border-top: 0;
+      margin-top: -0.469em;
+      margin-left: -0.937em;
+    }
+  }
+}

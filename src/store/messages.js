@@ -18,6 +18,11 @@ export const deleteMessage = key => ({
 })
 
 export const getUserMessages = userId => state => _.filter(state.messages, m => m.id === userId)
+
+export const getUserLastPublicMessage = userId => state => _.last(
+    _.filter(state.messages, m => m.id === userId && m.recipient === 'public')
+)
+
 export const getAllMessages = state => state.messages
 
 const roomReducer = makeReducer({
