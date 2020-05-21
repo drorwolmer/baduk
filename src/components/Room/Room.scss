@@ -42,6 +42,10 @@
     }
   }
 
+  &.block .right-sidebar {
+    display:none;
+  }
+
   &.block {
     .bg {
       background: url('/baduk/block-bg.png');
