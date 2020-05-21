@@ -8,7 +8,7 @@ import {
     removeUser,
     updateDominantSpeaker,
 } from '../store/users'
-import {pushMessage} from '../store/messages'
+import {deleteAllMessages, pushMessage} from '../store/messages'
 import {jitsi as jitsiConfig} from '../config/config.dev'
 
 const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
@@ -102,7 +102,13 @@ const joinConference = (dispatch, roomConfig) => {
     JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
         // TODO(DROR): ts can be none here,
         console.warn('MESSAGE_RECEIVED', id, text, ts)
-        const msg_object = JSON.parse(text)
+        let msg_object = null
+        try {
+            msg_object = JSON.parse(text)
+
+        } catch (e) {
+            return;
+        }
 
         const globalUID = getFromLocalStorage('GLOBAL_UID')
         msg_object.from_me = msg_object.globalUID === globalUID
@@ -139,15 +145,14 @@ export const changeConference = roomConfig => dispatch => {
 
     window.JitsiConference.leave()
         .then(() => {
+            dispatch(deleteAllMessages())
             joinConference(dispatch, roomConfig)
         })
 }
 
 /////////////////
 // LOCAL USER
-const getAllIds = () => {
-    return JSON.parse(getFromLocalStorage("ALL_IDS", '[]'));
-}
+
 
 /////////////////
 const onConferenceJoined = dispatch => () => {
@@ -155,23 +160,17 @@ const onConferenceJoined = dispatch => () => {
 
     const userId = window.JitsiConference.myUserId()
 
-    // small trick to achieve persistence
-    let all_ids = getAllIds()
-    all_ids.push(userId)
-    window.localStorage.setItem("ALL_IDS", JSON.stringify(all_ids));
-
     const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
     const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
     const globalUID = getFromLocalStorage('GLOBAL_UID', randomString(16))
-    // TODO(DROR): Remember camera state
 
     dispatch(addUser({
         id: userId,
+        globalUID: globalUID,
         isLocal: true,
         displayName: displayName,
         emoji: emoji,
         activeRoom: 'MAIN',
-        all_ids: all_ids
     }))
 
     // Send the cached display_name and emoji to other participants
@@ -185,7 +184,7 @@ const onConferenceJoined = dispatch => () => {
     const create_local_track_options = {
         devices: ["video", "audio"],
         cameraDeviceId: getFromLocalStorage("video_device_id", null),
-        onLocalTracks: getFromLocalStorage("audio_device_id", null),
+        micDeviceId: getFromLocalStorage("audio_device_id", null),
     }
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
