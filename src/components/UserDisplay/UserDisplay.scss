@@ -35,7 +35,6 @@
     text-shadow: 1px 1px rgba(0, 0, 0, 1);
     text-align: center;
     color: white;
-    font-size:1.3em;
   }
 
   .chat {
@@ -52,7 +51,7 @@
     cursor: pointer;
     position: absolute;
     z-index: 9;
-    font-size: 3em;
+    font-size: 2em;
     right: -5px;
     top: 20px;
     animation: spin 2s linear infinite;
@@ -64,7 +63,8 @@
     top:50%;
     animation: unset;
     right: unset;
-    opacity: 0.5;
+    opacity: 1;
+    font-size: 1.1em;
   }
 
   &.local-user {
@@ -84,7 +84,7 @@
 
   .side-room &.dominant {
     .in {
-      box-shadow: inset 0 0 50px red !important;
+      box-shadow: inset 0 0 20px rgba(226, 106, 106, 0.7) !important;
     }
   }
 
