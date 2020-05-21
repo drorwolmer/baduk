@@ -8,24 +8,20 @@ const nice_date = (date) => {
     return `${hours_str}:${minutes_str}`
 }
 
-const getNick = (userId) => {
-    const participant = window.JitsiConference.getParticipantById(userId)
-    if (!participant) {
-        return "Anonymous"
-    }
-    return participant.getDisplayName()
-}
-
-const ChatMessage = ({id: userId, text, ts, recipient}) => {
+const ChatMessage = ({displayName, targetDisplayName, from_me, to_me, text, emoji, ts, recipient}) => {
 
     const messageClassNames = classNames('text-message', {
         'private': recipient !== "public",
         'public': recipient === "public",
+        'from_me': from_me,
+        'to_me': to_me
     })
 
     return (
         <div className={messageClassNames}>
-            <span className="nick">{getNick(userId)} ({nice_date(ts)})</span><span className="text">{text}</span>
+            <span className="emoji">{emoji}</span>
+            <span className="nick">{displayName} -> {targetDisplayName} ({nice_date(ts)}) </span>
+            <span className="text">{text}</span>
         </div>
     )
 }

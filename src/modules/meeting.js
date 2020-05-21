@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import { getFromLocalStorage, getLocalTracks } from '../utils'
-import { getRoom, setRoom } from '../store/room'
-import { addUser, updateUser, addRemoteUserTrack, removeUser, updateDominantSpeaker } from '../store/users'
-import { pushMessage } from '../store/messages'
-import { jitsi as jitsiConfig } from '../config/config.dev'
+import {getFromLocalStorage, getLocalTracks} from '../utils'
+import {getRoom, setRoom} from '../store/room'
+import {addUser, updateUser, addRemoteUserTrack, removeUser, updateDominantSpeaker} from '../store/users'
+import {pushMessage} from '../store/messages'
+import {jitsi as jitsiConfig} from '../config/config.dev'
 
 const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
 const LEAVE_MINI_CONFERENCE_CMD = 'LEAVE_MINI_CONFERENCE'
@@ -19,8 +19,8 @@ export const initJitsi = store => {
     connect(store)
 }
 
-const connect = ({ dispatch, getState }) => {
-    const { CONNECTION_ESTABLISHED, CONNECTION_FAILED, CONNECTION_DISCONNECTED } = window.JitsiMeetJS.events.connection
+const connect = ({dispatch, getState}) => {
+    const {CONNECTION_ESTABLISHED, CONNECTION_FAILED, CONNECTION_DISCONNECTED} = window.JitsiMeetJS.events.connection
 
     window.JitsiConnection = new window.JitsiMeetJS.JitsiConnection(null, null, jitsiConfig)
 
@@ -66,7 +66,7 @@ const joinConference = (dispatch, roomConfig) => {
     } = window.JitsiMeetJS.events.conference
 
     JitsiConference.on(DISPLAY_NAME_CHANGED, (id, displayName) => {
-        dispatch(updateUser(id, { displayName }))
+        dispatch(updateUser(id, {displayName}))
     })
 
     JitsiConference.on(DOMINANT_SPEAKER_CHANGED, (id) => {
@@ -79,30 +79,36 @@ const joinConference = (dispatch, roomConfig) => {
 
         console.warn(SET_EMOJI_CMD, userId, emoji)
 
-        dispatch(updateUser(userId, { emoji }))
+        dispatch(updateUser(userId, {emoji}))
     })
 
     JitsiConference.on(MESSAGE_RECEIVED, function (id, text, ts) {
         // TODO(DROR): ts can be none here,
         console.warn('MESSAGE_RECEIVED', id, text, ts)
-        dispatch(pushMessage({
-            id: id,
-            text: text,
-            ts: ts ? new Date(Date.parse(ts)) : new Date(),  // ts is only sent when we refresh
-            recipient: 'public'
-        }))
+        const msg_object = JSON.parse(text)
+
+        const all_ids = getAllIds()
+        msg_object.from_me = (_.indexOf(all_ids, msg_object.id) > -1)
+        msg_object.to_me = (_.indexOf(all_ids, msg_object.recipient) > -1)
+
+        if (msg_object.from_me || msg_object.to_me || msg_object.recipient === "public") {
+            dispatch(pushMessage({
+                ...msg_object,
+                ts: ts ? new Date(Date.parse(ts)) : new Date(),  // ts is only sent when we refresh
+            }))
+        }
+
     })
 
-    JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
-        // TODO(DROR): ts can be none here,
-        console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
-        dispatch(pushMessage({
-            id: id,
-            text: text,
-            ts: new Date(), // as we have a different ID, we will never receive this...
-            recipient: 'me'
-        }))
-    })
+    // JitsiConference.on(PRIVATE_MESSAGE_RECEIVED, function (id, text, ts) {
+    //     // TODO(DROR): ts can be none here,
+    //     console.warn('PRIVATE_MESSAGE_RECEIVED', id, text, ts)
+    //     dispatch(pushMessage({
+    //         text: text,
+    //         ts: new Date(), // as we have a different ID, we will never receive this...
+    //         recipient: 'me'
+    //     }))
+    // })
 
     JitsiConference.on(CONFERENCE_JOINED, onConferenceJoined(dispatch))
     JitsiConference.on(USER_JOINED, onUserJoined(dispatch))
@@ -124,18 +130,27 @@ export const changeConference = roomConfig => dispatch => {
     if (!window.JitsiConference) return
 
     window.JitsiConference.leave()
-    .then(() => {
-        joinConference(dispatch, roomConfig)
-    })
+        .then(() => {
+            joinConference(dispatch, roomConfig)
+        })
 }
 
 /////////////////
 // LOCAL USER
+const getAllIds = () => {
+    return JSON.parse(getFromLocalStorage("ALL_IDS", '[]'));
+}
+
 /////////////////
 const onConferenceJoined = dispatch => () => {
     console.warn('onConferenceJoined')
 
     const userId = window.JitsiConference.myUserId()
+
+    // small trick to achieve persistence
+    let all_ids = getAllIds()
+    all_ids.push(userId)
+    window.localStorage.setItem("ALL_IDS", JSON.stringify(all_ids));
 
     const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
     const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
@@ -146,7 +161,8 @@ const onConferenceJoined = dispatch => () => {
         isLocal: true,
         displayName: displayName,
         emoji: emoji,
-        activeRoom: 'MAIN'
+        activeRoom: 'MAIN',
+        all_ids: all_ids
     }))
 
     // Send the cached display_name and emoji to other participants
@@ -164,10 +180,10 @@ const onConferenceJoined = dispatch => () => {
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
     window.JitsiMeetJS.createLocalTracks(create_local_track_options)
-    .then(onLocalTracks(dispatch))
-    .catch((error) => {
-        throw error
-    })
+        .then(onLocalTracks(dispatch))
+        .catch((error) => {
+            throw error
+        })
 }
 
 const onLocalTracks = dispatch => in_tracks => {
@@ -218,7 +234,7 @@ const onLocalTracks = dispatch => in_tracks => {
         })
     })
 
-    dispatch(updateUser(window.JitsiConference.myUserId(), { hasTracks: true }))
+    dispatch(updateUser(window.JitsiConference.myUserId(), {hasTracks: true}))
 }
 
 /////////////////
@@ -298,13 +314,13 @@ const onSideRoomJoined = dispatch => e => {
     console.warn(JOIN_MINI_CONFERENCE_CMD, userId, to)
 
     if (userId === window.JitsiConference.myUserId()) {
-        const { audio } = getLocalTracks()
+        const {audio} = getLocalTracks()
         if (audio) {
             audio.unmute()
         }
     }
 
-    dispatch(updateUser(userId, { activeRoom: to }))
+    dispatch(updateUser(userId, {activeRoom: to}))
 }
 
 export const leaveSideRoom = roomName => {
@@ -330,18 +346,18 @@ const onSideRoomLeft = dispatch => e => {
     console.warn(LEAVE_MINI_CONFERENCE_CMD, userId)
 
     if (userId === window.JitsiConference.myUserId()) {
-        const { audio } = getLocalTracks()
+        const {audio} = getLocalTracks()
         audio && audio.mute()
     }
 
-    dispatch(updateUser(userId, { activeRoom: 'MAIN' }))
+    dispatch(updateUser(userId, {activeRoom: 'MAIN'}))
 }
 
 //////////////////////
 // USER INTERACTIONS
 //////////////////////
 export const onVideoMuteToggle = () => {
-    const { video } = getLocalTracks()
+    const {video} = getLocalTracks()
     if (!video) {
         return
     }
@@ -368,11 +384,14 @@ const onTrackMuteChanged = dispatch => track => {
 
 }
 
-const onLocalTrackMuteChanged = () => {}
+const onLocalTrackMuteChanged = () => {
+}
 
-const onLocalTrackStopped = () => {}
+const onLocalTrackStopped = () => {
+}
 
-const OnLocalTrackAudioOutputChanged = () => {}
+const OnLocalTrackAudioOutputChanged = () => {
+}
 
 export const setLocalDisplayName = (userId, displayName) => {
     if (!window.JitsiConference) return
@@ -404,16 +423,30 @@ export const setLocalEmoji = (emoji) => {
 }
 
 export const sendPublicMessage = (msg) => {
-    if (!window.JitsiConference) return
-
-    window.JitsiConference.sendMessage(msg)
+    sendPrivateMessage("public", msg);
 }
 
 export const sendPrivateMessage = (targetId, msg) => {
     if (!window.JitsiConference) return
 
-    console.warn('sendPrivateTextMessage to ' + targetId)
-    window.JitsiConference.sendPrivateTextMessage(targetId, msg)
+    // TODO(DROR,ASAF): Can we access the state here?
+    const userId = window.JitsiConference.myUserId()
+    const displayName = getFromLocalStorage('DISPLAY_NAME', DEFAULT_USERNAME)
+    const emoji = getFromLocalStorage('EMOJI', DEFAULT_EMOJI)
+
+
+    const targetDisplayName = targetId === "public" ? "public" : window.JitsiConference.getParticipantById(targetId).getDisplayName()
+
+    const msg_object = {
+        id: userId,
+        displayName: displayName,
+        targetDisplayName: targetDisplayName,
+        emoji: emoji,
+        recipient: targetId,
+        text: msg
+    }
+
+    window.JitsiConference.sendMessage(JSON.stringify(msg_object))
 }
 
 /////////////////
