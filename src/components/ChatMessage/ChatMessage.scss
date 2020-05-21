@@ -38,6 +38,10 @@
   }
 }
 
+.text-message.public .nick.to {
+  display:none;
+}
+
 
 .text-message.private span.nick {
   font-weight: bold;
