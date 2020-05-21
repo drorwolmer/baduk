@@ -10,6 +10,24 @@ const nice_date = (date) => {
 
 const ChatMessage = ({displayName, targetDisplayName, from_me, to_me, text, emoji, ts, recipient}) => {
 
+    const getFromText = (displayName) =>
+    {
+        if (to_me && (recipient !== "public"))
+        {
+            return `Private from ${displayName}`
+        }
+        return displayName
+    }
+
+    const getToText = (displayName) =>
+    {
+        if (from_me && (recipient !== "public"))
+        {
+            return `Private to ${displayName}`
+        }
+        return displayName
+    }
+
     const messageClassNames = classNames('text-message', {
         'private': recipient !== "public",
         'public': recipient === "public",
@@ -20,7 +38,9 @@ const ChatMessage = ({displayName, targetDisplayName, from_me, to_me, text, emoj
     return (
         <div className={messageClassNames}>
             <span className="emoji">{emoji}</span>
-            <span className="nick">{displayName} -> {targetDisplayName} ({nice_date(ts)}) </span>
+            <span className="nick from">{getFromText(displayName)}</span>
+            <span className="nick to">{getToText(targetDisplayName)}</span>
+            <span className="msg-date">({nice_date(ts)}) </span>
             <span className="text">{text}</span>
         </div>
     )

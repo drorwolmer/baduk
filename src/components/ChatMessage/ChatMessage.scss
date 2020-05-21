@@ -13,7 +13,7 @@
 
 
   span.emoji {
-    font-size:1.4em;
+    font-size: 1.4em;
     padding-right: 5px;
   }
 
@@ -23,10 +23,23 @@
   }
 }
 
-.text-message.private {
+.text-message.from_me.private {
   background: rgba(139, 0, 0, 0.5);
 
-  span.nick {
-    font-weight:bold;
+  .nick.from {
+    display:none
   }
 }
+
+.text-message.to_me {
+  background: rgba(0, 139, 0, 0.5);
+  .nick.to {
+    display:none
+  }
+}
+
+
+.text-message.private span.nick {
+  font-weight: bold;
+}
+
