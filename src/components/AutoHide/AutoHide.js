@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-const AutoHide = ({ children, refreshKey, ttl = -1 }) => {
+const AutoHide = ({ children, refreshKey, ttl = -1, hidden }) => {
 
     const [isVisible, setIsVisible] = useState(true)
 
@@ -14,7 +14,7 @@ const AutoHide = ({ children, refreshKey, ttl = -1 }) => {
         }
     }, [refreshKey])
 
-    return isVisible && children
+    return isVisible && !hidden && children
 }
 
 export default AutoHide
