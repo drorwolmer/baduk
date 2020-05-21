@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "23232166a041ae9032f3c115cb9f09f9",
+    "revision": "6319faa1ad29af1b204249f9d0d8356b",
     "url": "/baduk/index.html"
   },
   {
-    "revision": "31f679083f843345d3e9",
-    "url": "/baduk/static/css/main.8c7611c2.chunk.css"
+    "revision": "dba5d601265ce9274a30",
+    "url": "/baduk/static/css/main.685cd7fe.chunk.css"
   },
   {
     "revision": "61416e4da45b1386c5fa",
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/baduk/static/js/2.ef6fb1fb.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "31f679083f843345d3e9",
-    "url": "/baduk/static/js/main.a10d7de4.chunk.js"
+    "revision": "dba5d601265ce9274a30",
+    "url": "/baduk/static/js/main.ef28c2a6.chunk.js"
   },
   {
     "revision": "54b1d37f7b0b78e206b1",
