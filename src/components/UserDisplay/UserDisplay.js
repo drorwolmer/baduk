@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
-import { getTracks } from '../../utils'
-import { sendPrivateMessage, sendPublicMessage, setLocalDisplayName } from '../../modules/meeting'
-import { getUserLastPublicMessage } from '../../store/messages'
+import {getTracks} from '../../utils'
+import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
+import {getUserLastPublicMessage} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
-import { useSelector } from 'react-redux'
+import {useSelector} from 'react-redux'
 import Popup from '../Popup'
 import AutoHide from '../AutoHide'
 import EmojiSelection from '../EmojiSelection'
@@ -21,7 +21,7 @@ const detachAndDispose = (track, ref) => {
     }
 }
 
-const UserDisplay = ({ id: userId, globalUID, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker }) => {
+const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker}) => {
 
     const videoRef = useRef(null)
     const audioRef = useRef(null)
@@ -36,7 +36,7 @@ const UserDisplay = ({ id: userId, globalUID, isLocal, has_audio, has_video, mut
     useEffect(() => {
 
         if (has_video) {
-            const { video } = getTracks(userId, isLocal)
+            const {video} = getTracks(userId, isLocal)
             attach(video, videoRef)
             setVideoTrack(video)
         }
@@ -51,7 +51,7 @@ const UserDisplay = ({ id: userId, globalUID, isLocal, has_audio, has_video, mut
     useEffect(() => {
 
         if (has_audio) {
-            const { audio } = getTracks(userId, isLocal)
+            const {audio} = getTracks(userId, isLocal)
             attach(audio, audioRef)
             setAudioTrack(audio)
         }
@@ -119,12 +119,14 @@ const UserDisplay = ({ id: userId, globalUID, isLocal, has_audio, has_video, mut
         'muted': !isAudioActive && !isLocal,
         'dominant': isDominantSpeaker,
         'local_muted': !isAudioActive && isLocal,
+        [`id_${userId}`]: true,
+        [`globalUID_${globalUID}`]: true
     })
 
     return (
         <div className={videoClassNames} onClick={onClick}>
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
-            <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
+            <div className="id" onClick={onNameClick}>{displayName}</div>
             {bubbleMessage && (
                 <AutoHide ttl={7000} refreshKey={bubbleMessage.ts}>
                     <SpeechBubble>{bubbleMessage.text}</SpeechBubble>
