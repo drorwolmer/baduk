@@ -185,7 +185,7 @@ const onConferenceJoined = dispatch => () => {
         devices: ["video", "audio"],
         cameraDeviceId: getFromLocalStorage("video_device_id", null),
         micDeviceId: getFromLocalStorage("audio_device_id", null),
-        constraints { "height": 180, "width": 180}
+        constraints: { "height": 180, "width": 180}
     }
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
