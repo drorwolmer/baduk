@@ -24,9 +24,14 @@ export const deleteAllMessages = () => ({
 export const getUserMessages = userId => state => _.filter(state.messages, m => m.id === userId)
 
 // Get the last message from this user, sent in the last 10 secs
-export const getUserLastMessage = globalUID => state => _.last(_.filter(state.messages, (m) => {
+export const getUserLastMessage = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
     let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
-    return (m.globalUID === globalUID) && (ts_diff_secs<10)
+    return m.globalUID === globalUID && (m.recipient === 'public' || m.recipient === localUserGlobalUID) &&  (ts_diff_secs<10)
+}))
+
+export const getLastMessageFromLocalUser = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
+    let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
+    return m.recipient === globalUID && m.globalUID === localUserGlobalUID && (ts_diff_secs<10)
 }))
 
 

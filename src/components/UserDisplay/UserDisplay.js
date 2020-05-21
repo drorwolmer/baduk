@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
 import {getTracks} from '../../utils'
 import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
-import {getUserLastMessage} from '../../store/messages'
+import {getUserLastMessage, getLastMessageFromLocalUser} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 import {useSelector} from 'react-redux'
@@ -11,6 +11,7 @@ import AutoHide from '../AutoHide'
 import EmojiSelection from '../EmojiSelection'
 import SpeechBubble from '../SpeechBubble'
 import TextInput from '../TextInput'
+import { getLocalUser } from '../../store/users'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -31,7 +32,11 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
 
     const [popup, setPopup] = useState(null)
 
-    const bubbleMessage = useSelector(getUserLastMessage(globalUID))
+    const localUser = useSelector(getLocalUser)
+
+    const bubbleMessage = useSelector(getUserLastMessage(globalUID, localUser.globalUID))
+
+    const lastMessageFromLocalUser = useSelector(getLastMessageFromLocalUser(globalUID, localUser.globalUID))
 
     useEffect(() => {
 
@@ -134,11 +139,15 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
             <div className="id" onClick={onNameClick}>{displayName}</div>
             {bubbleMessage && (
                 <AutoHide ttl={7000} refreshKey={bubbleMessage.ts} hidden={popupOpen}>
-                    <SpeechBubble className={classNames({
-                        from_me: bubbleMessage.from_me && bubbleMessage.recipient !== 'public',
-                        to_me: bubbleMessage.to_me,
-                    })}>
+                    <SpeechBubble className={classNames({ to_me: bubbleMessage.to_me })}>
                         {bubbleMessage.text}
+                    </SpeechBubble>
+                </AutoHide>
+            )}
+            {lastMessageFromLocalUser && (
+                <AutoHide ttl={7000} refreshKey={lastMessageFromLocalUser.ts} hidden={popupOpen}>
+                    <SpeechBubble className="centered no-pointer from_me">
+                        {lastMessageFromLocalUser.text}
                     </SpeechBubble>
                 </AutoHide>
             )}
