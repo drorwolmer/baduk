@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import './SpeechBubble.scss'
 
-const SpeechBubble = ({ text, ttl = 5000 }) => {
-
-    const [isVisible, setIsVisible] = useState(true)
-
-    useEffect(() => {
-        setIsVisible(true)
-        const timer = setTimeout(() => {
-            setIsVisible(false)
-        }, ttl)
-        return () => clearTimeout(timer)
-    }, [text])
-
-    return isVisible && (
+const SpeechBubble = ({ children }) => {
+    return (
         <div className="bubble-wrapper">
-            <div className="speech-bubble">{text}</div>
+            <div className="speech-bubble">{children}</div>
         </div>
     )
 }

@@ -7,6 +7,7 @@ import classNames from 'classnames'
 import './UserDisplay.scss'
 import { useSelector } from 'react-redux'
 import Popup from '../Popup'
+import AutoHide from '../AutoHide'
 import EmojiSelection from '../EmojiSelection'
 import SpeechBubble from '../SpeechBubble'
 
@@ -116,7 +117,9 @@ const UserDisplay = ({ id: userId, isLocal, has_audio, has_video, muted_audio, m
             <div className="emoji" onClick={onEmojiClick}>{emoji}</div>
             <div className="id" onClick={onNameClick}>{displayName} {userId}</div>
             {bubbleMessage && (
-                <SpeechBubble text={bubbleMessage.text}/>
+                <AutoHide ttl={7000} refreshKey={bubbleMessage.ts}>
+                    <SpeechBubble>{bubbleMessage.text}</SpeechBubble>
+                </AutoHide>
             )}
             <div className="in"/>
             {has_video && (
