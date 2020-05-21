@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
 import {getTracks} from '../../utils'
 import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
-import {getUserLastPublicMessage} from '../../store/messages'
+import {getUserLastMessage} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 import {useSelector} from 'react-redux'
@@ -31,7 +31,7 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
 
     const [popup, setPopup] = useState(null)
 
-    const bubbleMessage = useSelector(getUserLastPublicMessage(globalUID))
+    const bubbleMessage = useSelector(getUserLastMessage(globalUID))
 
     useEffect(() => {
 
@@ -134,7 +134,12 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
             <div className="id" onClick={onNameClick}>{displayName}</div>
             {bubbleMessage && (
                 <AutoHide ttl={7000} refreshKey={bubbleMessage.ts} hidden={popupOpen}>
-                    <SpeechBubble>{bubbleMessage.text}</SpeechBubble>
+                    <SpeechBubble className={classNames({
+                        from_me: bubbleMessage.from_me && bubbleMessage.recipient !== 'public',
+                        to_me: bubbleMessage.to_me,
+                    })}>
+                        {bubbleMessage.text}
+                    </SpeechBubble>
                 </AutoHide>
             )}
             <div className="in"/>

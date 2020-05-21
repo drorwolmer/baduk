@@ -23,10 +23,10 @@ export const deleteAllMessages = () => ({
 
 export const getUserMessages = userId => state => _.filter(state.messages, m => m.id === userId)
 
-// Get the last public message from this user, sent in the last 10 secs
-export const getUserLastPublicMessage = globalUID => state => _.last(_.filter(state.messages, (m) => {
+// Get the last message from this user, sent in the last 10 secs
+export const getUserLastMessage = globalUID => state => _.last(_.filter(state.messages, (m) => {
     let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
-    return (m.globalUID === globalUID) && (m.recipient === 'public') && (ts_diff_secs<10)
+    return (m.globalUID === globalUID) && (ts_diff_secs<10)
 }))
 
 
