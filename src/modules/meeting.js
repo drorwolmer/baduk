@@ -397,7 +397,7 @@ const onSideRoomJoined = dispatch => e => {
             audio.unmute()
         }
 
-        window.soundcloud && window.soundcloud.setVolume(25)
+        window.soundcloud && window.soundcloud.setVolume(10)
     }
 
     dispatch(updateUser(userId, {activeRoom: to}))
