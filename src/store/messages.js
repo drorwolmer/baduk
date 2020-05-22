@@ -44,7 +44,6 @@ export const getPrivateMessages = (recipientGlobalUID, localUserGlobalUID) => st
         || (m.globalUID === localUserGlobalUID && m.recipient === recipientGlobalUID)
 })
 
-const roomReducer = makeReducer({
 const messagesReducer = makeReducer({
     PUSH_MESSAGE: (state, action) => {
         return [...state, action.payload.msg]
