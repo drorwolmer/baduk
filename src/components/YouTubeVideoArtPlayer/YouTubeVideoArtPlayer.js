@@ -17,10 +17,7 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
     useEffect(() => {
         if (player) {
             player.playVideo()
-//            var videoArtTime = currentVideoArtPlayerIx()
-//            player.seekTo(videoArtTime['seek'])
         }
-        console.error("videoArtIndex useEFFEcT", videoArtIndex)
     }, [videoArtIndex])
 
 
@@ -39,26 +36,17 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
             setPlayer(e.target)
         }
 
-        console.error("ON READY VIDEOART PLAYER", videoArtIx, seek)
-
-        //props[videoArtIndex].onReady && props[videoArtIndex].onReady(e)
         setVideoArtIndex(videoArtIx)
         e.target.seekTo(seek);
         e.target.playVideo()
 
     }
 
-//    const valueSetter = player => {
-//        setPlayer(player)
-//    }
-
     const onEnd = e => {
 
         console.error("videoArtIndex before ", videoArtIndex);
         console.error("videoArtIndex", videoArtIndex)
         props[videoArtIndex]["player"].onEnd && props[videoArtIndex]["player"].onEnd(e)
-        console.error("AFTER")
-        console.error("AFTER setPlayer")
 
         if (videoArtIndex + 1 === videoArtArray.length)
         {
@@ -69,8 +57,6 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
             setVideoArtIndex(videoArtIndex + 1)
         }
 
-
-//        console.error("SETSTATE", setPlayer);
     }
 
 
