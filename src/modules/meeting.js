@@ -146,6 +146,9 @@ export const changeConference = roomConfig => dispatch => {
 
     window.JitsiConference.leave()
         .then(() => {
+            // Just incase we left from within the sideroom
+            window.soundcloud && window.soundcloud.setVolume(100)
+
             dispatch(deleteAllMessages())
             joinConference(dispatch, roomConfig)
         })
@@ -393,6 +396,8 @@ const onSideRoomJoined = dispatch => e => {
         if (audio) {
             audio.unmute()
         }
+
+        window.soundcloud && window.soundcloud.setVolume(25)
     }
 
     dispatch(updateUser(userId, {activeRoom: to}))
@@ -423,6 +428,7 @@ const onSideRoomLeft = dispatch => e => {
     if (userId === window.JitsiConference.myUserId()) {
         const {audio} = getLocalTracks()
         audio && audio.mute()
+        window.soundcloud.setVolume(100)
     }
 
     dispatch(updateUser(userId, {activeRoom: 'MAIN'}))

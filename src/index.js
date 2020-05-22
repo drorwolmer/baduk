@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom'
 import './css/main.scss'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
-import { Provider } from 'react-redux'
-import { initJitsi, kickInterruptedConnections, unload } from './modules/meeting'
+import {Provider} from 'react-redux'
+import {initJitsi, kickInterruptedConnections, unload} from './modules/meeting'
 import store from './store'
-import { setInitialRoom } from './store/room'
+import {setInitialRoom} from './store/room'
+
 
 
 
@@ -25,12 +26,12 @@ window.addEventListener("unload", unload)
 
 // init React
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App/>
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+    <React.StrictMode>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </React.StrictMode>,
+    document.getElementById('root')
 )
 
 // If you want your app to work offline and load faster, you can change
