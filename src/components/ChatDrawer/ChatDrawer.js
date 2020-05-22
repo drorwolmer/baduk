@@ -15,8 +15,13 @@ const ChatDrawer = ({ messagesSelector, maxHeight = -1 }) => {
 
     const styles = {}
     if (maxHeight > -1) {
-        const messagesHeight = _.size(messages) * MESSAGE_HEIGHT + ADDITIONAL_HEIGHT
-        styles.height = messagesHeight < maxHeight ? messagesHeight : maxHeight
+        const messageCount = _.size(messages)
+        if (messageCount === 0) {
+            styles.height = 0
+        } else {
+            const messagesHeight = messageCount * MESSAGE_HEIGHT + ADDITIONAL_HEIGHT
+            styles.height = messagesHeight < maxHeight ? messagesHeight : maxHeight
+        }
     }
 
     return (
