@@ -35,6 +35,7 @@
     text-shadow: 1px 1px rgba(0, 0, 0, 1);
     text-align: center;
     color: white;
+    font-size:1.1em;
   }
 
   .chat {
@@ -102,8 +103,17 @@
     font-size: 1.1em;
   }
 
-  &.local-user {
+  &.video_self {
 
+    .in {
+      //border: 1px solid red;
+      box-shadow: inset 0 0 10px lightblue;
+      border:1px solid lightblue;
+    }
+
+    .id {
+      //text-decoration: underline;
+    }
   }
 
   &.remote-user {
