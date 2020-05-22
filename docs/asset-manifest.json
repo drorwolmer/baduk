@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/baduk/static/css/main.c814fb07.chunk.css",
-    "main.js": "/baduk/static/js/main.2b1351a5.chunk.js",
-    "main.js.map": "/baduk/static/js/main.2b1351a5.chunk.js.map",
+    "main.css": "/baduk/static/css/main.02fc07d9.chunk.css",
+    "main.js": "/baduk/static/js/main.2d283401.chunk.js",
+    "main.js.map": "/baduk/static/js/main.2d283401.chunk.js.map",
     "runtime-main.js": "/baduk/static/js/runtime-main.fa55bcdb.js",
     "runtime-main.js.map": "/baduk/static/js/runtime-main.fa55bcdb.js.map",
     "static/js/2.d5bc56f6.chunk.js": "/baduk/static/js/2.d5bc56f6.chunk.js",
     "static/js/2.d5bc56f6.chunk.js.map": "/baduk/static/js/2.d5bc56f6.chunk.js.map",
     "index.html": "/baduk/index.html",
-    "precache-manifest.5914274813ec4b74435b1999ffaafdb0.js": "/baduk/precache-manifest.5914274813ec4b74435b1999ffaafdb0.js",
+    "precache-manifest.01b107515854c9f7f7e47ace87e628d8.js": "/baduk/precache-manifest.01b107515854c9f7f7e47ace87e628d8.js",
     "service-worker.js": "/baduk/service-worker.js",
-    "static/css/main.c814fb07.chunk.css.map": "/baduk/static/css/main.c814fb07.chunk.css.map",
+    "static/css/main.02fc07d9.chunk.css.map": "/baduk/static/css/main.02fc07d9.chunk.css.map",
     "static/js/2.d5bc56f6.chunk.js.LICENSE.txt": "/baduk/static/js/2.d5bc56f6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.fa55bcdb.js",
     "static/js/2.d5bc56f6.chunk.js",
-    "static/css/main.c814fb07.chunk.css",
-    "static/js/main.2b1351a5.chunk.js"
+    "static/css/main.02fc07d9.chunk.css",
+    "static/js/main.2d283401.chunk.js"
   ]
 }
