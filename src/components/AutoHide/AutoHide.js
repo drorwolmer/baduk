@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 const AutoHide = ({ children, refreshKey, ttl = -1, hidden }) => {
 
+    const [startedHidden, setStartedHidden] = useState(null)
     const [isVisible, setIsVisible] = useState(true)
+
+    useEffect(() => {
+        setStartedHidden(hidden)
+    }, [])
 
     useEffect(() => {
         if (ttl > -1) {
@@ -14,7 +19,7 @@ const AutoHide = ({ children, refreshKey, ttl = -1, hidden }) => {
         }
     }, [refreshKey])
 
-    return isVisible && !hidden && children
+    return isVisible && !hidden && !startedHidden && children
 }
 
 export default AutoHide
