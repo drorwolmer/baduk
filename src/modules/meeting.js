@@ -195,11 +195,15 @@ export const switchInput = (type, deviceId) => dispatch => {
 
 }
 
+export const isLocalUserInConference = () => {
+    return window.JitsiConference
+        && window.JitsiConference.myUserId()
+        && _.size(window.JitsiConference.getParticipants()) > 0
+}
+
 
 /////////////////
 // LOCAL USER
-
-
 /////////////////
 const onConferenceJoined = dispatch => () => {
     console.warn('onConferenceJoined')

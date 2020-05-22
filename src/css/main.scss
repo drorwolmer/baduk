@@ -34,3 +34,7 @@ body {
   overflow: hidden;
   position: absolute;
 }
+
+.button.disabled {
+  cursor: not-allowed;
+}

@@ -1,16 +1,23 @@
 import React, {useState} from 'react'
+import _ from 'lodash'
+import classNames from 'classnames'
 import './BottomNav.scss'
-import {onVideoMuteToggle, changeConference} from '../../modules/meeting'
+import {onVideoMuteToggle, changeConference, isLocalUserInConference} from '../../modules/meeting'
 import {ROOMS} from '../../consts'
-import {useDispatch} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Options from "../Options/options";
 import Popup from '../Popup'
+import { getLocalUser } from '../../store/users'
 
 const BottomNav = ({roomName}) => {
 
     const dispatch = useDispatch()
 
     const [optionsVisible, setOptionsVisible] = useState(false)
+
+    const localUser = useSelector(getLocalUser)
+
+    const localUserReady = !_.isNil(localUser) && isLocalUserInConference() && localUser.hasTracks
 
 
     const toggleFullscreen = () => {
@@ -30,16 +37,20 @@ const BottomNav = ({roomName}) => {
         setOptionsVisible(true)
     }
 
-    const goToRoom = roomConfig => () => dispatch(changeConference(roomConfig))
+    const goToRoom = roomConfig => () => {
+        if (!localUserReady) return
+        dispatch(changeConference(roomConfig))
+    }
+
+    const renderRoomButton = name => (
+        <div className={classNames(`button button-to-${name}`, {disabled: !localUserReady})} onClick={goToRoom(ROOMS[name])}/>
+    )
 
     return (
         <div className="bottom-nav">
-            {roomName !== 'block' && (
-                <div className="button button-to-block" onClick={goToRoom(ROOMS.block)}/>
-            )}
-            {roomName !== 'toilet' && (
-                <div className="button button-to-toilet" onClick={goToRoom(ROOMS.toilet)}/>
-            )}
+            {roomName !== 'block' && renderRoomButton('block')}
+            {roomName !== 'toilet' && renderRoomButton('toilet')}
+
             <div className="button mute-toggle" onClick={onVideoMuteToggle}/>
             <div className="button fullscreen-toggle" onClick={toggleFullscreen}/>
             <div className="button button-options" onClick={onOptionsClick}/>
