@@ -201,7 +201,12 @@ const onLocalTracks = dispatch => in_tracks => {
 
     console.error("onLocalTracks", in_tracks)
 
-    _.map(in_tracks, (local_track) => {
+    var localTracks = getLocalTracks();
+
+    window.JitsiConference.removeTrack(localTracks["video"]).then(() => {
+        window.JitsiConference.removeTrack(localTracks["audio"]);
+    }).then(() => {
+        _.map(in_tracks, (local_track) => {
 
         window.localStorage.setItem(`${local_track.getType()}_device_id`, local_track.getDeviceId())
 
@@ -246,6 +251,8 @@ const onLocalTracks = dispatch => in_tracks => {
     })
 
     dispatch(updateUser(window.JitsiConference.myUserId(), {hasTracks: true}))
+    });
+
 }
 
 /////////////////
