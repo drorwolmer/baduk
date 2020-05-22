@@ -30,9 +30,9 @@ export const soundtrackPlayerConfig = {
 export const videoArtPlayerConfig = {
     id: 'muteYouTubeVideoPlayer',
     containerClassName: 'video-art-player',
-    videoId: '3V9bPvna3nM',
+    videoId: 'm6cy9PqMgIk',
     options: {
-        videoId: '3V9bPvna3nM', // YouTube Video ID
+        videoId: 'm6cy9PqMgIk', // YouTube Video ID
         // width: 640, // Player width (in px)
         // height: 480, // Player height (in px)
         playerVars: {
@@ -46,7 +46,7 @@ export const videoArtPlayerConfig = {
             iv_load_policy: 3, // Hide the Video Annotations
             autohide: 1, // Hide video controls when playing,
             disablekb: 1,
-            playlist: '3V9bPvna3nM', // for the loop
+            playlist: 'm6cy9PqMgIk', // for the loop
             // start: 60,
             // origin: 'https://foosa-a977b5f6.localhost.run',
         },
