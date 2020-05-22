@@ -30,3 +30,34 @@
     }
   }
 }
+
+
+.side-room.inside {
+  background: rgba(0, 0, 0, 0.5);
+  background-clip: content-box;
+  background-position: bottom;
+  text-align: center;
+  width: 50vw;
+  cursor: default;
+  height: 100%;
+  float: left;
+
+  .seat {
+    width: 300px;
+    height: 300px;
+    margin: 15px -50px -100px 0;
+    //height: 20%;
+    //padding: 15px;
+    //display: inline-block;
+    display: inline-block;
+
+
+    .user-display {
+      display: inline-block;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+  }
+}

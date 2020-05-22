@@ -20,7 +20,7 @@
     overflow: hidden;
 
     &.button-to-toilet {
-      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97802024_240626827171480_2267265698860367872_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=RPxfRBd9JyQAX_xQAZU&_nc_ht=scontent.fsdv3-1.fna&oh=6186f5d99ab384bff9889ff60f22c520&oe=5EEB559F&dl=1');
+      background: url('/baduk/bathroom_button.png');
       background-position: center;
       background-size: cover;
     }
@@ -35,12 +35,12 @@
       background-size: contain;
     }
 
-     &.button-options {
+    &.button-options {
       background: url('/baduk/settings.png');
-      background-size:  96%;
-       background-position:  center;
-       width:50px;
-       height:50px;
+      background-size: 96%;
+      background-position: center;
+      width: 50px;
+      height: 50px;
     }
 
     &.fullscreen-toggle {
