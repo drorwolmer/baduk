@@ -2,12 +2,13 @@ import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
 import {useSelector} from 'react-redux'
-import {videoArtPlayerConfig} from '../../config/config.videos'
+import {currentVideoArtPlayer, videoArtArray} from '../../config/config.videos'
 import {leaveSideRoom} from '../../modules/meeting'
 import {getLocalUser, getUsersByActiveRoom} from '../../store/users'
 import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import YouTubePlayer from '../YouTubePlayer'
+import YouTubeVideoArtPlayer from '../YouTubeVideoArtPlayer'
 import './Room.scss'
 import ChatDrawer from "../ChatDrawer";
 
@@ -34,7 +35,7 @@ const Room = ({roomName, withVideoArt}) => {
             {withVideoArt && (
                 <div className="video-art-top">
                     <div className="big-video-container">
-                        <YouTubePlayer {...videoArtPlayerConfig}/>
+                        <YouTubeVideoArtPlayer {...videoArtArray}/>
                     </div>
                 </div>
             )}
