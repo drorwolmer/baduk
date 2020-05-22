@@ -35,7 +35,7 @@
     text-shadow: 1px 1px rgba(0, 0, 0, 1);
     text-align: center;
     color: white;
-    font-size:1.1em;
+    font-size: 1.1em;
   }
 
   .chat {
@@ -47,15 +47,18 @@
     .chat-scroll {
       height: 180px;
     }
+
     .chat-drawer {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
       padding: 2px 0;
+      position: relative;
+      top: 100%;
 
       .text-message {
         margin: 5px;
         max-width: 90%;
         padding: 5px 10px;
+
         .emoji {
           animation: none;
         }
@@ -80,6 +83,10 @@
     &.message-preview {
       top: 50%;
       transform: translateY(-50%);
+
+      .chat-drawer {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
     }
   }
 
@@ -108,7 +115,7 @@
     .in {
       //border: 1px solid red;
       box-shadow: inset 0 0 10px lightblue;
-      border:1px solid lightblue;
+      border: 1px solid lightblue;
     }
 
     .id {

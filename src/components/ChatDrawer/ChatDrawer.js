@@ -6,22 +6,16 @@ import ChatMessage from '../ChatMessage'
 import ScrollToBottom from 'react-scroll-to-bottom'
 import { css } from 'glamor'
 
-const MESSAGE_HEIGHT = 39
-const ADDITIONAL_HEIGHT = 8 // padding
-
 const ChatDrawer = ({ messagesSelector, maxHeight = -1 }) => {
 
     const messages = useSelector(messagesSelector)
 
-    const styles = {}
+    const styles = {
+        'background-color': 'rgba(0, 0, 0, 0.7)',
+        height: '100vh',
+    }
     if (maxHeight > -1) {
-        const messageCount = _.size(messages)
-        if (messageCount === 0) {
-            styles.height = 0
-        } else {
-            const messagesHeight = messageCount * MESSAGE_HEIGHT + ADDITIONAL_HEIGHT
-            styles.height = messagesHeight < maxHeight ? messagesHeight : maxHeight
-        }
+        styles.height = _.size(messages) === 0 ? 0 : maxHeight
     }
 
     return (

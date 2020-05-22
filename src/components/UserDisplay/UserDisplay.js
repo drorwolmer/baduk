@@ -35,6 +35,7 @@ const UserDisplay = ({user, isAudioActive}) => {
     const [audioTrack, setAudioTrack] = useState(null)
 
     const [popup, setPopup] = useState(null)
+    const [isChatOpen, setIsChatOpen] = useState(false)
 
     const localUser = useSelector(getLocalUser)
 
@@ -93,6 +94,7 @@ const UserDisplay = ({user, isAudioActive}) => {
                 submit: sendPublicMessage,
             }))
         } else {
+            setIsChatOpen(true)
             // send private message
             setPopup(<Chat recipient={user} maxDrawerHeight={180} />)
         }
@@ -111,7 +113,10 @@ const UserDisplay = ({user, isAudioActive}) => {
         }))
     }
 
-    const hidePopup = () => setPopup(null)
+    const hidePopup = () => {
+        setPopup(null)
+        setIsChatOpen(false)
+    }
 
     const onEmojiClick = e => {
         e.stopPropagation()
@@ -158,7 +163,7 @@ const UserDisplay = ({user, isAudioActive}) => {
                 </AutoHide>
             )}
             {lastPrivateMessageFromUser && (
-                <AutoHide ttl={3000} refreshKey={lastPrivateMessageFromUser.ts}>
+                <AutoHide ttl={3000} refreshKey={lastPrivateMessageFromUser.ts} hidden={isChatOpen}>
                     <ChatMessagePreview message={lastPrivateMessageFromUser}/>
                 </AutoHide>
             )}

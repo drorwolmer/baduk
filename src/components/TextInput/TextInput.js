@@ -5,6 +5,11 @@ import ContentEditable from 'react-contenteditable'
 
 import './TextInput.scss'
 
+const stripHtml = html => {
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    return doc.body.textContent || ''
+}
+
 const TextInput = ({ className, submit, dismiss }) => {
 
     const ref = useRef()
@@ -20,7 +25,7 @@ const TextInput = ({ className, submit, dismiss }) => {
         // submit on "enter"
         if (e.charCode === 13) {
             e.preventDefault()
-            submit && submit(text.current)
+            submit && submit(stripHtml(text.current))
             dismiss && dismiss()
         }
     }
@@ -38,7 +43,7 @@ const TextInput = ({ className, submit, dismiss }) => {
         <ContentEditable
             innerRef={ref}
             html={text.current}
-            className={classNames("text-input", className)}
+            className={classNames('text-input', className)}
             onChange={onChange}
             onKeyPress={onKeyPress} onKeyDown={onKeyDown}
         />
