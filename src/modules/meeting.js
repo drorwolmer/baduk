@@ -293,13 +293,18 @@ const onRemoteTrackAdded = dispatch => track => {
 }
 
 const onRemoteTrackRemoved = dispatch => track => {
-    if (track.isLocal()) {
-        return
-    }
-    console.warn('Remote TRACK_REMOVED', track, track.containers)
 
-    // const userId = track.getParticipantId()
-    // dispatch(removeRemoteTrack(userId, track))
+    console.warn('TRACK_REMOVED', track, track.containers)
+
+    let userId = track.getParticipantId()
+    if (!userId) {
+        userId = window.JitsiConference.myUserId()
+    }
+
+    dispatch(updateUser(userId, {
+        [`has_${track.getType()}`]: false,
+        [`muted_${track.getType()}`]: true
+    }))
 }
 
 const onUserLeft = dispatch => userId => {
