@@ -13,6 +13,8 @@
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png"/>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json"/>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+
     <title>the BLOCK</title>
 </head>
 <body>
@@ -23,5 +25,28 @@
 <script src="https://cdn.jsdelivr.net/npm/strophejs-plugin-disco@0.0.2/lib/strophe.disco.min.js"></script>
 <script src="%PUBLIC_URL%/lib-jitsi-meet.min.js"></script>
 <div id="root"></div>
+<div style="visibility:hidden;width:1px; height:1px;overflow: hidden; position: absolute;z-index: -100;">
+<!--    <iframe id="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"-->
+<!--            src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/766388068%3Fsecret_token%3Ds-Ur3dG&color=%23ff5500&auto_play=true">-->
+<!--    </iframe>-->
+        <iframe id="soundcloud" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/657985802&auto_play=true"></iframe>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        window.soundcloud = SC.Widget("soundcloud");
+
+        // TODO(DROR): Change to 2100
+        const party_start_date = 1590162041
+
+        window.soundcloud.bind(SC.Widget.Events.READY, function () {
+            const now_date = Math.floor((new Date()).getTime() / 1000)
+            const seek_to = (now_date - party_start_date) * 1000
+            window.soundcloud.seekTo(seek_to);
+
+        })
+
+    })
+</script>
 </body>
 </html>
