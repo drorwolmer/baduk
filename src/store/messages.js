@@ -1,12 +1,12 @@
 import _ from 'lodash'
-import {makeReducer} from '../utils'
+import { makeReducer } from '../utils'
 
 export const pushMessage = (msg) => dispatch => {
     const key = `${msg.id}-${(new Date()).getTime()}`
 
     dispatch({
         type: 'PUSH_MESSAGE',
-        payload: {msg},
+        payload: { msg },
     })
 
     // setTimeout(() => dispatch(deleteMessage(key)), 7000)
@@ -14,7 +14,7 @@ export const pushMessage = (msg) => dispatch => {
 
 export const deleteMessage = key => ({
     type: 'DELETE_MESSAGE',
-    payload: {key},
+    payload: { key },
 })
 
 export const deleteAllMessages = () => ({
@@ -26,16 +26,22 @@ export const getUserMessages = userId => state => _.filter(state.messages, m => 
 // Get the last message from this user, sent in the last 10 secs
 export const getUserLastMessage = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
     let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
-    return m.globalUID === globalUID && (m.recipient === 'public' || m.recipient === localUserGlobalUID) &&  (ts_diff_secs<10)
+    return m.globalUID === globalUID && (m.recipient === 'public' || m.recipient === localUserGlobalUID) && (ts_diff_secs < 10)
 }))
 
 export const getLastMessageFromLocalUser = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
     let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
-    return m.recipient === globalUID && m.globalUID === localUserGlobalUID && (ts_diff_secs<10)
+    return m.recipient === globalUID && m.globalUID === localUserGlobalUID && (ts_diff_secs < 10)
 }))
 
-
 export const getAllMessages = state => state.messages
+
+export const getPublicMessages = state => _.filter(state.messages, m => m.recipient === 'public')
+
+export const getPrivateMessages = (recipientGlobalUID, localUserGlobalUID) => state => _.filter(state.messages, m => {
+    return (m.globalUID === recipientGlobalUID && m.recipient === localUserGlobalUID)
+        || (m.globalUID === localUserGlobalUID && m.recipient === recipientGlobalUID)
+})
 
 const roomReducer = makeReducer({
     PUSH_MESSAGE: (state, action) => {

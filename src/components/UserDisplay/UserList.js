@@ -5,7 +5,7 @@ import UserDisplay from './index'
 const UserList = ({ users, isAudioActive }) => {
 
   const renderUser = useCallback(user => (
-    <UserDisplay key={`user-display-${user.id}`} {...user} isAudioActive={isAudioActive}/>
+    <UserDisplay key={`user-display-${user.id}`} user={user} isAudioActive={isAudioActive}/>
   ), [users])
 
   return (

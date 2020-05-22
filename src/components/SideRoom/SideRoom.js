@@ -23,7 +23,7 @@ export default ({ name, maxSeats }) => {
     }
 
     const renderUser = useCallback(user => (
-        <UserDisplay key={`user-display-${user.id}`} {...user} isAudioActive={localUserInRoom}/>
+        <UserDisplay key={`user-display-${user.id}`} user={user} isAudioActive={localUserInRoom}/>
     ), [users])
 
     return (

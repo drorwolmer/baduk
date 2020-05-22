@@ -42,8 +42,17 @@
     }
   }
 
+  .right-sidebar {
+    width: 320px;
+    min-width: 320px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    overflow-y: auto;
+    z-index: 1000;
+  }
+
   &.block .right-sidebar {
-    display:none;
+    display: none;
   }
 
   &.block {

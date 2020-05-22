@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
 import {getTracks} from '../../utils'
-import {sendPrivateMessage, sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
+import {sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
 import {getUserLastMessage, getLastMessageFromLocalUser} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
@@ -12,6 +12,7 @@ import EmojiSelection from '../EmojiSelection'
 import SpeechBubble from '../SpeechBubble'
 import TextInput from '../TextInput'
 import { getLocalUser } from '../../store/users'
+import Chat from '../Chat'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -22,7 +23,9 @@ const detachAndDispose = (track, ref) => {
     }
 }
 
-const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isAudioActive, isDominantSpeaker}) => {
+const UserDisplay = ({user, isAudioActive}) => {
+
+    const {id: userId, globalUID, isLocal, has_audio, has_video, muted_audio, muted_video, displayName, emoji, isDominantSpeaker} = user
 
     const videoRef = useRef(null)
     const audioRef = useRef(null)
@@ -88,11 +91,7 @@ const UserDisplay = ({id: userId, globalUID, isLocal, has_audio, has_video, mute
             }))
         } else {
             // send private message
-            setPopup(renderInputBubble({
-                className: 'centered no-pointer',
-                placeholder: `Say something to ${displayName}:`,
-                submit: msg => sendPrivateMessage(globalUID, displayName, msg),
-            }))
+            setPopup(<Chat recipient={user} />)
         }
 
     }

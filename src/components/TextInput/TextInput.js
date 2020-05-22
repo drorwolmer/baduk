@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react'
 import _ from 'lodash'
+import classNames from 'classnames'
 import ContentEditable from 'react-contenteditable'
 
 import './TextInput.scss'
 
-const TextInput = ({ submit, dismiss }) => {
+const TextInput = ({ className, submit, dismiss }) => {
 
     const ref = useRef()
     const text = useRef('')
@@ -18,6 +19,7 @@ const TextInput = ({ submit, dismiss }) => {
 
         // submit on "enter"
         if (e.charCode === 13) {
+            e.preventDefault()
             submit && submit(text.current)
             dismiss && dismiss()
         }
@@ -36,7 +38,7 @@ const TextInput = ({ submit, dismiss }) => {
         <ContentEditable
             innerRef={ref}
             html={text.current}
-            className="text-input"
+            className={classNames("text-input", className)}
             onChange={onChange}
             onKeyPress={onKeyPress} onKeyDown={onKeyDown}
         />

@@ -1,17 +1,18 @@
 import React from 'react'
 import _ from 'lodash'
 import classNames from 'classnames'
-import {useSelector} from 'react-redux'
-import {videoArtPlayerConfig} from '../../config/config.videos'
-import {leaveSideRoom} from '../../modules/meeting'
-import {getLocalUser, getUsersByActiveRoom} from '../../store/users'
+import { useSelector } from 'react-redux'
+import { videoArtPlayerConfig } from '../../config/config.videos'
+import { leaveSideRoom } from '../../modules/meeting'
+import { getLocalUser, getUsersByActiveRoom } from '../../store/users'
 import UserList from '../UserDisplay/UserList'
 import SideRoom from '../SideRoom'
 import YouTubePlayer from '../YouTubePlayer'
 import './Room.scss'
-import ChatDrawer from "../ChatDrawer";
+import ChatDrawer from '../ChatDrawer'
+import { getPublicMessages } from '../../store/messages'
 
-const Room = ({roomName, withVideoArt}) => {
+const Room = ({ roomName, withVideoArt }) => {
 
     const room = useSelector(state => state.room)
     const mainAreaUsers = useSelector(getUsersByActiveRoom('MAIN'))
@@ -43,7 +44,9 @@ const Room = ({roomName, withVideoArt}) => {
                     <SideRoom key={`side-room-${i}`} {...sideRoom}/>
                 ))}
                 <UserList users={mainAreaUsers} roomName="MAIN"/>
-                <ChatDrawer/>
+                <div className="right-sidebar">
+                    <ChatDrawer messagesSelector={getPublicMessages}/>
+                </div>
             </div>
         </div>
     )
