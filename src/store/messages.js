@@ -1,12 +1,12 @@
 import _ from 'lodash'
-import { makeReducer } from '../utils'
+import {makeReducer} from '../utils'
 
 export const pushMessage = (msg) => dispatch => {
     const key = `${msg.id}-${(new Date()).getTime()}`
 
     dispatch({
         type: 'PUSH_MESSAGE',
-        payload: { msg },
+        payload: {msg},
     })
 
     // setTimeout(() => dispatch(deleteMessage(key)), 7000)
@@ -14,7 +14,7 @@ export const pushMessage = (msg) => dispatch => {
 
 export const deleteMessage = key => ({
     type: 'DELETE_MESSAGE',
-    payload: { key },
+    payload: {key},
 })
 
 export const deleteAllMessages = () => ({
@@ -34,6 +34,7 @@ export const getLastMessageFromLocalUser = (globalUID, localUserGlobalUID) => st
     return m.recipient === globalUID && m.globalUID === localUserGlobalUID && (ts_diff_secs < 10)
 }))
 
+
 export const getAllMessages = state => state.messages
 
 export const getPublicMessages = state => _.filter(state.messages, m => m.recipient === 'public')
@@ -44,6 +45,7 @@ export const getPrivateMessages = (recipientGlobalUID, localUserGlobalUID) => st
 })
 
 const roomReducer = makeReducer({
+const messagesReducer = makeReducer({
     PUSH_MESSAGE: (state, action) => {
         return [...state, action.payload.msg]
     },
@@ -55,4 +57,4 @@ const roomReducer = makeReducer({
     },
 }, [])
 
-export default roomReducer
+export default messagesReducer

@@ -43,6 +43,8 @@ const UserDisplay = ({user, isAudioActive}) => {
 
     useEffect(() => {
 
+        console.error("useEffect", has_video, videoRef)
+
         if (has_video) {
             const {video} = getTracks(userId, isLocal)
             attach(video, videoRef)
@@ -50,7 +52,7 @@ const UserDisplay = ({user, isAudioActive}) => {
         }
 
         return () => {
-            if (has_audio || has_video) {
+            if (has_video) {
                 detachAndDispose(videoTrack, videoRef)
             }
         }
@@ -112,6 +114,8 @@ const UserDisplay = ({user, isAudioActive}) => {
 
     const onEmojiClick = e => {
         e.stopPropagation()
+
+        console.error(e.key)
 
         if (e.shiftKey) {
             // emoji clicked when shift is pressed
