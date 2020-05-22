@@ -1,14 +1,12 @@
 import React, {useEffect, useState, setState} from 'react'
-import {currentVideoArtPlayer} from '../../config/config.videos'
+import {currentVideoArtPlayer, currentVideoArtPlayerIx, videoArtArray} from '../../config/config.videos'
 import YouTube from 'react-youtube'
 
 
 const YouTubeVideoArtPlayer = ({volume, ...props}) => {
 
     const [player, setPlayer] = useState(null)
-    const [count, setCount] = useState(0)
-
-    console.error("PROPS", props)
+    const [videoArtIndex, setVideoArtIndex] = useState(currentVideoArtPlayerIx()['index'])
 
     useEffect(() => {
         if (player) {
@@ -17,23 +15,37 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
     }, [volume])
 
     useEffect(() => {
-        if (player && count > 0) {
+        if (player) {
             player.playVideo()
-            player.seekTo(60)
+//            var videoArtTime = currentVideoArtPlayerIx()
+//            player.seekTo(videoArtTime['seek'])
         }
-    }, [count])
+        console.error("videoArtIndex useEFFEcT", videoArtIndex)
+    }, [videoArtIndex])
+
+
 
     const onReady = e => {
 
+        var seek = 0;
+        var videoArtIx = 0;
+
         if (!player){
+            console.error("NO PLAYER")
+            var videoArtTime = currentVideoArtPlayerIx()
+
+            seek = videoArtTime['seek']
+            videoArtIx = videoArtTime['index']
             setPlayer(e.target)
         }
 
+        console.error("ON READY VIDEOART PLAYER", videoArtIx, seek)
 
-        console.error("ON READY VIDEOART PLAYER")
-        //props[count].onReady && props[count].onReady(e)
+        //props[videoArtIndex].onReady && props[videoArtIndex].onReady(e)
+        setVideoArtIndex(videoArtIx)
+        e.target.seekTo(seek);
         e.target.playVideo()
-        e.target.seekTo(60);
+
     }
 
 //    const valueSetter = player => {
@@ -42,12 +54,21 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
 
     const onEnd = e => {
 
-        console.error("COUNT before ", count);
-        console.error("COUNT", count)
-        props[count].onEnd && props[count].onEnd(e)
+        console.error("videoArtIndex before ", videoArtIndex);
+        console.error("videoArtIndex", videoArtIndex)
+        props[videoArtIndex]["player"].onEnd && props[videoArtIndex]["player"].onEnd(e)
         console.error("AFTER")
         console.error("AFTER setPlayer")
-        setCount(count + 1)
+
+        if (videoArtIndex + 1 === videoArtArray.length)
+        {
+            setVideoArtIndex(0)
+        }
+        else
+        {
+            setVideoArtIndex(videoArtIndex + 1)
+        }
+
 
 //        console.error("SETSTATE", setPlayer);
     }
@@ -55,7 +76,7 @@ const YouTubeVideoArtPlayer = ({volume, ...props}) => {
 
 
     return (
-        <YouTube {...props[count]} onReady={onReady} onEnd={onEnd}/>
+        <YouTube {...props[videoArtIndex]["player"]} onReady={onReady} onEnd={onEnd}/>
     )
 }
 

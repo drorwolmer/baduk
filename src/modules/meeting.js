@@ -10,6 +10,7 @@ import {
 } from '../store/users'
 import {deleteAllMessages, pushMessage} from '../store/messages'
 import {jitsi as jitsiConfig} from '../config/config.dev'
+import {setAvailableInputDevices, setInputDevice} from "../store/devices";
 
 const JOIN_MINI_CONFERENCE_CMD = 'JOIN_MINI_CONFERENCE'
 const LEAVE_MINI_CONFERENCE_CMD = 'LEAVE_MINI_CONFERENCE'
@@ -145,10 +146,55 @@ export const changeConference = roomConfig => dispatch => {
 
     window.JitsiConference.leave()
         .then(() => {
+            // Just incase we left from within the sideroom
+            window.soundcloud && window.soundcloud.setVolume(100)
+
             dispatch(deleteAllMessages())
             joinConference(dispatch, roomConfig)
         })
 }
+
+export const switchInput = (type, deviceId) => dispatch => {
+    if (!window.JitsiMeetJS.mediaDevices.isDeviceChangeAvailable(type)) {
+        console.error("no isDeviceChangeAvailable()")
+        return
+    }
+    let local_track = null
+    if (type === "audio") {
+        local_track = window.JitsiConference.getLocalAudioTrack()
+    } else {
+        local_track = window.JitsiConference.getLocalVideoTrack()
+    }
+
+    console.error("switchInput", local_track)
+
+    window.JitsiConference.removeTrack(local_track).then(() => {
+        local_track && local_track.dispose()
+
+        // We want to explicitly ask for the device we last used
+        // for dror for example, switching rooms selects the snap camera instead of the regular
+        // This fixes it
+        const create_local_track_options = {
+            devices: [type],
+        }
+
+        if (type === "audio") {
+            create_local_track_options["micDeviceId"] = deviceId
+        } else {
+            create_local_track_options["cameraDeviceId"] = deviceId
+            create_local_track_options["constraints"] = {"height": 180, "width": 180}
+        }
+
+        window.JitsiMeetJS.createLocalTracks(create_local_track_options)
+            .then(onLocalTracks(dispatch))
+            .catch((error) => {
+                throw error
+            })
+
+    })
+
+}
+
 
 /////////////////
 // LOCAL USER
@@ -185,7 +231,7 @@ const onConferenceJoined = dispatch => () => {
         devices: ["video", "audio"],
         cameraDeviceId: getFromLocalStorage("video_device_id", null),
         micDeviceId: getFromLocalStorage("audio_device_id", null),
-        constraints: { "height": 180, "width": 180}
+        constraints: {"height": 180, "width": 180}
     }
 
     // Try to get audio/video. TODO(DROR): This might fail, we need the users's help
@@ -201,19 +247,31 @@ const onLocalTracks = dispatch => in_tracks => {
 
     console.error("onLocalTracks", in_tracks)
 
-    var localTracks = getLocalTracks();
+    // Try to get device list
+    if (window.JitsiMeetJS.mediaDevices.isDeviceListAvailable()) {
+        window.JitsiMeetJS.mediaDevices.enumerateDevices((devices) => {
+            const audio_inputs = _.filter(devices, (d) => d.kind === "audioinput")
+            const video_inputs = _.filter(devices, (d) => d.kind === "videoinput")
+            dispatch(setAvailableInputDevices(audio_inputs, video_inputs))
+        })
+    }
 
-    window.JitsiConference.removeTrack(localTracks["video"]).then(() => {
-        window.JitsiConference.removeTrack(localTracks["audio"]);
-    }).then(() => {
-        _.map(in_tracks, (local_track) => {
+    _.map(in_tracks, (local_track) => {
 
         window.localStorage.setItem(`${local_track.getType()}_device_id`, local_track.getDeviceId())
+        dispatch(setInputDevice(local_track.getType(), local_track.getDeviceId()))
 
         local_track.addEventListener(
             window.JitsiMeetJS.events.track.TRACK_MUTE_CHANGED,
             onTrackMuteChanged(dispatch)
         )
+
+        // local_track.addEventListener(
+        //     window.JitsiMeetJS.events.track.LOCAL_TRACK_STOPPED,
+        //     (track) => {
+        //         console.error("LOCAL_TRACK_STOPPED", track)
+        //     }
+        // )
 
         // Send lower quality video by default
         window.JitsiConference.setSenderVideoConstraint(180)
@@ -235,8 +293,6 @@ const onLocalTracks = dispatch => in_tracks => {
 
         window.JitsiConference.addTrack(local_track).then(() => {
 
-            console.warn('FOO', local_track)
-
             dispatch(updateUser(window.JitsiConference.myUserId(), {
                 hasTracks: true,
                 [`muted_${local_track.getType()}`]: local_track.isMuted(),
@@ -251,7 +307,6 @@ const onLocalTracks = dispatch => in_tracks => {
     })
 
     dispatch(updateUser(window.JitsiConference.myUserId(), {hasTracks: true}))
-    });
 
 }
 
@@ -293,13 +348,18 @@ const onRemoteTrackAdded = dispatch => track => {
 }
 
 const onRemoteTrackRemoved = dispatch => track => {
-    if (track.isLocal()) {
-        return
-    }
-    console.warn('Remote TRACK_REMOVED', track, track.containers)
 
-    // const userId = track.getParticipantId()
-    // dispatch(removeRemoteTrack(userId, track))
+    console.warn('TRACK_REMOVED', track, track.containers)
+
+    let userId = track.getParticipantId()
+    if (!userId) {
+        userId = window.JitsiConference.myUserId()
+    }
+
+    dispatch(updateUser(userId, {
+        [`has_${track.getType()}`]: false,
+        [`muted_${track.getType()}`]: true
+    }))
 }
 
 const onUserLeft = dispatch => userId => {
@@ -336,6 +396,8 @@ const onSideRoomJoined = dispatch => e => {
         if (audio) {
             audio.unmute()
         }
+
+        window.soundcloud && window.soundcloud.setVolume(10)
     }
 
     dispatch(updateUser(userId, {activeRoom: to}))
@@ -366,6 +428,7 @@ const onSideRoomLeft = dispatch => e => {
     if (userId === window.JitsiConference.myUserId()) {
         const {audio} = getLocalTracks()
         audio && audio.mute()
+        window.soundcloud.setVolume(100)
     }
 
     dispatch(updateUser(userId, {activeRoom: 'MAIN'}))
@@ -502,3 +565,4 @@ export const unload = () => {
     window.JitsiConference.leave()
     window.connection.disconnect()
 }
+
