@@ -1,0 +1,18 @@
+.options-selector {
+  border: 1px solid red;
+  text-align: left;
+  font-size: 0.6em;
+
+  .header {
+    font-weight: bold;
+    font-size:1.2em;
+  }
+
+  .header, .input {
+    padding: 5px;
+  }
+
+  .input.is_active {
+    color:green;
+  }
+}

@@ -37,7 +37,7 @@ export const getLastMessageFromLocalUser = (globalUID, localUserGlobalUID) => st
 
 export const getAllMessages = state => state.messages
 
-const roomReducer = makeReducer({
+const messagesReducer = makeReducer({
     PUSH_MESSAGE: (state, action) => {
         return [...state, action.payload.msg]
     },
@@ -49,4 +49,4 @@ const roomReducer = makeReducer({
     },
 }, [])
 
-export default roomReducer
+export default messagesReducer
