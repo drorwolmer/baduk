@@ -45,7 +45,7 @@ const UserDisplay = ({user, isAudioActive}) => {
 
     useEffect(() => {
 
-        console.error("useEffect", has_video, videoRef)
+        console.warn("useEffect", has_video, videoRef)
 
         if (has_video) {
             const {video} = getTracks(userId, isLocal)
