@@ -15,9 +15,9 @@ const BottomNav = ({roomName}) => {
 
     const [optionsVisible, setOptionsVisible] = useState(false)
 
-    const localUser = useSelector(getLocalUser)
+    // const localUser = useSelector(getLocalUser)
 
-    const localUserReady = !_.isNil(localUser) && isLocalUserInConference() && localUser.hasTracks
+    // const localUserReady = !_.isNil(localUser) && isLocalUserInConference() && localUser.hasTracks
 
 
     const toggleFullscreen = () => {
@@ -38,12 +38,12 @@ const BottomNav = ({roomName}) => {
     }
 
     const goToRoom = roomConfig => () => {
-        if (!localUserReady) return
+        // if (!localUserReady) return
         dispatch(changeConference(roomConfig))
     }
 
     const renderRoomButton = name => (
-        <div className={classNames(`button button-to-${name}`, {disabled: !localUserReady})} onClick={goToRoom(ROOMS[name])}/>
+        <div className={classNames(`button button-to-${name}`)} onClick={goToRoom(ROOMS[name])}/>
     )
 
     return (
