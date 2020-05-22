@@ -42,7 +42,7 @@ const Room = ({ roomName, withVideoArt }) => {
             )}
             <div className="main-area" onClick={onMeetingAreaClick}>
                 {_.map(room.sideRooms, (sideRoom, i) => (
-                    <SideRoom key={`side-room-${i}`} {...sideRoom}/>
+                    <SideRoom userInside={!userInMainArea} key={`side-room-${i}`} {...sideRoom}/>
                 ))}
                 <UserList users={mainAreaUsers} roomName="MAIN"/>
                 <div className="right-sidebar">

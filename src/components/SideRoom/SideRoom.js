@@ -7,7 +7,7 @@ import { joinSideRoom } from '../../modules/meeting'
 import './SideRoom.scss'
 import UserDisplay from '../UserDisplay'
 
-export default ({ name, maxSeats }) => {
+export default ({ name, maxSeats, userInside }) => {
 
     const users = useSelector(getUsersByActiveRoom(name))
 
@@ -26,15 +26,20 @@ export default ({ name, maxSeats }) => {
         <UserDisplay key={`user-display-${user.id}`} user={user} isAudioActive={localUserInRoom}/>
     ), [users])
 
+    const ClassNames = classNames('side-room', {
+        "inside": userInside
+    })
+
     return (
-        <div className="side-room" onClick={e => e.stopPropagation()}>
+        <div className={ClassNames} onClick={e => e.stopPropagation()}>
+            <div>{userInside? "he": "no"}</div>
             <div className="bg"/>
             {_.map(_.orderBy(users, 'id'), user => (
                 <div className="seat">{renderUser(user)}</div>
             ))}
             {_.map(Array(emptySeatCount), (o, i) => {
                 return (
-                    <div className="seat">
+                    <div key={`empty-seat-${i}`} className="seat">
                         <div className={classNames('user-display free-seat')} onClick={onFreeSeatClick}>
                             <div className="id">Speak up</div>
                             <div className="in"/>

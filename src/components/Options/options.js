@@ -27,7 +27,7 @@ const Options = () => {
     const {audio_inputs, video_inputs, video_input_id, audio_input_id} = useSelector(getInputDevices)
 
     return (
-        <div className="options-selector" style={{"background": "#fff"}}>
+        <div className="options-selector">
             <div className={"header"}>Audio inputs</div>
             {_.map(audio_inputs, (audio_input) => {
                 return (<MediaOption input={audio_input} type="audio" local_input_id={audio_input_id}/>)

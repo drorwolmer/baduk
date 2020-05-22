@@ -4,12 +4,13 @@ import {onVideoMuteToggle, changeConference} from '../../modules/meeting'
 import {ROOMS} from '../../consts'
 import {useDispatch} from 'react-redux'
 import Options from "../Options/options";
+import Popup from '../Popup'
 
 const BottomNav = ({roomName}) => {
 
     const dispatch = useDispatch()
 
-    const [popup, setPopup] = useState(null)
+    const [optionsVisible, setOptionsVisible] = useState(false)
 
 
     const toggleFullscreen = () => {
@@ -22,9 +23,11 @@ const BottomNav = ({roomName}) => {
         }
     }
 
+    const hidePopup = () => setOptionsVisible(false)
+
     const onOptionsClick = (e) => {
         e.stopPropagation()
-        setPopup(<Options/>)
+        setOptionsVisible(true)
     }
 
     const goToRoom = roomConfig => () => dispatch(changeConference(roomConfig))
@@ -40,7 +43,12 @@ const BottomNav = ({roomName}) => {
             <div className="button mute-toggle" onClick={onVideoMuteToggle}/>
             <div className="button fullscreen-toggle" onClick={toggleFullscreen}/>
             <div className="button button-options" onClick={onOptionsClick}/>
-            <Options/>
+            {optionsVisible && (
+                <Popup onOutsideClick={hidePopup}>
+                    <Options/>
+                </Popup>
+            )}
+
         </div>
     )
 }
