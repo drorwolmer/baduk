@@ -20,7 +20,7 @@
     overflow: hidden;
 
     &.button-to-toilet {
-      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97802024_240626827171480_2267265698860367872_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=RPxfRBd9JyQAX_xQAZU&_nc_ht=scontent.fsdv3-1.fna&oh=6186f5d99ab384bff9889ff60f22c520&oe=5EEB559F&dl=1');
+      background: url('/baduk/toilet.gif');
       background-position: center;
       background-size: cover;
     }
@@ -31,12 +31,21 @@
     }
 
     &.mute-toggle {
-      background: url('https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.15752-9/97882351_270728564067910_3625809836505038848_n.jpg?_nc_cat=102&_nc_sid=b96e70&_nc_ohc=JdlJBnI6Ob4AX9U84tZ&_nc_ht=scontent.fsdv3-1.fna&oh=d33d5f96d2844f70f50cf3cd15dee039&oe=5EE9EE69');
-      background-size: contain;
+      background: url('/baduk/camera.png');
+      background-size: 180%;
+      background-position: center;
+    }
+
+    &.button-options {
+      background: url('/baduk/settings.png');
+      background-size: 96%;
+      background-position: center;
+      width: 50px;
+      height: 50px;
     }
 
     &.fullscreen-toggle {
-      background: url('https://cdn.iconscout.com/icon/free/png-256/fullscreen-13-458946.png');
+      background: url('/baduk/full.png');
       background-size: contain;
     }
   }
