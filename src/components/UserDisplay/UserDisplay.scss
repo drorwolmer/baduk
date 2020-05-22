@@ -41,7 +41,6 @@
     z-index: 2000;
     position: absolute;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
     transform: translateY(-100%);
 
     .chat-scroll {
@@ -50,10 +49,12 @@
     .chat-drawer {
       width: 100%;
       background-color: rgba(0, 0, 0, 0.7);
+      padding: 2px 0;
 
       .text-message {
         margin: 5px;
         max-width: 90%;
+        padding: 5px 10px;
         .emoji {
           animation: none;
         }
@@ -73,6 +74,11 @@
       width: unset;
       background-color: rgba(255, 255, 255, 0.7);
       padding: 6px 10px;
+    }
+
+    &.message-preview {
+      top: 50%;
+      transform: translateY(-50%);
     }
   }
 

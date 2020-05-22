@@ -4,15 +4,25 @@ import './ChatDrawer.scss'
 import { useSelector } from 'react-redux'
 import ChatMessage from '../ChatMessage'
 import ScrollToBottom from 'react-scroll-to-bottom'
+import { css } from 'glamor'
 
-const ChatDrawer = ({ messagesSelector }) => {
+const MESSAGE_HEIGHT = 39
+const ADDITIONAL_HEIGHT = 8 // padding
 
-    const all_messages = useSelector(messagesSelector)
+const ChatDrawer = ({ messagesSelector, maxHeight = -1 }) => {
+
+    const messages = useSelector(messagesSelector)
+
+    const styles = {}
+    if (maxHeight > -1) {
+        const messagesHeight = _.size(messages) * MESSAGE_HEIGHT + ADDITIONAL_HEIGHT
+        styles.height = messagesHeight < maxHeight ? messagesHeight : maxHeight
+    }
 
     return (
-        <ScrollToBottom className="chat-scroll">
+        <ScrollToBottom className={css(styles)}>
             <div className="chat-drawer">
-                {_.map(_.orderBy(all_messages, 'ts', 'asc'), (msg) => {
+                {_.map(_.orderBy(messages, 'ts', 'asc'), (msg) => {
                     return (
                         <ChatMessage key={msg.ts.toISOString().concat(msg.globalUID)} ts={msg.ts} text={msg.text}
                                      displayName={msg.displayName}

@@ -6,7 +6,7 @@ import TextInput from '../TextInput'
 import { sendPrivateMessage } from '../../modules/meeting'
 import { getLocalUser } from '../../store/users'
 
-const Chat = ({ recipient }) => {
+const Chat = ({ recipient, maxDrawerHeight }) => {
 
     const [isSending, setIsSending] = useState(false)
 
@@ -28,7 +28,7 @@ const Chat = ({ recipient }) => {
 
     return (
         <div className="chat">
-            <ChatDrawer messagesSelector={getPrivateMessages(globalUID, localUser.globalUID)}/>
+            <ChatDrawer messagesSelector={getPrivateMessages(globalUID, localUser.globalUID)} maxHeight={maxDrawerHeight}/>
             {!isSending && (<TextInput className="chat-message" submit={sendMessage}/>)}
         </div>
     )

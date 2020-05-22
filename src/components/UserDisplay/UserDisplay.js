@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import _ from 'lodash'
 import {getTracks} from '../../utils'
 import {sendPublicMessage, setLocalDisplayName} from '../../modules/meeting'
-import {getUserLastMessage, getLastMessageFromLocalUser} from '../../store/messages'
+import {getUserLastPublicMessage ,getLastPrivateMessageFromUser} from '../../store/messages'
 import classNames from 'classnames'
 import './UserDisplay.scss'
 import {useSelector} from 'react-redux'
@@ -13,6 +13,7 @@ import SpeechBubble from '../SpeechBubble'
 import TextInput from '../TextInput'
 import { getLocalUser } from '../../store/users'
 import Chat from '../Chat'
+import ChatMessagePreview from '../Chat/ChatMessagePreview'
 
 const attach = (track, ref) => track && ref.current && track.attach(ref.current)
 
@@ -37,9 +38,9 @@ const UserDisplay = ({user, isAudioActive}) => {
 
     const localUser = useSelector(getLocalUser)
 
-    const bubbleMessage = useSelector(getUserLastMessage(globalUID, localUser.globalUID))
+    const bubbleMessage = useSelector(getUserLastPublicMessage(globalUID, localUser.globalUID))
 
-    const lastMessageFromLocalUser = useSelector(getLastMessageFromLocalUser(globalUID, localUser.globalUID))
+    const lastPrivateMessageFromUser = useSelector(getLastPrivateMessageFromUser(globalUID, localUser.globalUID))
 
     useEffect(() => {
 
@@ -93,7 +94,7 @@ const UserDisplay = ({user, isAudioActive}) => {
             }))
         } else {
             // send private message
-            setPopup(<Chat recipient={user} />)
+            setPopup(<Chat recipient={user} maxDrawerHeight={180} />)
         }
 
     }
@@ -156,11 +157,9 @@ const UserDisplay = ({user, isAudioActive}) => {
                     </SpeechBubble>
                 </AutoHide>
             )}
-            {lastMessageFromLocalUser && (
-                <AutoHide ttl={7000} refreshKey={lastMessageFromLocalUser.ts} hidden={popupOpen}>
-                    <SpeechBubble className="centered no-pointer from_me">
-                        {lastMessageFromLocalUser.text}
-                    </SpeechBubble>
+            {lastPrivateMessageFromUser && (
+                <AutoHide ttl={3000} refreshKey={lastPrivateMessageFromUser.ts}>
+                    <ChatMessagePreview message={lastPrivateMessageFromUser}/>
                 </AutoHide>
             )}
             <div className="in"/>

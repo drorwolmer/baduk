@@ -29,11 +29,15 @@ export const getUserLastMessage = (globalUID, localUserGlobalUID) => state => _.
     return m.globalUID === globalUID && (m.recipient === 'public' || m.recipient === localUserGlobalUID) && (ts_diff_secs < 10)
 }))
 
-export const getLastMessageFromLocalUser = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
+export const getUserLastPublicMessage = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
     let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
-    return m.recipient === globalUID && m.globalUID === localUserGlobalUID && (ts_diff_secs < 10)
+    return m.globalUID === globalUID && m.recipient === 'public' && (ts_diff_secs < 10)
 }))
 
+export const getLastPrivateMessageFromUser = (globalUID, localUserGlobalUID) => state => _.last(_.filter(state.messages, (m) => {
+    let ts_diff_secs = Math.abs(((new Date()) - m.ts) / 1000)
+    return m.recipient === localUserGlobalUID && m.globalUID === globalUID && (ts_diff_secs < 10)
+}))
 
 export const getAllMessages = state => state.messages
 
