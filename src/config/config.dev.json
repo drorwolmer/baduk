@@ -1,11 +1,11 @@
 {
   "jitsi": {
     "hosts": {
-      "domain": "dror-testing.tlvengnetapp.com",
-      "focus": "focus.dror-testing.tlvengnetapp.com",
-      "muc": "conference.dror-testing.tlvengnetapp.com"
+      "domain": "meet.jit.si",
+      "focus": "focus.meet.jit.si",
+      "muc": "conference.meet.jit.si"
     },
-    "bosh": "//dror-testing.tlvengnetapp.com/http-bind?room=ELHAMIN_BLOCKUS",
+    "bosh": "//meet.jit.si/http-bind?room=ELHAMIN_BLOCKUS",
     "clientNode": "http://jitsi.org/jitsimeet",
     "desktopSharingChromeDisabled": true,
     "openBridgeChannel": "datachannel",
