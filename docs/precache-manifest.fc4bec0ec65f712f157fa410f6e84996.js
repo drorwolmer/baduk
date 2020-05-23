@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "cd07434a26b7337a635d4f0ea80119ed",
+    "revision": "c12bb6fbe22937dd772b87bbf6d94032",
     "url": "/baduk/index.html"
   },
   {
