@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/baduk/static/css/main.bd08c348.chunk.css",
-    "main.js": "/baduk/static/js/main.5fa51e12.chunk.js",
-    "main.js.map": "/baduk/static/js/main.5fa51e12.chunk.js.map",
+    "main.js": "/baduk/static/js/main.3d3dee40.chunk.js",
+    "main.js.map": "/baduk/static/js/main.3d3dee40.chunk.js.map",
     "runtime-main.js": "/baduk/static/js/runtime-main.fa55bcdb.js",
     "runtime-main.js.map": "/baduk/static/js/runtime-main.fa55bcdb.js.map",
     "static/js/2.00561568.chunk.js": "/baduk/static/js/2.00561568.chunk.js",
     "static/js/2.00561568.chunk.js.map": "/baduk/static/js/2.00561568.chunk.js.map",
     "index.html": "/baduk/index.html",
-    "precache-manifest.52828eaf515c323f19388ad1900f3120.js": "/baduk/precache-manifest.52828eaf515c323f19388ad1900f3120.js",
+    "precache-manifest.37733b6405461769f505cedca176a56c.js": "/baduk/precache-manifest.37733b6405461769f505cedca176a56c.js",
     "service-worker.js": "/baduk/service-worker.js",
     "static/css/main.bd08c348.chunk.css.map": "/baduk/static/css/main.bd08c348.chunk.css.map",
     "static/js/2.00561568.chunk.js.LICENSE.txt": "/baduk/static/js/2.00561568.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.fa55bcdb.js",
     "static/js/2.00561568.chunk.js",
     "static/css/main.bd08c348.chunk.css",
-    "static/js/main.5fa51e12.chunk.js"
+    "static/js/main.3d3dee40.chunk.js"
   ]
 }
